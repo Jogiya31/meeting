@@ -1,0 +1,82 @@
+.stepper-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.step-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+/* Step Line - connects steps */
+.step-line {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: #ccc;
+  top: 18px;
+  left: -50%;
+  z-index: 1;
+  transition: background 0.3s ease-in-out;
+}
+
+.completed-line {
+  background: #1c8003; /* Change color for completed steps */
+}
+
+.step {
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 50%;
+  background: #ccc;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin: auto;
+  transition: background 0.3s ease-in-out;
+  z-index: 2;
+}
+
+.step.active .step-number,
+.step.completed .step-number {
+  background: #33a5db;
+}
+
+.step-label {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.step.active .step-label {
+  color: #33a5db;
+}
+
+/* First step should not have a line before it */
+.step-wrapper:first-child .step-line {
+  display: none;
+}
+
+.step.completed {
+  .step-number {
+    background: #1c8003;
+  }
+  .step-label {
+    font-weight: 600;
+    color: #333;
+  }
+}
