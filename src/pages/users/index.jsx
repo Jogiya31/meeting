@@ -368,6 +368,12 @@ const UserList = () => {
                 </div>
               </div>
             </Col>
+            <Col md={12} className="d-flex justify-content-end mt-4">
+              <Button variant="info">Save</Button>
+              <Button variant="secondary" onClick={handleClose}>
+                Cancel
+              </Button>
+            </Col>
           </Row>
         </Modal.Body>
       </Modal>

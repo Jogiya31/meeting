@@ -9,6 +9,7 @@ import moment from 'moment';
 import Stepper from '../../components/stepper';
 import Attendance from './attendance';
 import meetingImage from '../../assets/images/meeting.png';
+import { MultiSelect } from 'react-multi-select-component';
 
 const NewPoint = () => {
   const navigate = useNavigate();
@@ -26,13 +27,20 @@ const NewPoint = () => {
   const [errors, setErrors] = useState([{ task: false, endDate: false, officer: false }]);
   const [currentStep, setCurrentStep] = useState(1);
   const [attendanceData, setAttendanceData] = useState([]);
+  const [userListOption, setUserListOptions] = useState([]); // User options state
+  const [userFilter, setuserFilter] = useState([]); // user filter state
   const stepsList = ['Create Meeting', 'Mark Attendance', 'Discussion Points', 'Review'];
-
   const userList = useSelector((state) => state.users.data);
 
   useEffect(() => {
     dispatch(userActions.getuserInfo());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (userList?.data) {
+      setUserListOptions(userList.data.map((item) => ({ label: item.userName, value: item.userId })));
+    }
+  }, [userList]);
 
   const handleAddField = () => {
     setFormFields([...formFields, { task: '', endDate: null, officer: '' }]);
@@ -41,12 +49,19 @@ const NewPoint = () => {
   };
 
   const handleFieldChange = (index, field, value) => {
-    const updatedFields = [...formFields];
-    if (field === 'endDate' && value instanceof Date && !isNaN(value)) {
-      value = moment(value).format('DD-MM-YYYY');
-    }
-    updatedFields[index][field] = value;
-    setFormFields(updatedFields);
+    setFormFields((prevFields) => {
+      const updatedFields = [...prevFields];
+
+      if (field === 'endDate' && value instanceof Date && !isNaN(value)) {
+        updatedFields[index][field] = moment(value).format('DD-MM-YYYY');
+      } else if (field === 'officer') {
+        updatedFields[index][field] = Array.isArray(value) ? value.map((item) => item.value) : []; // Ensure an array
+      } else {
+        updatedFields[index][field] = value;
+      }
+
+      return updatedFields;
+    });
   };
 
   const handleDeleteField = (index) => {
@@ -118,7 +133,6 @@ const NewPoint = () => {
     if (currentStep === 1) {
       isValid = validateStep1();
     } else if (currentStep === 3) {
-      console.log('formFields', formFields);
       isValid = validateAllRows();
     }
 
@@ -206,45 +220,45 @@ const NewPoint = () => {
             {currentStep === 2 && <Attendance handleAttendanceFormData={handleAttendanceData} formFields={attendanceData} />}
 
             {currentStep === 3 && (
-              <Form autoComplete="false">
+              <Form autoComplete="off">
                 <Box extra="">
                   {formFields.map((field, index) => (
                     <Row key={index} className="mb-2">
-                      <Col>
-                        <div className="lineForm">
-                          <Form.Control
-                            as="textarea"
-                            placeholder="Enter text here.."
-                            rows={1}
-                            className={`mr-2 ${errors[index]?.task ? 'is-invalid' : ''}`} // Add error class for task field
-                            value={field.task}
-                            onChange={(e) => handleFieldChange(index, 'task', e.target.value)}
-                            autoFocus={index === formFields.length - 1} // Auto-focus only on the last input field
-                            ref={index === formFields.length - 1 ? lastInputRef : null} // Set ref to the last input field
-                          />
-                          <div className="mr-2 w-full">
-                            <DatePicker
-                              className={`form-control ${errors[index]?.endDate ? 'is-invalid' : ''}`} // Add error class for end date
-                              selected={field.endDate ? moment(field.endDate, 'DD-MM-YYYY').toDate() : null} // Convert formatted date back to Date object for DatePicker
-                              onChange={(date) => handleFieldChange(index, 'endDate', date)}
-                              placeholderText="End Date"
-                              dateFormat="dd-MM-yyyy"
-                              name="enddate"
-                            />
-                          </div>
-                          <Form.Select
-                            aria-label="Default select example"
-                            className={`mr-2 ${errors[index]?.officer ? 'is-invalid' : ''}`} // Add error class for officer field
-                            value={field.officer}
-                            onChange={(e) => handleFieldChange(index, 'officer', e.target.value)}
-                          >
-                            <option value="">Select an officer</option>
-                            {userList?.data?.map((item) => (
-                              <option value={item.id} key={`${item.userName}${index}`}>
-                                {item.userName}
-                              </option>
-                            ))}
-                          </Form.Select>
+                      <Col md={5}>
+                        <Form.Control
+                          as="textarea"
+                          placeholder="Enter text here.."
+                          rows={1}
+                          className={`mr-2 ${errors[index]?.task ? 'is-invalid' : ''}`} // Add error class for task field
+                          value={field.task}
+                          onChange={(e) => handleFieldChange(index, 'task', e.target.value)}
+                          autoFocus={index === formFields.length - 1} // Auto-focus only on the last input field
+                          ref={index === formFields.length - 1 ? lastInputRef : null} // Set ref to the last input field
+                        />
+                      </Col>
+                      <Col md={3}>
+                        <DatePicker
+                          className={`form-control ${errors[index]?.endDate ? 'is-invalid' : ''}`} // Add error class for end date
+                          selected={field.endDate ? moment(field.endDate, 'DD-MM-YYYY').toDate() : null} // Convert formatted date back to Date object for DatePicker
+                          onChange={(date) => handleFieldChange(index, 'endDate', date)}
+                          placeholderText="End Date"
+                          dateFormat="dd-MM-yyyy"
+                          name="enddate"
+                          minDate={new Date()} // Disable past dates
+                        />
+                      </Col>
+
+                      <Col md={3}>
+                        <MultiSelect
+                          options={userListOption}
+                          value={userListOption.filter((option) => (formFields[index].officer || []).includes(option.value))} // Ensure officer is an array
+                          onChange={(selected) => handleFieldChange(index, 'officer', selected)}
+                          overrideStrings={{ selectSomeItems: 'Select Multiple Officers' }}
+                          hasSelectAll={true}
+                        />
+                      </Col>
+                      <Col md={1}>
+                        <div className="lineForm d-flex justify-content-end">
                           {index === formFields.length - 1 && (
                             <Button onClick={handleAddField} variant="info" className="sortBtn">
                               <i className="feather icon-plus m-0" />
@@ -259,15 +273,6 @@ const NewPoint = () => {
                       </Col>
                     </Row>
                   ))}
-                  {/* <Row>
-                  <Col className="d-flex justify-content-center">
-                    {formFields.length > 0 && ( // Only render Save All button if there are rows
-                      <Button onClick={handleSaveAll} className="btn-info">
-                        Save
-                      </Button>
-                    )}
-                  </Col>
-                </Row> */}
                 </Box>
               </Form>
             )}
@@ -296,38 +301,16 @@ const NewPoint = () => {
                     </div>
                   </Col>
 
-                  <Col className="mt-3">
-                    <Table responsive hover>
-                      <thead>
-                        <tr>
-                          <th className="" style={{ width: '50px' }}>
-                            Sno
-                          </th>
-                          <th className="w-60">Discussion Points</th>
-                          <th className="w-20">End date</th>
-                          <th className="w-20">Officer Name</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {formFields.map((item, idx) => (
-                          <tr>
-                            <td>{idx + 1}</td>
-                            <td>{item.task}</td>
-                            <td>{item.endDate}</td>
-                            <td>{item.officer}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </Col>
                   <Col md={12} className="mt-3">
                     <Accordion defaultActiveKey="0">
                       <Accordion.Item eventKey="1">
-                        <Accordion.Header className='font-black'>Attendance List</Accordion.Header>
-                        <Accordion.Body>
+                        <Accordion.Header className="mb-3">
+                          <label className="fs-6 text-secondary m-0 ">Attendance List</label>
+                        </Accordion.Header>
+                        <Accordion.Body className="p-0 dark-table">
                           <Table responsive hover>
                             <thead>
-                              <tr className=''>
+                              <tr className="">
                                 <th className="" style={{ width: '50px' }}>
                                   Sno
                                 </th>
@@ -360,6 +343,40 @@ const NewPoint = () => {
                       </Accordion.Item>
                     </Accordion>
                     <div></div>
+                  </Col>
+
+                  <Col md={12} className="mt-3">
+                    <Accordion defaultActiveKey="0">
+                      <Accordion.Item eventKey="1">
+                        <Accordion.Header className="mb-3">
+                          <label className="fs-6 text-secondary  m-0">Discussion Points</label>
+                        </Accordion.Header>
+                        <Accordion.Body className="p-0 inner-table">
+                          <Table responsive hover>
+                            <thead>
+                              <tr>
+                                <th className="" style={{ width: '50px' }}>
+                                  Sno
+                                </th>
+                                <th className="w-60">Discussion Points</th>
+                                <th className="w-20">End date</th>
+                                <th className="w-20">Officer Name</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {formFields.map((item, idx) => (
+                                <tr>
+                                  <td>{idx + 1}</td>
+                                  <td>{item.task}</td>
+                                  <td>{item.endDate}</td>
+                                  <td>{item.officer}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </Table>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    </Accordion>
                   </Col>
                 </Row>
               </Box>

@@ -39,7 +39,7 @@ const DashDefault = () => {
         <Col xl={6} xxl={4}>
           <Card className="customcard">
             <Card.Body>
-              <h6 className="mb-4">Preset Users</h6>
+              <h6 className="mb-4">Total meeting</h6>
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -53,7 +53,7 @@ const DashDefault = () => {
         <Col xl={6} xxl={4}>
           <Card className="customcard">
             <Card.Body>
-              <h6 className="mb-4">Absent Users</h6>
+              <h6 className="mb-4">Total tasks</h6>
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -67,7 +67,7 @@ const DashDefault = () => {
         <Col xl={6} xxl={4}>
           <Card className="customcard">
             <Card.Body>
-              <h6 className="mb-4">OnTime Users</h6>
+              <h6 className="mb-4">Total completed tasks</h6>
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -81,7 +81,21 @@ const DashDefault = () => {
         <Col xl={6} xxl={4}>
           <Card className="customcard">
             <Card.Body>
-              <h6 className="mb-4">Late Users</h6>
+              <h6 className="mb-4">Total Panding tasks</h6>
+              <div className="row d-flex align-items-center">
+                <div className="col-9">
+                  <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                    <i className={`feather users text-c-red f-30 m-r-5`}> {counts && counts.lateUsers} </i>
+                  </h3>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col xl={6} xxl={4}>
+          <Card className="customcard">
+            <Card.Body>
+              <h6 className="mb-4">Total tasks on hold</h6>
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">

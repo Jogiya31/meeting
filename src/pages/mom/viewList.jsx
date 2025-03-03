@@ -97,9 +97,19 @@ export default function CollapsibleTable() {
 
   // Filter rows based on search input
   const filteredRows = useMemo(() => {
-    return data?.filter((row) =>
-      parentHeaders.some((phead) => row[phead.id] && row[phead.id].toString().toLowerCase().includes(search.toLowerCase()))
-    );
+    return data?.filter((row) => {
+      // Check if the parent row matches the search
+      const parentMatch = parentHeaders.some(
+        (phead) => row[phead.id] && row[phead.id].toString().toLowerCase().includes(search.toLowerCase())
+      );
+
+      // Check if any child row (discussion point) matches the search
+      const childMatch = row.discussionPoints?.some((point) =>
+        headers.some((head) => point[head.id] && point[head.id].toString().toLowerCase().includes(search.toLowerCase()))
+      );
+
+      return parentMatch || childMatch;
+    });
   }, [search, data]);
 
   const sortedRows = useMemo(() => {
@@ -117,7 +127,6 @@ export default function CollapsibleTable() {
   );
 
   const handleSeletedAttendance = (row) => {
-    console.log('row', row);
     setattendanceData(row);
     setShowAttendanceList(!showAttendanceList);
   };

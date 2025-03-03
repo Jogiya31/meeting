@@ -315,6 +315,49 @@ td {
 .lineForm {
   display: flex;
 }
+
+.bg-0 {
+  background-color: none;
+  background: none;
+}
+.br-0 {
+  border: none;
+}
+
+.op-10{
+  opacity: 1;
+}
+.op-9{
+  opacity: 0.9;
+}
+.op-8{
+  opacity: 0.8;
+}
+.op-7{
+  opacity: 0.7;
+}
+.op-6{
+  opacity: 0.6;
+}
+.op-5{
+  opacity: 0.5;
+}
+.op-4{
+  opacity: 0.4;
+}
+.op-3{
+  opacity: 0.3;
+}
+.op-2{
+  opacity: 0.2;
+}
+.op-1{
+  opacity: 0.1;
+}
+.op-0{
+  opacity: 0;
+}
+
 .cfs-14 {
   font-size: 14px !important;
 }
@@ -865,6 +908,28 @@ button.sortBtn.btn.btn-info,
       color: #fff;
       &:hover {
         opacity: 1;
+      }
+    }
+  }
+}
+
+.rmsc label {
+  margin-bottom: 0;
+}
+
+.accordion {
+  .accordion-item {
+    border: none !important;
+
+    .accordion-header {
+      .accordion-button {
+        padding: 0 !important;
+        background-color: transparent;
+        width: auto;
+        box-shadow: none;
+        &::after {
+          margin-left: 5px !important;
+        }
       }
     }
   }

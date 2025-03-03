@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../../store/user/userSlice';
+import { MultiSelect } from 'react-multi-select-component';
 
 const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => {
   const dispatch = useDispatch();
@@ -10,7 +11,8 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   const [formFields, setFormFields] = useState(
     initialFields.length ? initialFields : [{ userId: '', designationId: '', divisionId: '', organization: '', mobile: '', isOther: false }]
   );
-
+  const [userListOption, setUserListOptions] = useState([]); // User options state
+  const [userFilter, setuserFilter] = useState([]); // user filter state
   const [showregister, setShowregister] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -31,6 +33,12 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   useEffect(() => {
     handleAttendanceFormData(formFields);
   }, [formFields]);
+  
+  useEffect(() => {
+    if (userList?.data) {
+      setUserListOptions(userList.data.map((item) => ({ label: item.userName, value: item.userId })));
+    }
+  }, [userList]);
 
   const handleOfficerChange = (index, userId) => {
     if (userId === 'other') {
@@ -59,10 +67,6 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
         handleAddField();
       }
     }
-  };
-
-  const handleChange = (index, fieldName, value) => {
-    setFormFields((prevFields) => prevFields.map((field, i) => (i === index ? { ...field, [fieldName]: value } : field)));
   };
 
   const handleDeleteField = (index) => {
@@ -134,25 +138,68 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
     handleAttendanceFormData(formFields);
   }, [formFields]);
 
+  const handleUserFilter = (newSelected) => {
+    setuserFilter(newSelected);
+
+    // Extract selected user IDs
+    const selectedUserIds = newSelected.map((user) => user.value.toString());
+
+    // Generate new form fields based on selected users
+    const updatedFields = selectedUserIds.map((userId) => {
+      const existingField = formFields.find((field) => field.userId === userId);
+
+      if (existingField) {
+        return existingField; // Keep existing fields if already in list
+      }
+
+      // Find user details from userList
+      const selectedUser = userList?.data?.find((user) => user.userId.toString() === userId);
+
+      return {
+        userId: userId,
+        designationId: selectedUser?.designationId || '',
+        divisionId: selectedUser?.divisionId || '',
+        organization: selectedUser?.organization || '',
+        mobile: selectedUser?.mobile || '',
+        isOther: false
+      };
+    });
+
+    // Ensure at least one empty field exists for new input
+    if (updatedFields.length === 0 || updatedFields[updatedFields.length - 1].userId !== '') {
+      updatedFields.push({ userId: '', designationId: '', divisionId: '', organization: '', mobile: '', isOther: false });
+    }
+
+    setFormFields(updatedFields);
+  };
+
+  const customHeader = (
+    <div className="d-flex align-items-center">
+      <h5 className="ml-3">Meeting attendance</h5>
+      <div>
+        <MultiSelect
+          options={userListOption}
+          value={userFilter}
+          onChange={handleUserFilter}
+          overrideStrings={{
+            selectSomeItems: 'Select Multiple Officers'
+          }}
+          hasSelectAll={true}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <Container fluid>
       <Row>
         <Col>
           <Form autoComplete="off">
-            <Box title="Meeting attendance" extra="header-danger">
+            <Box extra="header-danger" customHeader={customHeader}>
               {formFields.map((field, index) => (
                 <Row key={index} className="mb-2">
                   <Col>
                     <div className="lineForm">
-                      {/* {field.isOther ? (
-                        <Form.Control
-                          type="text"
-                          name="userId"
-                          value={field.userId}
-                          placeholder="Enter user manually"
-                          onChange={(e) => handleChange(index, 'userId', e.target.value)}
-                        />
-                      ) : ( */}
                       <Form.Select
                         aria-label="Select an officer"
                         name="userId"
@@ -167,8 +214,6 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                         ))}
                         <option value="other">Other</option>
                       </Form.Select>
-                      {/* )} */}
-
                       <Form.Control
                         type="text"
                         name="designationId"
