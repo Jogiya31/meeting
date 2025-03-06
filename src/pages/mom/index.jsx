@@ -28,7 +28,6 @@ const NewPoint = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [attendanceData, setAttendanceData] = useState([]);
   const [userListOption, setUserListOptions] = useState([]); // User options state
-  const [userFilter, setuserFilter] = useState([]); // user filter state
   const stepsList = ['Create Meeting', 'Mark Attendance', 'Discussion Points', 'Review'];
   const userList = useSelector((state) => state.users.data);
 
@@ -86,7 +85,10 @@ const NewPoint = () => {
     setTimeError(!currentTime);
     setstartDateError(!currentDate);
 
+   
+
     if (validateAllRows()) {
+      console.log('Now Call APIS')
       console.log('discussionDate:', discussionDate);
       console.log('All rows saved:', formFields);
     } else {
@@ -328,8 +330,8 @@ const NewPoint = () => {
                                     <tr>
                                       <td>{idx + 1}</td>
                                       <td>{item.userId}</td>
-                                      <td>{item.designationId}</td>
-                                      <td>{item.divisionId}</td>
+                                      <td>{item.designation}</td>
+                                      <td>{item.division}</td>
                                       <td>{item.organization}</td>
                                       <td>{item.mobile}</td>
                                     </tr>

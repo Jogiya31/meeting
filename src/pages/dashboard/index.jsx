@@ -1,22 +1,15 @@
-import api from '../../api';
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
+import { userActions } from '../../store/user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const DashDefault = () => {
-  const [counts, setCounts] = useState(null);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const userList = useSelector((state) => state.users.data);
 
   useEffect(() => {
     // Call the GET API to fetch users
-    api
-      .get('/dashboardCounts')
-      .then((response) => {
-        setCounts(response.data);
-      })
-      .catch((err) => {
-        setError('Error fetching users');
-        console.error(err);
-      });
+     dispatch(userActions.getuserInfo());
   }, []);
 
   return (
@@ -29,7 +22,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-blue f-30 m-r-5`}> {counts && counts.totalUsers}</i>
+                    <i className={`feather users text-c-blue f-30 m-r-5`}> {userList?.Result?.length}</i>
                   </h3>
                 </div>
               </div>
@@ -43,7 +36,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-green f-30 m-r-5`}> {counts && counts.presentUsers} </i>
+                    <i className={`feather users text-c-green f-30 m-r-5`}> 0 </i>
                   </h3>
                 </div>
               </div>
@@ -57,7 +50,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-red f-30 m-r-5`}> {counts && counts.absentUsers} </i>
+                    <i className={`feather users text-c-red f-30 m-r-5`}> 0</i>
                   </h3>
                 </div>
               </div>
@@ -71,7 +64,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-green f-30 m-r-5`}> {counts && counts.onTimeUsers} </i>
+                    <i className={`feather users text-c-green f-30 m-r-5`}> 0 </i>
                   </h3>
                 </div>
               </div>
@@ -85,7 +78,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-red f-30 m-r-5`}> {counts && counts.lateUsers} </i>
+                    <i className={`feather users text-c-red f-30 m-r-5`}> 0 </i>
                   </h3>
                 </div>
               </div>
@@ -99,12 +92,17 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-red f-30 m-r-5`}> {counts && counts.lateUsers} </i>
+                    <i className={`feather users text-c-red f-30 m-r-5`}> 0 </i>
                   </h3>
                 </div>
               </div>
             </Card.Body>
           </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+        {/* <TaskCalendar /> */}
         </Col>
       </Row>
     </React.Fragment>

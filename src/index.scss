@@ -324,37 +324,37 @@ td {
   border: none;
 }
 
-.op-10{
+.op-10 {
   opacity: 1;
 }
-.op-9{
+.op-9 {
   opacity: 0.9;
 }
-.op-8{
+.op-8 {
   opacity: 0.8;
 }
-.op-7{
+.op-7 {
   opacity: 0.7;
 }
-.op-6{
+.op-6 {
   opacity: 0.6;
 }
-.op-5{
+.op-5 {
   opacity: 0.5;
 }
-.op-4{
+.op-4 {
   opacity: 0.4;
 }
-.op-3{
+.op-3 {
   opacity: 0.3;
 }
-.op-2{
+.op-2 {
   opacity: 0.2;
 }
-.op-1{
+.op-1 {
   opacity: 0.1;
 }
-.op-0{
+.op-0 {
   opacity: 0;
 }
 
@@ -692,6 +692,10 @@ button.sortBtn.btn.btn-info,
       p {
         color: #fff;
       }
+      
+      .point{
+        font-size: 8px;
+      }
     }
   }
   .footer {
@@ -933,4 +937,8 @@ button.sortBtn.btn.btn-info,
       }
     }
   }
+}
+
+.custom-cards {
+  border-radius: 10px;
 }

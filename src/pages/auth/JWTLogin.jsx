@@ -3,55 +3,62 @@ import { Row, Col, Alert, Button } from 'react-bootstrap';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api';
+import { authActions } from '../../store/auth/authrSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const JWTLogin = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [saveCredentials, setSaveCredentials] = useState(false);
-
+  const loginDeatils = useSelector((state) => state.auth.data);
   useEffect(() => {
     const logged = localStorage.getItem('loggedIn');
-    if (logged) {
+    if (logged && loginDeatils) {
       navigate('/dashboard');
     } else {
       navigate('/login');
     }
   }, []);
 
+  const handleSubmit = (values, { setSubmitting }) => {
+    setError('');
+    dispatch(authActions.getauthInfo(values))
+      .unwrap()
+      .then(() => {
+        if (saveCredentials) {
+          localStorage.setItem('loggedIn', true);
+        }
+      })
+      .catch((err) => {
+        setError(err || 'An unexpected error occurred. Please try again later.');
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
+  };
+
+  useEffect(() => {
+    if (loginDeatils?.Result) {
+      localStorage.setItem('loggedIn', true);
+      localStorage.setItem('role', loginDeatils.Result[0].Role); 
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  }, [loginDeatils]);
+
   return (
     <Formik
       initialValues={{
-        username: '',
-        password: ''
+        UsernameMobile: '',
+        Password: ''
       }}
       validationSchema={Yup.object().shape({
-        username: Yup.string().max(255).required('User ID is required'),
-        password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required')
+        UsernameMobile: Yup.string().max(255).required('User ID is required'),
+        Password: Yup.string().required('Password is required')
       })}
-      onSubmit={(values, { setSubmitting }) => {
-        setError('');
-        api
-          .post('/login', values) // Replace `/login` with your API endpoint
-          .then((response) => {
-            // Save credentials if the checkbox is checked
-            if (saveCredentials) {
-              localStorage.setItem('loggedIn', true);
-            }
-            navigate('/dashboard'); // Navigate to dashboard on success
-          })
-          .catch((err) => {
-            // Handle error response
-            if (err.response?.status === 401) {
-              setError('Invalid user ID or password');
-            } else {
-              setError('An unexpected error occurred. Please try again later.');
-            }
-          })
-          .finally(() => {
-            setSubmitting(false);
-          });
-      }}
+      onSubmit={handleSubmit}
     >
       {({ errors, handleBlur, handleChange, isSubmitting, touched, values, handleSubmit }) => (
         <form noValidate onSubmit={handleSubmit}>
@@ -60,28 +67,28 @@ const JWTLogin = () => {
             <input
               id="username"
               className="form-control"
-              name="username"
-              placeholder="Enter your User ID"
+              name="UsernameMobile"
+              placeholder="Enter your User Name/Mobile"
               onBlur={handleBlur}
               onChange={handleChange}
               type="text"
-              value={values.username}
+              value={values.UsernameMobile}
             />
-            {touched.username && errors.username && <small className="text-danger form-text">{errors.username}</small>}
+            {touched.UsernameMobile && errors.UsernameMobile && <small className="text-danger form-text">{errors.UsernameMobile}</small>}
           </div>
           <div className="form-group mb-4">
             <label htmlFor="password">Password</label>
             <input
               id="password"
               className="form-control"
-              name="password"
+              name="Password"
               placeholder="Enter your Password"
               onBlur={handleBlur}
               onChange={handleChange}
               type="password"
-              value={values.password}
+              value={values.Password}
             />
-            {touched.password && errors.password && <small className="text-danger form-text">{errors.password}</small>}
+            {touched.Password && errors.Password && <small className="text-danger form-text">{errors.Password}</small>}
           </div>
 
           <div className="custom-control custom-checkbox text-start mb-4 mt-2">

@@ -9,7 +9,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   const dispatch = useDispatch();
   const userList = useSelector((state) => state.users.data);
   const [formFields, setFormFields] = useState(
-    initialFields.length ? initialFields : [{ userId: '', designationId: '', divisionId: '', organization: '', mobile: '', isOther: false }]
+    initialFields.length ? initialFields : [{ userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false }]
   );
   const [userListOption, setUserListOptions] = useState([]); // User options state
   const [userFilter, setuserFilter] = useState([]); // user filter state
@@ -33,10 +33,10 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   useEffect(() => {
     handleAttendanceFormData(formFields);
   }, [formFields]);
-  
+
   useEffect(() => {
-    if (userList?.data) {
-      setUserListOptions(userList.data.map((item) => ({ label: item.userName, value: item.userId })));
+    if (userList?.Result) {
+      setUserListOptions(userList.Result.map((item) => ({ label: item.UserName, value: item.UserId })));
     }
   }, [userList]);
 
@@ -45,18 +45,17 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       setShowregister(true);
       setFormFields((prevFields) => prevFields.map((field, i) => (i === index ? { ...field, userId: '', isOther: true } : field)));
     } else {
-      const selectedUser = userList?.data?.find((user) => user.userId === parseInt(userId, 10));
-
+      const selectedUser = userList?.Result?.find((user) => user.UserId === userId);
       setFormFields((prevFields) =>
         prevFields.map((field, i) =>
           i === index
             ? {
                 ...field,
                 userId: userId,
-                designationId: selectedUser?.designationId || '',
-                divisionId: selectedUser?.divisionId || '',
-                organization: selectedUser?.organization || '',
-                mobile: selectedUser?.mobile || '',
+                designation: selectedUser?.DesignationTitle || '',
+                division: selectedUser?.EmployeeDivisionTitle || '',
+                organization: selectedUser?.OrganisationTitle || '',
+                mobile: selectedUser?.Mobile || '',
                 isOther: false
               }
             : field
@@ -78,7 +77,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   const handleAddField = () => {
     setFormFields((prevFields) => [
       ...prevFields,
-      { userId: '', designationId: '', divisionId: '', organization: '', mobile: '', isOther: false }
+      { userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false }
     ]);
   };
 
@@ -91,8 +90,8 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
             ? {
                 ...field,
                 userId: formData.userName, // Using the entered name as userId
-                designationId: formData.designation,
-                divisionId: formData.division,
+                designation: formData.designation,
+                division: formData.division,
                 organization: formData.organization,
                 mobile: formData.mobile,
                 isOther: false // Reset "Other" flag
@@ -157,8 +156,8 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
 
       return {
         userId: userId,
-        designationId: selectedUser?.designationId || '',
-        divisionId: selectedUser?.divisionId || '',
+        designation: selectedUser?.designation || '',
+        division: selectedUser?.division || '',
         organization: selectedUser?.organization || '',
         mobile: selectedUser?.mobile || '',
         isOther: false
@@ -167,7 +166,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
 
     // Ensure at least one empty field exists for new input
     if (updatedFields.length === 0 || updatedFields[updatedFields.length - 1].userId !== '') {
-      updatedFields.push({ userId: '', designationId: '', divisionId: '', organization: '', mobile: '', isOther: false });
+      updatedFields.push({ userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false });
     }
 
     setFormFields(updatedFields);
@@ -207,26 +206,26 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                         onChange={(e) => handleOfficerChange(index, e.target.value)}
                       >
                         <option value="">Select an officer</option>
-                        {userList?.data?.map((item) => (
-                          <option value={item.userId} key={item.userId}>
-                            {item.userName}
+                        {userList?.Result?.map((item) => (
+                          <option value={item.UserId} key={item.UserId}>
+                            {item.UserName}
                           </option>
                         ))}
                         <option value="other">Other</option>
                       </Form.Select>
                       <Form.Control
                         type="text"
-                        name="designationId"
+                        name="designation"
                         className="ml-1"
-                        value={field.designationId}
+                        value={field.designation}
                         placeholder="Designation"
                         disabled
                       />
                       <Form.Control
                         type="text"
-                        name="divisionId"
+                        name="division"
                         className="ml-1"
-                        value={field.divisionId}
+                        value={field.division}
                         placeholder="Division"
                         disabled
                       />

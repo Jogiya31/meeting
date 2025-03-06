@@ -11,6 +11,9 @@
     "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
     "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@progress/kendo-react-pdf": "^9.4.0",
     "@react-google-maps/api": "^2.19.3",
