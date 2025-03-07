@@ -102,7 +102,9 @@ const menuItems = {
           url: '/settings',
           classes: 'nav-item',
           icon: 'fas fa-cogs',
-          display: true
+          display: true,
+          target: true,
+          external: true
         },
         {
           id: 'logout',

@@ -303,6 +303,9 @@ td {
 .grey-bg {
   background-color: $secondary-color !important;
 }
+.lightgrey-bg {
+  background-color: $default-color !important;
+}
 .darkgrey-bg {
   background-color: $header-dark-background !important;
 }
@@ -692,8 +695,8 @@ button.sortBtn.btn.btn-info,
       p {
         color: #fff;
       }
-      
-      .point{
+
+      .point {
         font-size: 8px;
       }
     }
@@ -941,4 +944,8 @@ button.sortBtn.btn.btn-info,
 
 .custom-cards {
   border-radius: 10px;
+}
+
+.multi-user-filter {
+  max-width: 250px;
 }

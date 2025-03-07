@@ -23,7 +23,7 @@
   background: #ccc;
   top: 18px;
   left: -50%;
-  z-index: 1;
+  z-index: 0;
   transition: background 0.3s ease-in-out;
 }
 
@@ -34,7 +34,7 @@
 .step {
   position: relative;
   text-align: center;
-  z-index: 2;
+  z-index: 1;
 }
 
 .step-number {
