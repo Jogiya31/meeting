@@ -10,11 +10,12 @@ import Stepper from '../../components/stepper';
 import Attendance from './attendance';
 import meetingImage from '../../assets/images/meeting.png';
 import { MultiSelect } from 'react-multi-select-component';
+import { meetingsActions } from '../../store/mom/momSlice';
 
 const NewPoint = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const Role = localStorage.getItem('role');
   const [currentDate, setcurrentDate] = useState(null);
   const [currentTime, setcurrentTime] = useState(null);
   const [meetingTitle, setmeetingTitle] = useState('');
@@ -30,14 +31,15 @@ const NewPoint = () => {
   const [userListOption, setUserListOptions] = useState([]); // User options state
   const stepsList = ['Create Meeting', 'Mark Attendance', 'Discussion Points', 'Review'];
   const userList = useSelector((state) => state.users.data);
+  const meetingDetails = useSelector((state) => state.meetings.data);
 
   useEffect(() => {
     dispatch(userActions.getuserInfo());
   }, [dispatch]);
 
   useEffect(() => {
-    if (userList?.data) {
-      setUserListOptions(userList.data.map((item) => ({ label: item.userName, value: item.userId })));
+    if (userList?.Result) {
+      setUserListOptions(userList.Result.map((item) => ({ label: item.UserName, value: item.UserId })));
     }
   }, [userList]);
 
@@ -54,7 +56,9 @@ const NewPoint = () => {
       if (field === 'endDate' && value instanceof Date && !isNaN(value)) {
         updatedFields[index][field] = moment(value).format('DD-MM-YYYY');
       } else if (field === 'officer') {
-        updatedFields[index][field] = Array.isArray(value) ? value.map((item) => item.value) : []; // Ensure an array
+        updatedFields[index][field] = Array.isArray(value)
+          ? value.map((item) => item.value).join(',') // Convert to comma-separated string
+          : '';
       } else {
         updatedFields[index][field] = value;
       }
@@ -81,20 +85,33 @@ const NewPoint = () => {
   };
 
   const handleSaveAll = () => {
+    console.log('enter');
     setTitleError(!meetingTitle.trim());
     setTimeError(!currentTime);
     setstartDateError(!currentDate);
-
-   
-
-    if (validateAllRows()) {
-      console.log('Now Call APIS')
-      console.log('discussionDate:', discussionDate);
-      console.log('All rows saved:', formFields);
-    } else {
-      console.log('Validation failed.');
-    }
+    dispatch(
+      meetingsActions.addMeetingsInfo({
+        MeetingTitle: meetingTitle,
+        MeetingDate: currentDate,
+        MeetingTime: currentTime,
+        CreatedBy: Role
+      })
+    );
   };
+
+  useEffect(() => {
+    if (attendanceData.length > 0) {
+      attendanceData.forEach((item) => {
+        dispatch(meetingsActions.addAttendanceInfo(item));
+      });
+    }
+
+    if (formFields.length > 0) {
+      formFields.forEach((item) => {
+        dispatch(meetingsActions.addDiscussionInfo(item));
+      });
+    }
+  }, [meetingDetails]); // Ensure correct dependencies
 
   const handleDiscussionDate = (date) => {
     setcurrentDate(date);
@@ -131,29 +148,34 @@ const NewPoint = () => {
 
   const handleStepChange = (nextStep) => {
     let isValid = true;
-
     if (currentStep === 1) {
       isValid = validateStep1();
+    } else if (currentStep === 2) {
+      setAttendanceData((prevData) => prevData.filter((field) => field.userId !== ''));
+      if (attendanceData.length) {
+        isValid = true;
+      } else {
+        isValid = false;
+      }
     } else if (currentStep === 3) {
       isValid = validateAllRows();
     }
-
     if (!isValid) {
       return false; // Prevent step change if validation fails
     }
-
     setCurrentStep(nextStep);
+    dispatch(userActions.getuserInfo());
     return true; // Allow step change
   };
 
   const handleAttendanceData = (data) => {
     setAttendanceData(data); // Keep attendance data even when switching steps
   };
-
   useEffect(() => {
-    console.log('attendanceData', attendanceData);
-    console.log('currentStep', currentStep);
-  }, [attendanceData, currentStep]);
+    if (currentStep === 5) {
+      handleSaveAll();
+    }
+  }, [currentStep]);
 
   return (
     <Container fluid>
@@ -253,10 +275,13 @@ const NewPoint = () => {
                       <Col md={3}>
                         <MultiSelect
                           options={userListOption}
-                          value={userListOption.filter((option) => (formFields[index].officer || []).includes(option.value))} // Ensure officer is an array
+                          value={userListOption.filter((option) => formFields[index].officer.split(',').includes(option.value))} // Convert string to array for selection
                           onChange={(selected) => handleFieldChange(index, 'officer', selected)}
                           overrideStrings={{ selectSomeItems: 'Select Multiple Officers' }}
                           hasSelectAll={true}
+                          valueRenderer={(selected) =>
+                            selected.length > 0 ? selected.map((s) => s.label).join(', ') : 'Select Multiple Officers'
+                          }
                         />
                       </Col>
                       <Col md={1}>
@@ -325,11 +350,12 @@ const NewPoint = () => {
                             </thead>
                             <tbody>
                               {attendanceData.map((item, idx) => {
+                                const user = userList?.Result?.find((u) => u.UserId === item.userId);
                                 if (item.userId !== '') {
                                   return (
                                     <tr>
                                       <td>{idx + 1}</td>
-                                      <td>{item.userId}</td>
+                                      <td>{user ? user.UserName : ''}</td>
                                       <td>{item.designation}</td>
                                       <td>{item.division}</td>
                                       <td>{item.organization}</td>
@@ -366,14 +392,33 @@ const NewPoint = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {formFields.map((item, idx) => (
-                                <tr>
-                                  <td>{idx + 1}</td>
-                                  <td>{item.task}</td>
-                                  <td>{item.endDate}</td>
-                                  <td>{item.officer}</td>
-                                </tr>
-                              ))}
+                              {formFields.map((item, idx) => {
+                                const userIds = Array.isArray(item.officer) ? item.officer : item.officer.split(',');
+                                const userNamesArray = userIds
+                                  .map((id) => {
+                                    const user = userList?.Result?.find((u) => u.UserId === id);
+                                    return user ? user.UserName : null;
+                                  })
+                                  .filter((name) => name) // Remove null values if any UserId does not match
+                                  .join(', '); // Convert array to comma-separated string
+                                const userNames = userNamesArray.split(',');
+                                return (
+                                  <tr>
+                                    <td>{idx + 1}</td>
+                                    <td>{item.task}</td>
+                                    <td>{item.endDate}</td>
+                                    <td>
+                                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                                        {userNames.map((name, index) => (
+                                          <span key={index} className="label-user">
+                                            {name.trim()}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
                             </tbody>
                           </Table>
                         </Accordion.Body>
@@ -382,6 +427,11 @@ const NewPoint = () => {
                   </Col>
                 </Row>
               </Box>
+            )}
+            {currentStep === 5 && (
+              <div>
+                <span className="fas fa-spinner"></span>
+              </div>
             )}
           </Stepper>
         </Col>

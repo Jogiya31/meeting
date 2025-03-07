@@ -4,6 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   loader: false,
   data: [],
+  meetingData: [],
   success: false,
   message: ''
 };
@@ -30,21 +31,74 @@ const meetingsSlice = createSlice({
       state.message = action.payload; // Store error message
       state.success = false; // Set success flag to false
     },
+
     // Action to initiate fetching add meetings information
     addMeetingsInfo(state) {
       state.loader = true; // Set loader to true while fetching
+      state.meetingData = [];
     },
     // Action to handle successful retrieval of add meetings information
     addMeetingsInfoSuccess(state, action) {
       state.loader = false; // Set loader to false after fetching
       state.success = true; // Set success flag to true
+      state.meetingData = action.payload;
     },
     // Action to handle failure in fetching add meetings information
     addMeetingsInfoFailed(state, action) {
       state.loader = false; // Set loader to false after fetching
       state.message = action.payload; // Store error message
       state.success = false; // Set success flag to false
+      state.meetingData = action.payload;
     },
+
+    // Action to initiate fetching add Attendance information
+    addAttendanceInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of add Attendance information
+    addAttendanceInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching add Attendance information
+    addAttendanceInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    // Action to initiate fetching add Discussion information
+    addDiscussionInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of add Discussion information
+    addDiscussionInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching add Discussion information
+    addDiscussionInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    // Action to initiate fetching updateDiscussion information
+    updateDiscussionInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of updateDiscussion information
+    updateDiscussionInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching updateDiscussion information
+    updateDiscussionInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
     // Action to clear meetings data
     clearData(state) {
       state.data = [];

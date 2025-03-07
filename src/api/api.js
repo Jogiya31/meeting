@@ -119,8 +119,8 @@ export const UpdateEmployement = (data) => {
   });
 };
 
-export const getMeetingsDetails = () => {
-  const url = `/GetMeetingDetails`;
+export const getMeetings = () => {
+  const url = `/GetMeetingDiscussionAttendanceDetails`;
   return axiosClient().get(url, payload, {
     'Content-Type': 'application/json'
   });
@@ -128,6 +128,27 @@ export const getMeetingsDetails = () => {
 export const addMeetingsDetails = (data) => {
   const payload = data.payload;
   const url = `/Save_Meeting`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const addAttendanceDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Save_Attendance`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const addDiscussionDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Save_DiscussionPoint`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const updateDiscussionDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Update_DiscussionPoint`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });

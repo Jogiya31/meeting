@@ -58,43 +58,45 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   }, [userList]);
 
   const handleOfficerChange = (index, userId) => {
-    if (userId === 'other') {
-      CallAPIs();
-      setShowregister(true);
-      return;
-    } else {
-      // Find the selected user from userList
-      const selectedUser = userList?.Result?.find((user) => user.UserId.toString() === userId);
-  
-      setFormFields((prevFields) =>
-        prevFields.map((field, i) =>
-          i === index
-            ? {
-                ...field,
-                userId,
-                designation: selectedUser?.DesignationTitle || '',
-                division: selectedUser?.EmployeeDivisionTitle || '',
-                organization: selectedUser?.OrganisationTitle || '',
-                mobile: selectedUser?.Mobile || '',
-                isOther: false
-              }
-            : field
-        )
-      );
-  
-      // Update the MultiSelect state to include the selected user
-      setuserFilter((prevSelected) => {
-        const alreadySelected = prevSelected.some((u) => u.value === userId);
-        if (!alreadySelected) {
-          return [...prevSelected, { label: selectedUser.UserName, value: userId }];
-        }
-        return prevSelected;
-      });
-  
-      handleAddField();
+    if (userId) {
+      if (userId === 'other') {
+        CallAPIs();
+        setShowregister(true);
+        return;
+      } else {
+        // Find the selected user from userList
+        const selectedUser = userList?.Result?.find((user) => user.UserId.toString() === userId);
+
+        setFormFields((prevFields) =>
+          prevFields.map((field, i) =>
+            i === index
+              ? {
+                  ...field,
+                  userId,
+                  designation: selectedUser?.DesignationTitle || '',
+                  division: selectedUser?.EmployeeDivisionTitle || '',
+                  organization: selectedUser?.OrganisationTitle || '',
+                  mobile: selectedUser?.Mobile || '',
+                  isOther: false
+                }
+              : field
+          )
+        );
+
+        // Update the MultiSelect state to include the selected user
+        setuserFilter((prevSelected) => {
+          const alreadySelected = prevSelected.some((u) => u.value === userId);
+          if (!alreadySelected) {
+            return [...prevSelected, { label: selectedUser.UserName, value: userId }];
+          }
+          return prevSelected;
+        });
+
+        handleAddField();
+      }
     }
   };
-  
+
   const handleDeleteField = (index) => {
     if (window.confirm('Are you sure you want to delete this row?')) {
       setFormFields((prevFields) => prevFields.filter((_, i) => i !== index));
@@ -142,18 +144,18 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
 
   const handleUserFilter = (newSelected) => {
     setuserFilter(newSelected);
-  
+
     // Extract selected user IDs
     const selectedUserIds = newSelected.map((user) => user.value.toString());
-  
+
     // Generate new form fields based on selected users
     const updatedFields = selectedUserIds.map((userId) => {
       const existingField = formFields.find((field) => field.userId === userId);
       if (existingField) return existingField;
-  
+
       // Find user details from userList.Result
       const selectedUser = userList?.Result?.find((user) => user.UserId.toString() === userId);
-  
+
       return {
         userId: userId,
         designation: selectedUser?.DesignationTitle || '',
@@ -163,19 +165,19 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
         isOther: false
       };
     });
-  
+
     // Ensure at least one empty field exists for new input
     if (updatedFields.length === 0 || updatedFields[updatedFields.length - 1].userId !== '') {
       updatedFields.push({ userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false });
     }
-  
+
     setFormFields(updatedFields);
   };
-  
+
   const customHeader = (
     <div className="d-flex align-items-center">
       <h5 className="ml-3">Meeting attendance</h5>
-      <div className='multi-user-filter'>
+      <div className="multi-user-filter">
         <MultiSelect
           options={userListOption}
           value={userFilter}
@@ -196,8 +198,6 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       </div>
     </div>
   );
-  ;
-
   const validate = () => {
     let newErrors = {};
     if (!formData.UserName) newErrors.UserName = 'User name is required';
@@ -242,36 +242,36 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       setShowregister(false);
     }, 500);
   };
- useEffect(() => {
-  if (newUserName && userList?.Result) {
-    const updatedUser = userList.Result.find((user) => user.UserName === newUserName);
-    if (updatedUser) {
-      setFormFields((prevFields) => {
-        // Remove all blank rows
-        let newFields = prevFields.filter((field) => field.userId !== '');
+  useEffect(() => {
+    if (newUserName && userList?.Result) {
+      const updatedUser = userList.Result.find((user) => user.UserName === newUserName);
+      if (updatedUser) {
+        setFormFields((prevFields) => {
+          // Remove all blank rows
+          let newFields = prevFields.filter((field) => field.userId !== '');
 
-        // Add the new user row
-        newFields.push({
-          userId: updatedUser.UserId,
-          designation: updatedUser.DesignationTitle || '',
-          division: updatedUser.EmployeeDivisionTitle || '',
-          organization: updatedUser.OrganisationTitle || '',
-          mobile: updatedUser.Mobile || '',
-          isOther: false
+          // Add the new user row
+          newFields.push({
+            userId: updatedUser.UserId,
+            designation: updatedUser.DesignationTitle || '',
+            division: updatedUser.EmployeeDivisionTitle || '',
+            organization: updatedUser.OrganisationTitle || '',
+            mobile: updatedUser.Mobile || '',
+            isOther: false
+          });
+
+          // Ensure there's exactly one blank row at the end
+          return [...newFields, { userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false }];
         });
 
-        // Ensure there's exactly one blank row at the end
-        return [...newFields, { userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false }];
-      });
+        // Update MultiSelect filter
+        setuserFilter((prevFilters) => [...prevFilters, { label: updatedUser.UserName, value: updatedUser.UserId }]);
 
-      // Update MultiSelect filter
-      setuserFilter((prevFilters) => [...prevFilters, { label: updatedUser.UserName, value: updatedUser.UserId }]);
-
-      // Reset after updating fields
-      setNewUserName(null);
+        // Reset after updating fields
+        setNewUserName(null);
+      }
     }
-  }
-}, [userList]);
+  }, [userList]);
 
   return (
     <Container fluid>

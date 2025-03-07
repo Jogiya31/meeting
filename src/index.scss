@@ -949,3 +949,13 @@ button.sortBtn.btn.btn-info,
 .multi-user-filter {
   max-width: 250px;
 }
+.label-user{
+  white-space: nowrap;
+  padding: 2px 7px;
+  border-radius: 25px;
+  border: 1px solid rgb(204, 204, 204);
+  background-color: rgb(240, 240, 240);
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+}
