@@ -8,10 +8,9 @@ export const authInfo = (data) => {
   });
 };
 
-export const alluserInfo = (data) => {
-  const payload = data.payload;
+export const alluserInfo = () => {
   const url = `/GetUserDetails`;
-  return axiosClient().get(url, payload, {
+  return axiosClient().get(url, {
     'Content-Type': 'application/json'
   });
 };
@@ -121,7 +120,7 @@ export const UpdateEmployement = (data) => {
 
 export const getMeetings = () => {
   const url = `/GetMeetingDiscussionAttendanceDetails`;
-  return axiosClient().get(url, payload, {
+  return axiosClient().get(url, {
     'Content-Type': 'application/json'
   });
 };

@@ -80,21 +80,41 @@ const Index = () => {
       ModifyBy: Role,
       Status: updatedItem.status.toString()
     };
-   
+
     try {
       await dispatch(updateAction(payload));
-      console.log('payload', payload);
       setList(list.map((item) => (item.id === id ? { ...item, isEditing: false } : item)));
     } catch (error) {
       console.error('Failed to update item:', error);
     }
   };
 
-  const handleDelete = (list, setList, id) => {
-    if (window.confirm('Do you want to delete this item?')) {
-      setList(list.filter((item) => item.id !== id));
+  const handleDelete = async (list, setList, updateAction, id, fieldName) => {
+    if (window.confirm('Do you want to change status for this item?')) {
+      const updatedItem = list.find((item) => item.id === id);
+      if (!updatedItem) return;
+  
+      const payload = {
+        [fieldName + 'Id']: updatedItem.id,
+        [fieldName + 'Title']: updatedItem.title,
+        ModifyBy: Role,
+        Status: updatedItem.status === 1 ? '0' : '1' // Ensure it's a string
+      };
+  
+      try {
+        await dispatch(updateAction(payload));
+  
+        // Create a new array reference to trigger re-render
+        setList((prevList) =>
+          prevList.map((item) =>
+            item.id === id ? { ...item, status: updatedItem.status === 1 ? 0 : 1 } : item
+          )
+        );
+      } catch (error) {
+        console.error('Failed to update item:', error);
+      }
     }
-  };
+  };  
 
   const handleAddItem = async (newItem, setNewItem, apiAction, fetchAction, fieldName) => {
     if (!newItem.trim()) return; // Prevent empty input
@@ -155,7 +175,7 @@ const Index = () => {
                   <span className="feather icon-edit pending-bg text-white f-12 p-2" onClick={() => handleEdit(list, setList, item.id)} />
                   <span
                     className="feather icon-x hold-bg text-white f-12 fw-bolder p-2 ml-1"
-                    onClick={() => handleDelete(list, setList, item.id)}
+                    onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
                   />
                 </div>
               </Col>

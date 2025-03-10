@@ -17,7 +17,7 @@ const meetingsSlice = createSlice({
     // Action to initiate fetching meetings information
     getMeetingsInfo(state) {
       state.loader = true; // Set loader to true while fetching
-      state.data = []; // Clear previous data
+      // state.data = []; // Clear previous data
     },
     // Action to handle successful retrieval of meetings information
     getMeetingsInfoSuccess(state, action) {

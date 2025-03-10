@@ -1,13 +1,13 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { meetingsActions } from './momSlice';
-import { addAttendanceDetails, addDiscussionDetails, getMeetings, updateDiscussionDetails } from '../../api/api';
+import { addAttendanceDetails, addDiscussionDetails, addMeetingsDetails, getMeetings, updateDiscussionDetails } from '../../api/api';
 import { toast } from 'react-toastify';
 
 // Saga function to handle fetching Meetings information
 function* handleMeetingsInfo(data) {
   try {
     // Call the API to fetch Meetings information
-    const response = yield call(allMeetingsInfo, data);
+    const response = yield call(getMeetings, data);
     // Check if the response status is 200 (OK)
     if (response.status === 200) {
       // If successful, dispatch success action with received data
@@ -28,7 +28,7 @@ function* handleMeetingsInfo(data) {
 function* handleAddMeetingsInfo(data) {
   try {
     // Call the API to fetch add Meetings information
-    const response = yield call(getMeetings, data);
+    const response = yield call(addMeetingsDetails, data);
     // Check if the response status is 200 (OK)
     if (response.status === 200) {
       // If successful, dispatch success action with received data

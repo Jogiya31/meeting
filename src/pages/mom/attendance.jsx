@@ -53,7 +53,9 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
 
   useEffect(() => {
     if (userList?.Result) {
-      setUserListOptions(userList.Result.map((item) => ({ label: item.UserName, value: item.UserId })));
+      setUserListOptions(
+        userList.Result?.filter((item) => item.Status === '1').map((item) => ({ label: item.UserName, value: item.UserId }))
+      );
     }
   }, [userList]);
 

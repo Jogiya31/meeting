@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Table, Button, Collapse, Card, Modal, Form, Row, Col, Pagination, InputGroup } from 'react-bootstrap';
 import { Fragment } from 'react';
 import { FaSort } from 'react-icons/fa';
@@ -7,10 +7,14 @@ import excelImg from '../../assets/images/excel_i.svg';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
 import EnhancedTable from '../../components/Table';
-import Data from '../../utils/data';
+import { useDispatch, useSelector } from 'react-redux';
+import { meetingsActions } from '../../store/mom/momSlice';
+import { userActions } from '../../store/user/userSlice';
 
 export default function CollapsibleTable() {
-  const [data, setData] = useState(Data || []);
+  const Role = localStorage.getItem('role');
+  const dispatch = useDispatch();
+  const [data, setData] = useState([]);
   const [expandedRows, setExpandedRows] = useState({});
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('');
@@ -20,6 +24,24 @@ export default function CollapsibleTable() {
   const [show, setShow] = useState(false);
   const [showAttendanceList, setShowAttendanceList] = useState(false);
   const [attendanceData, setattendanceData] = useState([]);
+  const [selectedRow, setselectedRow] = useState({});
+  const [formData, setFormData] = useState({
+    Status: '',
+    Reason: ''
+  });
+  const MeetingLists = useSelector((state) => state.meetings.data);
+  const userLists = useSelector((state) => state.users.data);
+
+  useEffect(() => {
+    dispatch(userActions.getuserInfo());
+    dispatch(meetingsActions.getMeetingsInfo());
+  }, []);
+
+  useEffect(() => {
+    if (MeetingLists) {
+      setData(MeetingLists?.MeetingDetails || []);
+    }
+  }, [MeetingLists]);
 
   const toggleRow = (id) => {
     setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -39,30 +61,31 @@ export default function CollapsibleTable() {
     setOrderBy(property);
   };
 
-  const handleShow = () => setShow(true);
-
   const parentHeaders = [
-    { id: 'title', label: 'Meeting Title' },
-    { id: 'date', label: 'Date' },
-    { id: 'In Progress', label: 'In Progress' },
-    { id: 'Completed', label: 'Completed' },
-    { id: 'Hold', label: 'Hold' }
+    { id: 'MeetingTitle', label: 'Meeting Title' },
+    { id: 'MeetingDate', label: 'Date' },
+    { id: 'MeetingStatus', label: 'In Progress' },
+    { id: 'MeetingStatus', label: 'Completed' },
+    { id: 'MeetingStatus', label: 'Hold' }
   ];
 
   const headers = [
-    { id: 'description', label: 'Description' },
-    { id: 'startDate', label: 'Start Date' },
-    { id: 'endDate', label: 'End Date' },
-    { id: 'status', label: 'Status' },
-    { id: 'reasion', label: 'Remark' },
-    { id: 'userId', label: 'Reporting Officer' }
+    { id: 'Description', label: 'Description' },
+    { id: 'StartDate', label: 'Start Date' },
+    { id: 'EndDate', label: 'End Date' },
+    { id: 'Status', label: 'Status' },
+    { id: 'Reason', label: 'Remark' },
+    { id: 'UserId', label: 'Reporting Officer' }
   ];
 
   // Action handler for each row (for example, Edit)
   const handleActionClick = (row) => {
-    console.log('Action clicked for row:', row);
-    // Access row.id or any other row property here
-    handleShow();
+    setselectedRow(row);
+    setShow(true);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const renderPaginationItems = () => {
@@ -162,10 +185,10 @@ export default function CollapsibleTable() {
   const handleStatusChangeFilter = (e) => {
     const value = e.target.value;
     if (value) {
-      const filteredData = filterDataByStatus(Data, value);
+      const filteredData = filterDataByStatus(MeetingLists?.MeetingDetails, value);
       setData(filteredData || []);
     } else {
-      setData(Data || []);
+      setData(MeetingLists?.MeetingDetails || []);
     }
   };
 
@@ -173,26 +196,70 @@ export default function CollapsibleTable() {
     return data
       .map((meeting) => ({
         ...meeting,
-        discussionPoints: meeting.discussionPoints.filter((point) => point.status === status)
+        DiscussionsPoint: meeting.DiscussionsPoint.filter((point) => point.Status === status)
       }))
-      .filter((meeting) => meeting.discussionPoints.length > 0); // Remove meetings with no matching discussion points
+      .filter((meeting) => meeting.DiscussionsPoint.length > 0); // Remove meetings with no matching discussion points
   };
 
   // Function to count discussion point statuses
   const countStatuses = (data) => {
     const statusCounts = {
-      Pending: 0,
+      InPending: 0,
       Completed: 0,
       Hold: 0
     };
 
-    data.discussionPoints.forEach((point) => {
-      if (statusCounts.hasOwnProperty(point.status)) {
-        statusCounts[point.status]++;
+    data.DiscussionsPoint.forEach((point) => {
+      if (point.Status === '1') {
+        statusCounts.InPending++;
+      } else if (point.Status === '2') {
+        statusCounts.Completed++;
+      } else if (point.Status === '3') {
+        statusCounts.Hold++;
       }
     });
 
     return statusCounts;
+  };
+
+  const handleSaveClick = () => {
+    const payload = {
+      DiscussionId: selectedRow.DiscussionId,
+      Reason: formData.Reason,
+      ModifyBy: Role,
+      Status: formData.Status
+    };
+    dispatch(meetingsActions.updateDiscussionInfo(payload));
+    setTimeout(() => {
+      setShow(false);
+      dispatch(meetingsActions.getMeetingsInfo());
+    }, 500);
+  };
+
+  const transformData = (discussions, userLists) => {
+    if (!discussions || !Array.isArray(discussions)) return [];
+    const statusLabels = {
+      1: 'Pending',
+      2: 'Completed',
+      3: 'Hold'
+    };
+
+    return discussions.map((discussion) => {
+      const userIds = discussion.UserId ? discussion.UserId.split(',').map((id) => id.trim()) : [];
+
+      const userNames = userIds
+        .map((id) => {
+          const user = userLists?.Result?.find((user) => String(user.UserId) === String(id));
+          return user?.UserName || '';
+        })
+        .join(', ');
+
+      return {
+        ...discussion,
+        Status: statusLabels[discussion.Status] || '',
+        UserName: userNames
+      };
+    });
   };
 
   return (
@@ -203,9 +270,9 @@ export default function CollapsibleTable() {
             <h5 className="m-0 p-0">Meeting Lists</h5>
             <select className="form-control w-30 ml-2" onChange={(e) => handleStatusChangeFilter(e)}>
               <option value="">Select Status</option>
-              <option value={'Pending'}>Pending</option>
-              <option value={'Completed'}>Completed</option>
-              <option value={'Hold'}>Hold</option>
+              <option value={'1'}>In Progress</option>
+              <option value={'2'}>Completed</option>
+              <option value={'3'}>Hold</option>
             </select>
           </Col>
           <Col className="actionField">
@@ -238,19 +305,19 @@ export default function CollapsibleTable() {
                     <Fragment key={`${row}__${row.id}`}>
                       <tr>
                         <td className="text-center">
-                          <span variant="link" onClick={() => toggleRow(row.id)}>
-                            {expandedRows[row.id] ? (
+                          <span variant="link" onClick={() => toggleRow(row.MeetingId)}>
+                            {expandedRows[row.MeetingId] ? (
                               <i className="feather icon-chevron-down list-toggle-direction" />
                             ) : (
                               <i className="feather icon-chevron-right list-toggle-direction" />
                             )}
                           </span>
                         </td>
-                        <td>{row.title}</td>
-                        <td>{row.date}</td>
+                        <td>{row.MeetingTitle}</td>
+                        <td>{moment(row.MeetingDate).format('DD-MM-YYYY')}</td>
                         <td>
                           <label to="#" className="label pending-bg text-white f-12 fw-bolder">
-                            {statusCounts.Pending}
+                            {statusCounts.InPending}
                           </label>
                         </td>
                         <td>
@@ -268,26 +335,30 @@ export default function CollapsibleTable() {
                           <img
                             src={attendanceImg}
                             className="attendance pointer"
-                            onClick={() => handleSeletedAttendance(row.attendance)}
+                            onClick={() => handleSeletedAttendance(row.Attendance)}
                             alt=""
                           />
                         </td>
                       </tr>
                       <tr>
                         <td colSpan={7} className="p-0">
-                          <Collapse in={expandedRows[row.id]}>
+                          <Collapse in={expandedRows[row.MeetingId]}>
                             <div className="p-3 bg-light border transition-all duration-300 ease-in-out inner-table">
-                              <EnhancedTable
-                                data={row.discussionPoints || []}
-                                headers={headers}
-                                headerCss="cinnerTable"
-                                enableSno
-                                rowactions={(row) => (
-                                  <Button variant="primary" onClick={() => handleActionClick(row)} className="float-end btn-sm">
-                                    Action
-                                  </Button>
-                                )}
-                              />
+                              {userLists?.Result ? (
+                                <EnhancedTable
+                                  data={transformData(row.DiscussionsPoint, userLists) || []}
+                                  headers={headers}
+                                  headerCss="cinnerTable"
+                                  enableSno
+                                  rowactions={(row) => (
+                                    <Button variant="primary" onClick={() => handleActionClick(row)} className="float-end btn-sm">
+                                      Action
+                                    </Button>
+                                  )}
+                                />
+                              ) : (
+                                ''
+                              )}
                             </div>
                           </Collapse>
                         </td>
@@ -326,21 +397,33 @@ export default function CollapsibleTable() {
               <Form.Label>Status</Form.Label>
               <Form.Select
                 className="form-control mb-3" // Add error class for officer field
+                name="Status"
+                defaultValue={selectedRow?.Status}
+                onChange={handleChange}
               >
                 <option value="">Select status</option>
                 <option value="1">In Progress</option>
-                <option value="2">Complete</option>
+                <option value="2">Completed</option>
                 <option value="3">On Hold</option>
               </Form.Select>
             </Form.Group>
             <Form.Group>
               <Form.Label>Remark</Form.Label>
-              <Form.Control as="textarea" placeholder="Enter text here.." rows={3} />
+              <Form.Control
+                as="textarea"
+                defaultValue={selectedRow?.Reason}
+                rows={3}
+                name="Reason"
+                placeholder="Enter text here.."
+                onChange={handleChange}
+              />
             </Form.Group>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button className="btn-info">Save</Button>
+          <Button className="btn-info" onClick={() => handleSaveClick()}>
+            Save
+          </Button>
           <Button className="btn-secondary" onClick={handleClose}>
             Cancel
           </Button>
@@ -375,11 +458,11 @@ export default function CollapsibleTable() {
                   return (
                     <tr key={`${item?.division}${idx}`}>
                       <td>{idx + 1}</td>
-                      <td>{item?.username}</td>
-                      <td>{item?.designation}</td>
-                      <td>{item?.division}</td>
-                      <td>{item?.organization}</td>
-                      <td>{item?.mobile}</td>
+                      <td>{item?.UserName}</td>
+                      <td>{item?.DesignationTitle}</td>
+                      <td>{item?.DivisionTitle}</td>
+                      <td>{item?.OrganisationTitle}</td>
+                      <td>{item?.Mobile}</td>
                     </tr>
                   );
                 }

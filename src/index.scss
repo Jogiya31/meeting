@@ -949,7 +949,7 @@ button.sortBtn.btn.btn-info,
 .multi-user-filter {
   max-width: 250px;
 }
-.label-user{
+.label-user {
   white-space: nowrap;
   padding: 2px 7px;
   border-radius: 25px;
@@ -958,4 +958,10 @@ button.sortBtn.btn.btn-info,
   cursor: pointer;
   font-size: 12px;
   text-align: center;
+}
+
+.showLoader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
 import { userActions } from '../../store/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { meetingsActions } from '../../store/mom/momSlice';
 
 const DashDefault = () => {
   const dispatch = useDispatch();
   const userList = useSelector((state) => state.users.data);
+  const MeetingLists = useSelector((state) => state.meetings.data);
 
   useEffect(() => {
     // Call the GET API to fetch users
-     dispatch(userActions.getuserInfo());
+    dispatch(userActions.getuserInfo());
+    dispatch(meetingsActions.getMeetingsInfo());
   }, []);
 
   return (
@@ -36,7 +39,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-green f-30 m-r-5`}> 0 </i>
+                    <i className={`feather users text-c-green f-30 m-r-5`}> {MeetingLists?.MeetingDetails?.length} </i>
                   </h3>
                 </div>
               </div>
@@ -101,9 +104,7 @@ const DashDefault = () => {
         </Col>
       </Row>
       <Row>
-        <Col>
-        {/* <TaskCalendar /> */}
-        </Col>
+        <Col>{/* <TaskCalendar /> */}</Col>
       </Row>
     </React.Fragment>
   );

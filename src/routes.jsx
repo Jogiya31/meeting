@@ -56,17 +56,6 @@ const routes = [
         path: '/users',
         element: lazy(() => import('./pages/users'))
       },
-
-      {
-        exact: 'true',
-        path: '/today',
-        element: lazy(() => import('./pages/attendance'))
-      },
-      {
-        exact: 'true',
-        path: '/exportAttendance',
-        element: lazy(() => import('./pages/attendance/history'))
-      },
       {
         exact: 'true',
         path: '/newPoints',

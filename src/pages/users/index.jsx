@@ -89,7 +89,7 @@ const UserList = () => {
     reader.onloadend = () => setFormData({ ...formData, ImgPath: reader.result });
     if (file) reader.readAsDataURL(file);
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -256,7 +256,7 @@ const UserList = () => {
                     <option value="" disabled>
                       Select designation...
                     </option>
-                    {designationDataList?.Result?.map((item) => (
+                    {designationDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
                       <option value={item.DesignationId}>{item.DesignationTitle}</option>
                     ))}
                   </Form.Select>
@@ -278,7 +278,7 @@ const UserList = () => {
                     <option value="" disabled>
                       Select type...
                     </option>
-                    {employeementDataList?.Result?.map((item) => (
+                    {employeementDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
                       <option value={item.EmployeementId}>{item.EmployeementTitle}</option>
                     ))}
                   </Form.Select>
@@ -298,7 +298,7 @@ const UserList = () => {
                     <option value="" disabled>
                       Select division...
                     </option>
-                    {divisionDataList?.Result?.map((item) => (
+                    {divisionDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
                       <option value={item.DivisionId}>{item.DivisionTitle}</option>
                     ))}
                   </Form.Select>
@@ -314,7 +314,7 @@ const UserList = () => {
                     <option value="" disabled>
                       Select division...
                     </option>
-                    {organizationDataList?.Result?.map((item) => (
+                    {organizationDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
                       <option value={item.OrganisationId}>{item.OrganisationTitle}</option>
                     ))}
                   </Form.Select>

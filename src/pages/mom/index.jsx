@@ -11,6 +11,7 @@ import Attendance from './attendance';
 import meetingImage from '../../assets/images/meeting.png';
 import { MultiSelect } from 'react-multi-select-component';
 import { meetingsActions } from '../../store/mom/momSlice';
+import Textloading from '../../components/Loader/loading';
 
 const NewPoint = () => {
   const navigate = useNavigate();
@@ -39,7 +40,9 @@ const NewPoint = () => {
 
   useEffect(() => {
     if (userList?.Result) {
-      setUserListOptions(userList.Result.map((item) => ({ label: item.UserName, value: item.UserId })));
+      setUserListOptions(
+        userList?.Result?.filter((item) => item.Status === '1').map((item) => ({ label: item.UserName, value: item.UserId }))
+      );
     }
   }, [userList]);
 
@@ -85,7 +88,6 @@ const NewPoint = () => {
   };
 
   const handleSaveAll = () => {
-    console.log('enter');
     setTitleError(!meetingTitle.trim());
     setTimeError(!currentTime);
     setstartDateError(!currentDate);
@@ -100,16 +102,32 @@ const NewPoint = () => {
   };
 
   useEffect(() => {
-    if (attendanceData.length > 0) {
-      attendanceData.forEach((item) => {
-        dispatch(meetingsActions.addAttendanceInfo(item));
-      });
-    }
-
-    if (formFields.length > 0) {
-      formFields.forEach((item) => {
-        dispatch(meetingsActions.addDiscussionInfo(item));
-      });
+    if (attendanceData.length && meetingDetails?.MeetingId) {
+      if (attendanceData.length > 0) {
+        attendanceData.forEach((item) => {
+          const payload = {
+            MeetingId: meetingDetails?.MeetingId,
+            UserId: item.userId,
+            CreatedBy: Role
+          };
+          dispatch(meetingsActions.addAttendanceInfo(payload));
+        });
+      }
+      if (formFields.length > 0) {
+        formFields.forEach((item) => {
+          const payload = {
+            MeetingId: meetingDetails?.MeetingId,
+            Description: item.task,
+            StartDate: currentDate,
+            EndDate: item.endDate,
+            UserId: item.officer,
+            Reason: '',
+            CreatedBy: Role
+          };
+          dispatch(meetingsActions.addDiscussionInfo(payload));
+        });
+      }
+      navigate('/viewPoints');
     }
   }, [meetingDetails]); // Ensure correct dependencies
 
@@ -171,9 +189,10 @@ const NewPoint = () => {
   const handleAttendanceData = (data) => {
     setAttendanceData(data); // Keep attendance data even when switching steps
   };
+
   useEffect(() => {
     if (currentStep === 5) {
-      handleSaveAll();
+       handleSaveAll();
     }
   }, [currentStep]);
 
@@ -429,8 +448,11 @@ const NewPoint = () => {
               </Box>
             )}
             {currentStep === 5 && (
-              <div>
-                <span className="fas fa-spinner"></span>
+              <div className="showLoader mt-5 mb-5">
+                <div className='text-center mt-5' >
+                  <Textloading />
+                  <h5>Saving Meeting</h5>
+                </div>
               </div>
             )}
           </Stepper>
