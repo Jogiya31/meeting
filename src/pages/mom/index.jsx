@@ -1,6 +1,6 @@
 import Box from '../../components/Box';
 import { useEffect, useRef, useState } from 'react';
-import { Accordion, Button, Col, Container, Form, Row, Table } from 'react-bootstrap';
+import { Accordion, Button, Col, Container, Form, Modal, Row, Table } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,12 +10,13 @@ import Stepper from '../../components/stepper';
 import Attendance from './attendance';
 import meetingImage from '../../assets/images/meeting.png';
 import { MultiSelect } from 'react-multi-select-component';
-import { meetingsActions } from '../../store/mom/momSlice';
 import Textloading from '../../components/Loader/loading';
+import axios from 'axios';
 
 const NewPoint = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const API_URL = import.meta.env.VITE_APP_API_BASE_URL;
   const Role = localStorage.getItem('role');
   const [currentDate, setcurrentDate] = useState(null);
   const [currentTime, setcurrentTime] = useState(null);
@@ -30,9 +31,10 @@ const NewPoint = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [attendanceData, setAttendanceData] = useState([]);
   const [userListOption, setUserListOptions] = useState([]); // User options state
+  const [showInfo, setShowInfo] = useState(false);
+  const [selectedUser, setselectedUser] = useState(null);
   const stepsList = ['Create Meeting', 'Mark Attendance', 'Discussion Points', 'Review'];
   const userList = useSelector((state) => state.users.data);
-  const meetingDetails = useSelector((state) => state.meetings.data);
 
   useEffect(() => {
     dispatch(userActions.getuserInfo());
@@ -57,7 +59,7 @@ const NewPoint = () => {
       const updatedFields = [...prevFields];
 
       if (field === 'endDate' && value instanceof Date && !isNaN(value)) {
-        updatedFields[index][field] = moment(value).format('DD-MM-YYYY');
+        updatedFields[index][field] = value;
       } else if (field === 'officer') {
         updatedFields[index][field] = Array.isArray(value)
           ? value.map((item) => item.value).join(',') // Convert to comma-separated string
@@ -87,49 +89,58 @@ const NewPoint = () => {
     return newErrors.every((error) => !Object.values(error).includes(true));
   };
 
-  const handleSaveAll = () => {
+  const handleSaveAll = async () => {
     setTitleError(!meetingTitle.trim());
     setTimeError(!currentTime);
     setstartDateError(!currentDate);
-    dispatch(
-      meetingsActions.addMeetingsInfo({
+
+    try {
+      // Call the Meeting API
+      const meetingResponse = await axios.post(`${API_URL}/Save_Meeting`, {
         MeetingTitle: meetingTitle,
         MeetingDate: currentDate,
         MeetingTime: currentTime,
         CreatedBy: Role
-      })
-    );
-  };
+      });
 
-  useEffect(() => {
-    if (attendanceData.length && meetingDetails?.MeetingId) {
-      if (attendanceData.length > 0) {
-        attendanceData.forEach((item) => {
-          const payload = {
-            MeetingId: meetingDetails?.MeetingId,
-            UserId: item.userId,
-            CreatedBy: Role
-          };
-          dispatch(meetingsActions.addAttendanceInfo(payload));
-        });
+      const meetingId = meetingResponse?.data?.MeetingId;
+
+      if (!meetingId) {
+        console.error('Meeting ID not received');
+        return;
       }
-      if (formFields.length > 0) {
-        formFields.forEach((item) => {
-          const payload = {
-            MeetingId: meetingDetails?.MeetingId,
-            Description: item.task,
-            StartDate: currentDate,
-            EndDate: item.endDate,
-            UserId: item.officer,
-            Reason: '',
-            CreatedBy: Role
-          };
-          dispatch(meetingsActions.addDiscussionInfo(payload));
-        });
-      }
-      navigate('/viewPoints');
+
+      // Call Attendance API
+      const attendanceRequests = attendanceData.map((item) =>
+        axios.post(`${API_URL}/Save_Attendance`, {
+          MeetingId: meetingId,
+          UserId: item.userId,
+          CreatedBy: Role
+        })
+      );
+
+      // Call Discussion API
+      const discussionRequests = formFields.map((item) =>
+        axios.post(`${API_URL}/Save_DiscussionPoint`, {
+          MeetingId: meetingId,
+          Description: item.task,
+          StartDate: currentDate,
+          EndDate: item.endDate,
+          UserId: item.officer,
+          Reason: '',
+          CreatedBy: Role
+        })
+      );
+
+      // Execute API calls in parallel
+      await Promise.all([...attendanceRequests, ...discussionRequests]);
+
+      // Navigate after all API calls complete
+      navigate('/meetings/viewPoints');
+    } catch (error) {
+      console.error('API call failed:', error);
     }
-  }, [meetingDetails]); // Ensure correct dependencies
+  };
 
   const handleDiscussionDate = (date) => {
     setcurrentDate(date);
@@ -192,9 +203,19 @@ const NewPoint = () => {
 
   useEffect(() => {
     if (currentStep === 5) {
-       handleSaveAll();
+      handleSaveAll();
     }
   }, [currentStep]);
+
+  const handleClose = () => {
+    setShow(false);
+    setselectedUser(null);
+  };
+  const handleUserInfo = (user) => {
+    console.log('user', user);
+    setselectedUser(user);
+    setShowInfo(true);
+  };
 
   return (
     <Container fluid>
@@ -259,62 +280,61 @@ const NewPoint = () => {
                 </Box>
               </div>
             )}
-
             {currentStep === 2 && <Attendance handleAttendanceFormData={handleAttendanceData} formFields={attendanceData} />}
-
             {currentStep === 3 && (
               <Form autoComplete="off">
                 <Box extra="">
                   {formFields.map((field, index) => (
                     <Row key={index} className="mb-2">
-                      <Col md={5}>
-                        <Form.Control
-                          as="textarea"
-                          placeholder="Enter text here.."
-                          rows={1}
-                          className={`mr-2 ${errors[index]?.task ? 'is-invalid' : ''}`} // Add error class for task field
-                          value={field.task}
-                          onChange={(e) => handleFieldChange(index, 'task', e.target.value)}
-                          autoFocus={index === formFields.length - 1} // Auto-focus only on the last input field
-                          ref={index === formFields.length - 1 ? lastInputRef : null} // Set ref to the last input field
-                        />
-                      </Col>
-                      <Col md={3}>
-                        <DatePicker
-                          className={`form-control ${errors[index]?.endDate ? 'is-invalid' : ''}`} // Add error class for end date
-                          selected={field.endDate ? moment(field.endDate, 'DD-MM-YYYY').toDate() : null} // Convert formatted date back to Date object for DatePicker
-                          onChange={(date) => handleFieldChange(index, 'endDate', date)}
-                          placeholderText="End Date"
-                          dateFormat="dd-MM-yyyy"
-                          name="enddate"
-                          minDate={new Date()} // Disable past dates
-                        />
-                      </Col>
-
-                      <Col md={3}>
-                        <MultiSelect
-                          options={userListOption}
-                          value={userListOption.filter((option) => formFields[index].officer.split(',').includes(option.value))} // Convert string to array for selection
-                          onChange={(selected) => handleFieldChange(index, 'officer', selected)}
-                          overrideStrings={{ selectSomeItems: 'Select Multiple Officers' }}
-                          hasSelectAll={true}
-                          valueRenderer={(selected) =>
-                            selected.length > 0 ? selected.map((s) => s.label).join(', ') : 'Select Multiple Officers'
-                          }
-                        />
-                      </Col>
-                      <Col md={1}>
-                        <div className="lineForm d-flex justify-content-end">
-                          {index === formFields.length - 1 && (
-                            <Button onClick={handleAddField} variant="info" className="sortBtn">
-                              <i className="feather icon-plus m-0" />
-                            </Button>
-                          )}
-                          {formFields.length !== 1 && (
-                            <Button variant="danger" onClick={() => handleDeleteField(index)} className="sortBtn">
-                              <i className="feather icon-x m-0" />
-                            </Button>
-                          )}
+                      <Col md={12} className="d-flex justify-content-between align-items-center w-100">
+                        <div className="w-35">
+                          <Form.Control
+                            as="textarea"
+                            placeholder="Enter text here.."
+                            rows={1}
+                            className={`mr-2 ${errors[index]?.task ? 'is-invalid' : ''}`} // Add error class for task field
+                            value={field.task}
+                            onChange={(e) => handleFieldChange(index, 'task', e.target.value)}
+                            autoFocus={index === formFields.length - 1} // Auto-focus only on the last input field
+                            ref={index === formFields.length - 1 ? lastInputRef : null} // Set ref to the last input field
+                          />
+                        </div>
+                        <div className="w-25 ml-1">
+                          <DatePicker
+                            className={`form-control ${errors[index]?.endDate ? 'is-invalid' : ''}`} // Add error class for end date
+                            selected={field.endDate ? moment(field.endDate, 'DD-MM-YYYY').toDate() : null} // Convert formatted date back to Date object for DatePicker
+                            onChange={(date) => handleFieldChange(index, 'endDate', date)}
+                            placeholderText="End Date"
+                            dateFormat="dd-MM-yyyy"
+                            name="enddate"
+                            minDate={new Date()} // Disable past dates
+                          />
+                        </div>
+                        <div className="w-25 ml-1">
+                          <MultiSelect
+                            options={userListOption}
+                            value={userListOption.filter((option) => formFields[index].officer.split(',').includes(option.value))} // Convert string to array for selection
+                            onChange={(selected) => handleFieldChange(index, 'officer', selected)}
+                            overrideStrings={{ selectSomeItems: 'Select Multiple Officers' }}
+                            hasSelectAll={true}
+                            valueRenderer={(selected) =>
+                              selected.length > 0 ? selected.map((s) => s.label).join(', ') : 'Select Multiple Officers'
+                            }
+                          />
+                        </div>
+                        <div className="w-15 ml-1">
+                          <div className="lineForm d-flex justify-content-end">
+                            {index === formFields.length - 1 && (
+                              <Button onClick={handleAddField} variant="info" className="sortBtn">
+                                <i className="feather icon-plus m-0" />
+                              </Button>
+                            )}
+                            {formFields.length !== 1 && (
+                              <Button variant="danger" onClick={() => handleDeleteField(index)} className="sortBtn">
+                                <i className="feather icon-x m-0" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </Col>
                     </Row>
@@ -322,7 +342,6 @@ const NewPoint = () => {
                 </Box>
               </Form>
             )}
-
             {currentStep === 4 && (
               <Box extra="header-info">
                 <Row>
@@ -413,26 +432,21 @@ const NewPoint = () => {
                             <tbody>
                               {formFields.map((item, idx) => {
                                 const userIds = Array.isArray(item.officer) ? item.officer : item.officer.split(',');
-                                const userNamesArray = userIds
-                                  .map((id) => {
-                                    const user = userList?.Result?.find((u) => u.UserId === id);
-                                    return user ? user.UserName : null;
-                                  })
-                                  .filter((name) => name) // Remove null values if any UserId does not match
-                                  .join(', '); // Convert array to comma-separated string
-                                const userNames = userNamesArray.split(',');
                                 return (
                                   <tr>
                                     <td>{idx + 1}</td>
                                     <td>{item.task}</td>
-                                    <td>{item.endDate}</td>
+                                    <td>{moment(item.endDate).format('DD-MM-YYYY')}</td>
                                     <td>
                                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                                        {userNames.map((name, index) => (
-                                          <span key={index} className="label-user">
-                                            {name.trim()}
-                                          </span>
-                                        ))}
+                                        {userIds.map((id, index) => {
+                                          const user = userList?.Result?.find((u) => u.UserId === id);
+                                          return user ? (
+                                            <span key={index} className="label-user" onClick={() => handleUserInfo(user)}>
+                                              {user.UserName}
+                                            </span>
+                                          ) : null;
+                                        })}
                                       </div>
                                     </td>
                                   </tr>
@@ -449,7 +463,7 @@ const NewPoint = () => {
             )}
             {currentStep === 5 && (
               <div className="showLoader mt-5 mb-5">
-                <div className='text-center mt-5' >
+                <div className="text-center mt-5">
                   <Textloading />
                   <h5>Saving Meeting</h5>
                 </div>
@@ -458,6 +472,29 @@ const NewPoint = () => {
           </Stepper>
         </Col>
       </Row>
+      <Modal show={showInfo} onHide={handleClose} animation={false}>
+        <Modal.Header>
+          <Modal.Title>
+            <h5>User Details</h5>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col md={5}>
+              <div className="d-flex justify-content-center align-items-center">
+                <img src={selectedUser?.ImgPath || ''} alt="userImage" />
+                <h4>{selectedUser.UserName}</h4>
+                <h6>{selectedUser.OrganisationTitle}</h6>
+              </div>
+            </Col>
+            <Col md={7}>
+              <div>
+                <div></div>
+              </div>
+            </Col>
+          </Row>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };

@@ -38,7 +38,7 @@ const routes = [
   },
   {
     exact: 'true',
-    path: '/logout',
+    path: '/meetings/logout',
     element: lazy(() => import('./pages/auth/SignOut'))
   },
   {
@@ -47,33 +47,33 @@ const routes = [
     routes: [
       {
         exact: 'true',
-        path: '/dashboard',
+        path: '/meetings/dashboard',
         element: lazy(() => import('./pages/dashboard'))
       },
 
       {
         exact: 'true',
-        path: '/users',
+        path: '/meetings/users',
         element: lazy(() => import('./pages/users'))
       },
       {
         exact: 'true',
-        path: '/newPoints',
+        path: '/meetings/newPoints',
         element: lazy(() => import('./pages/mom'))
       },
       {
         exact: 'true',
-        path: '/viewPoints',
+        path: '/meetings/viewPoints',
         element: lazy(() => import('./pages/mom/viewList'))
       },
       {
         exact: 'true',
-        path: '/meeting-attendance',
+        path: '/meetings/meeting-attendance',
         element: lazy(() => import('./pages/mom/attendance'))
       },
       {
         exact: 'true',
-        path: '/settings',
+        path: '/meetings/masterSettings',
         element: lazy(() => import('./pages/settings'))
       },
       {

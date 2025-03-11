@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Table, Pagination, Button, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import { FaSort } from 'react-icons/fa';
 import * as XLSX from 'xlsx';
-import { v4 as uuidv4 } from 'uuid';
 import './style.scss';
 
 function EnhancedTable({
@@ -177,7 +176,7 @@ function EnhancedTable({
             const isItemSelected = selected.includes(row.id);
             const count = idx + 1;
             return (
-              <tr key={uuidv4()} className={isItemSelected ? 'table-active' : ''}>
+              <tr key={`${row.id}-${count}_${Math.random()}`} className={isItemSelected ? 'table-active' : ''}>
                 {enableSelectRows && (
                   <td>
                     <Form.Check type="checkbox" checked={isItemSelected} className="p-0 text-center" onChange={() => handleClick(row.id)} />
@@ -206,9 +205,9 @@ function EnhancedTable({
             </Form.Control>
           </InputGroup>
           <div className="flex">
-            <Pagination.Prev onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
+            <Pagination.Prev title="Previous Page" onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
             {renderPaginationItems()}
-            <Pagination.Next onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
+            <Pagination.Next title="Next Page" onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
           </div>
         </Pagination>
       )}

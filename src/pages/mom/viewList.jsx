@@ -64,9 +64,9 @@ export default function CollapsibleTable() {
   const parentHeaders = [
     { id: 'MeetingTitle', label: 'Meeting Title' },
     { id: 'MeetingDate', label: 'Date' },
-    { id: 'MeetingStatus', label: 'In Progress' },
-    { id: 'MeetingStatus', label: 'Completed' },
-    { id: 'MeetingStatus', label: 'Hold' }
+    { id: 'MeetingStatus', label: 'Total Tasks' },
+    { id: 'MeetingStatus', label: 'Pending Tasks' },
+    { id: 'MeetingStatus', label: 'Completed Tasks' }
   ];
 
   const headers = [
@@ -75,7 +75,7 @@ export default function CollapsibleTable() {
     { id: 'EndDate', label: 'End Date' },
     { id: 'Status', label: 'Status' },
     { id: 'Reason', label: 'Remark' },
-    { id: 'UserId', label: 'Reporting Officer' }
+    { id: 'UserName', label: 'Assigned To' }
   ];
 
   // Action handler for each row (for example, Edit)
@@ -204,19 +204,18 @@ export default function CollapsibleTable() {
   // Function to count discussion point statuses
   const countStatuses = (data) => {
     const statusCounts = {
-      InPending: 0,
+      Pending: 0,
       Completed: 0,
-      Hold: 0
+      TotalTasks: 0
     };
 
     data.DiscussionsPoint.forEach((point) => {
       if (point.Status === '1') {
-        statusCounts.InPending++;
+        statusCounts.Pending++;
       } else if (point.Status === '2') {
         statusCounts.Completed++;
-      } else if (point.Status === '3') {
-        statusCounts.Hold++;
       }
+      statusCounts.TotalTasks++;
     });
 
     return statusCounts;
@@ -247,17 +246,18 @@ export default function CollapsibleTable() {
     return discussions.map((discussion) => {
       const userIds = discussion.UserId ? discussion.UserId.split(',').map((id) => id.trim()) : [];
 
-      const userNames = userIds
+      const officerNames = userIds
         .map((id) => {
           const user = userLists?.Result?.find((user) => String(user.UserId) === String(id));
           return user?.UserName || '';
         })
         .join(', ');
-
       return {
         ...discussion,
         Status: statusLabels[discussion.Status] || '',
-        UserName: userNames
+        EndDate: moment(discussion.EndDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD') || '',
+        StartDate: moment(discussion.StartDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD') || '',
+        UserName: officerNames
       };
     });
   };
@@ -270,9 +270,8 @@ export default function CollapsibleTable() {
             <h5 className="m-0 p-0">Meeting Lists</h5>
             <select className="form-control w-30 ml-2" onChange={(e) => handleStatusChangeFilter(e)}>
               <option value="">Select Status</option>
-              <option value={'1'}>In Progress</option>
+              <option value={'1'}>Pending</option>
               <option value={'2'}>Completed</option>
-              <option value={'3'}>Hold</option>
             </select>
           </Col>
           <Col className="actionField">
@@ -302,7 +301,7 @@ export default function CollapsibleTable() {
                 {visibleRows.map((row, idx) => {
                   const statusCounts = countStatuses(row);
                   return (
-                    <Fragment key={`${row}__${row.id}`}>
+                    <Fragment key={`${row}__${row.id}_${Math.random()}`}>
                       <tr>
                         <td className="text-center">
                           <span variant="link" onClick={() => toggleRow(row.MeetingId)}>
@@ -313,11 +312,20 @@ export default function CollapsibleTable() {
                             )}
                           </span>
                         </td>
-                        <td>{row.MeetingTitle}</td>
+                        <td>
+                          <span className="pointer" onClick={() => toggleRow(row.MeetingId)}>
+                            {row.MeetingTitle}
+                          </span>
+                        </td>
                         <td>{moment(row.MeetingDate).format('DD-MM-YYYY')}</td>
                         <td>
+                          <label to="#" className="label theme-bg text-white f-12 fw-bolder">
+                            {statusCounts.TotalTasks}
+                          </label>
+                        </td>
+                        <td>
                           <label to="#" className="label pending-bg text-white f-12 fw-bolder">
-                            {statusCounts.InPending}
+                            {statusCounts.Pending}
                           </label>
                         </td>
                         <td>
@@ -325,14 +333,10 @@ export default function CollapsibleTable() {
                             {statusCounts.Completed}
                           </label>
                         </td>
-                        <td>
-                          {' '}
-                          <label to="#" className="label hold-bg text-white f-12 fw-bolder">
-                            {statusCounts.Hold}
-                          </label>
-                        </td>
+
                         <td className="text-center">
                           <img
+                            title="Attendance"
                             src={attendanceImg}
                             className="attendance pointer"
                             onClick={() => handleSeletedAttendance(row.Attendance)}
@@ -393,6 +397,9 @@ export default function CollapsibleTable() {
         </Modal.Header>
         <Modal.Body>
           <div className="userModalBody">
+            <div>
+              <Form.Label className="bold-text">Expected End Date : </Form.Label> {selectedRow.EndDate}
+            </div>
             <Form.Group>
               <Form.Label>Status</Form.Label>
               <Form.Select

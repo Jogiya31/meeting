@@ -47,7 +47,6 @@ const UserList = () => {
 
   const handleClose = () => {
     setShow(false);
-    setShowregister(false);
   };
 
   const handleShowRegister = () => {
@@ -173,7 +172,7 @@ const UserList = () => {
                 <tbody>
                   {userList?.Result?.map((item, index) => {
                     return (
-                      <tr className="unread" key={index}>
+                      <tr className="unread" key={`${index}-${Math.random()}`}>
                         <td>
                           <img className="rounded-circle" style={{ width: '40px' }} src={item.ImgPath || avatar2} alt="activity-user" />
                         </td>
@@ -200,16 +199,17 @@ const UserList = () => {
                           )}
                         </td>
                         <td>
-                          <Link
-                            className="action-section"
+                          <span
+                            className="action-section cursor"
+                            title="Edit user"
                             onClick={() => {
                               setselectedUser(item); // Set selected user
                               setShowregister(true); // Open modal without resetting
                             }}
                           >
                             <Image src={edit} height={20} />
-                            <span className="text-black ml-1">Edit</span>
-                          </Link>
+                            <span className="text-black ml-1"></span>
+                          </span>
                         </td>
                       </tr>
                     );

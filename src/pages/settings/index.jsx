@@ -93,28 +93,24 @@ const Index = () => {
     if (window.confirm('Do you want to change status for this item?')) {
       const updatedItem = list.find((item) => item.id === id);
       if (!updatedItem) return;
-  
+
       const payload = {
         [fieldName + 'Id']: updatedItem.id,
         [fieldName + 'Title']: updatedItem.title,
         ModifyBy: Role,
         Status: updatedItem.status === 1 ? '0' : '1' // Ensure it's a string
       };
-  
+
       try {
         await dispatch(updateAction(payload));
-  
+
         // Create a new array reference to trigger re-render
-        setList((prevList) =>
-          prevList.map((item) =>
-            item.id === id ? { ...item, status: updatedItem.status === 1 ? 0 : 1 } : item
-          )
-        );
+        setList((prevList) => prevList.map((item) => (item.id === id ? { ...item, status: updatedItem.status === 1 ? 0 : 1 } : item)));
       } catch (error) {
         console.error('Failed to update item:', error);
       }
     }
-  };  
+  };
 
   const handleAddItem = async (newItem, setNewItem, apiAction, fetchAction, fieldName) => {
     if (!newItem.trim()) return; // Prevent empty input
@@ -154,7 +150,7 @@ const Index = () => {
           </div>
           {list?.map((item) => (
             <Row key={item.id}>
-              <Col md={10}>
+              <Col md={10} sm={10}>
                 <div className={`d-flex justify-content-between custom-cards ${item.status ? '' : 'op-5'}`}>
                   {item.isEditing ? (
                     <input
@@ -170,13 +166,23 @@ const Index = () => {
                   )}
                 </div>
               </Col>
-              <Col md={2} className="d-flex align-items-center">
+              <Col md={2} sm={2} className="d-flex align-items-center">
                 <div className="d-flex justify-content-between">
-                  <span className="feather icon-edit pending-bg text-white f-12 p-2" onClick={() => handleEdit(list, setList, item.id)} />
                   <span
-                    className="feather icon-x hold-bg text-white f-12 fw-bolder p-2 ml-1"
-                    onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
+                    className="feather icon-edit pending-bg text-white f-12 p-2 pointer"
+                    onClick={() => handleEdit(list, setList, item.id)}
                   />
+                  {item.status ? (
+                    <span
+                      className="feather icon-check success-bg text-white f-12 fw-bolder p-2 ml-1 pointer"
+                      onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
+                    />
+                  ) : (
+                    <span
+                      className="feather icon-x hold-bg text-white f-12 fw-bolder p-2 ml-1 pointer"
+                      onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
+                    />
+                  )}
                 </div>
               </Col>
             </Row>

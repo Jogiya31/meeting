@@ -10,7 +10,7 @@ const menuItems = {
           id: 'dashboard',
           title: 'Dashboard',
           type: 'item',
-          url: '/dashboard',
+          url: '/meetings/dashboard',
           classes: 'nav-item',
           icon: 'feather icon-grid',
           display: true
@@ -19,7 +19,7 @@ const menuItems = {
           id: 'users',
           title: 'Users',
           type: 'item',
-          url: '/users',
+          url: '/meetings/users',
           classes: 'nav-item',
           icon: 'feather icon-users',
           display: true
@@ -35,7 +35,7 @@ const menuItems = {
               id: 'markAttendance',
               title: "Mark today's Attendance",
               type: 'item',
-              url: '/today',
+              url: '/meetings/today',
               display: true,
               icon: 'fas fa-circle'
             },
@@ -43,7 +43,7 @@ const menuItems = {
               id: 'exportAttendance',
               title: 'Export Attendance',
               type: 'item',
-              url: '/exportAttendance',
+              url: '/meetings/exportAttendance',
               display: true,
               icon: 'fas fa-circle'
             }
@@ -68,21 +68,21 @@ const menuItems = {
               id: 'todays_Point',
               title: 'Todays Points',
               type: 'item',
-              url: '/newPoints',
+              url: '/meetings/newPoints',
               display: true
             },
             {
               id: 'view_history',
               title: 'View Histoy',
               type: 'item',
-              url: '/viewPoints',
+              url: '/meetings/viewPoints',
               display: true
             },
             {
               id: 'meetingattendance',
               title: 'Attendance',
               type: 'item',
-              url: '/meeting-attendance',
+              url: '/meetings/meeting-attendance',
               display: false
             }
           ]
@@ -99,18 +99,16 @@ const menuItems = {
           id: 'settings',
           title: 'Settings',
           type: 'item',
-          url: '/settings',
+          url: '/meetings/masterSettings',
           classes: 'nav-item',
           icon: 'fas fa-cogs',
           display: true,
-          target: true,
-          external: true
         },
         {
           id: 'logout',
           title: 'Logout',
           type: 'item',
-          url: '/logout',
+          url: '/meetings/logout',
           classes: 'nav-item',
           icon: 'feather icon-log-out',
           display: true

@@ -25,7 +25,10 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-blue f-30 m-r-5`}> {userList?.Result?.length}</i>
+                    <i className={`feather users text-c-blue f-30 m-r-5`}>
+                      {' '}
+                      {userList?.Result?.filter((item) => item.Status === '1').length}
+                    </i>
                   </h3>
                 </div>
               </div>
