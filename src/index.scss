@@ -672,24 +672,29 @@ button.sortBtn.btn.btn-info,
   }
 }
 .userModalBody {
-  .left {
+  .info {
+    width: 100%;
     display: flex;
-    justify-content: center;
     flex-direction: column;
-    align-items: center;
-    .userdetails {
-      text-align: center;
-    }
   }
-  .right {
-    .userLabel {
-      color: #333;
-      font-weight: 600;
-    }
-    input {
-      margin-right: 5px;
-    }
-  }
+  // .left {
+  //   display: flex;
+  //   justify-content: center;
+  //   flex-direction: column;
+  //   align-items: center;
+  //   .userdetails {
+  //     text-align: center;
+  //   }
+  // }
+  // .right {
+  //   .userLabel {
+  //     color: #333;
+  //     font-weight: 600;
+  //   }
+  //   input {
+  //     margin-right: 5px;
+  //   }
+  // }
 }
 .tableHeaderSection {
   margin-bottom: 10px;
@@ -965,6 +970,8 @@ button.sortBtn.btn.btn-info,
   }
 }
 
+///////////////////
+
 .rmsc label {
   margin-bottom: 0;
 }
@@ -1020,4 +1027,31 @@ button.sortBtn.btn.btn-info,
   background-color: #f5f5f5;
   outline: none;
   transition: all 0.3s ease;
+}
+
+.userInfo-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.userInfo-right {
+  width: 100%;
+  .userInfo-data {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.7rem;
+    h6 {
+      font-weight: 600;
+      color: #444;
+      width: 40%;
+      margin: 0;
+      padding: 0;
+    }
+    span {
+      width: 60%;
+    }
+  }
 }

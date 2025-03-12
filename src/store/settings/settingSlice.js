@@ -7,6 +7,7 @@ const initialState = {
   divisionData: [],
   employeementData: [],
   organizationData: [],
+  statusData: [],
   success: false,
   message: ''
 };
@@ -16,6 +17,7 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
+    //////////////////////////////////// designation//////////////////////////////////////
     // Action to initiate fetching designation information
     getDesignationInfo(state) {
       state.loader = true; // Set loader to true while fetching
@@ -64,6 +66,7 @@ const settingsSlice = createSlice({
       state.success = false; // Set success flag to false
     },
 
+    //////////////////////////////////// division//////////////////////////////////////
     // Action to initiate fetching division information
     getDivisionInfo(state) {
       state.loader = true; // Set loader to true while fetching
@@ -112,6 +115,7 @@ const settingsSlice = createSlice({
       state.success = false; // Set success flag to false
     },
 
+    //////////////////////////////////// employeement//////////////////////////////////////
     // Action to initiate fetching employeement information
     getEmployeementInfo(state) {
       state.loader = true; // Set loader to true while fetching
@@ -161,6 +165,7 @@ const settingsSlice = createSlice({
       state.success = false; // Set success flag to false
     },
 
+    //////////////////////////////////// organization//////////////////////////////////////
     // Action to initiate fetching organization information
     getOrganizationInfo(state) {
       state.loader = true; // Set loader to true while fetching
@@ -210,12 +215,61 @@ const settingsSlice = createSlice({
       state.success = false; // Set success flag to false
     },
 
+    //////////////////////////////////// Status//////////////////////////////////////
+    // Action to initiate fetching Status information
+    getStatusInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Status information
+    getStatusInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+      state.statusData = action.payload; // Store received data
+    },
+    // Action to handle failure in fetching Status information
+    getStatusInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+    // Action to initiate fetching Status information
+    addStatusInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Status information
+    addStatusInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching Status information
+    addStatusInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+    // Action to initiate fetching Status information
+    updateStatusInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Status information
+    updateStatusInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching Status information
+    updateStatusInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
     // Action to clear settings data
     clearData(state) {
       state.designationData = [];
       state.divisionData = [];
       state.employeementData = [];
       state.organizationData = [];
+      state.statusData = [];
       state.loader = false; // Set loader to false
       state.success = false; // Set success flag to false
       state.message = ''; // Clear error message

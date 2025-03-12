@@ -9,17 +9,18 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      // this ensures that the browser opens upon server start
       open: true,
-      // this sets a default port to 3000
-      port: PORT
+      port: PORT,
+      historyApiFallback: true,
+      fs: {
+        strict: false
+      }
     },
     define: {
       global: 'window'
     },
     resolve: {
-      alias: [
-      ]
+      alias: []
     },
     css: {
       preprocessorOptions: {

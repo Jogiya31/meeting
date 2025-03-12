@@ -11,17 +11,20 @@ const Index = () => {
   const divisionDataList = useSelector((state) => state.settings.divisionData);
   const employeementDataList = useSelector((state) => state.settings.employeementData);
   const organizationDataList = useSelector((state) => state.settings.organizationData);
+  const statusDataList = useSelector((state) => state.settings.statusData);
 
   const [divisionList, setDivisionList] = useState([]);
   const [employmentTypeList, setEmploymentTypeList] = useState([]);
   const [organisationList, setOrganisationList] = useState([]);
   const [designationList, setDesignationList] = useState([]);
+  const [statusList, setStatusList] = useState([]);
 
   useEffect(() => {
     dispatch(settingsActions.getDesignationInfo());
     dispatch(settingsActions.getDivisionInfo());
     dispatch(settingsActions.getEmployeementInfo());
     dispatch(settingsActions.getOrganizationInfo());
+    dispatch(settingsActions.getStatusInfo());
   }, []);
 
   useEffect(() => {
@@ -61,7 +64,16 @@ const Index = () => {
       }));
       setOrganisationList(list);
     }
-  }, [designationDataList, divisionDataList, employeementDataList, organizationDataList]);
+    if (Array.isArray(statusDataList?.Result)) {
+      const list = statusDataList.Result.map((item) => ({
+        id: item.StatusId,
+        title: item.StatusTitle,
+        status: Number(item.Status),
+        isEditing: false
+      }));
+      setStatusList(list);
+    }
+  }, [designationDataList, divisionDataList, employeementDataList, organizationDataList, statusDataList]);
 
   const handleEdit = (list, setList, id) => {
     setList(list.map((item) => (item.id === id ? { ...item, isEditing: true } : item)));
@@ -71,7 +83,7 @@ const Index = () => {
     setList(list.map((item) => (item.id === id ? { ...item, title: newValue } : item)));
   };
 
-  const handleBlur = async (list, setList, updateAction, id, fieldName) => {
+  const handleSaveChange = async (list, setList, updateAction, id, fieldName) => {
     const updatedItem = list.find((item) => item.id === id);
     if (!updatedItem) return;
     const payload = {
@@ -158,7 +170,6 @@ const Index = () => {
                       className="w-100 form-control bg-0 text-white p-2"
                       value={item.title}
                       onChange={(e) => handleChange(list, setList, item.id, e.target.value)}
-                      onBlur={() => handleBlur(list, setList, updateAction, item.id, fieldName)}
                       autoFocus
                     />
                   ) : (
@@ -168,18 +179,29 @@ const Index = () => {
               </Col>
               <Col md={2} sm={2} className="d-flex align-items-center">
                 <div className="d-flex justify-content-between">
-                  <span
-                    className="feather icon-edit pending-bg text-white f-12 p-2 pointer"
-                    onClick={() => handleEdit(list, setList, item.id)}
-                  />
+                  {item.isEditing ? (
+                    <span
+                      title="Save"
+                      className={`feather icon-check theme-bg text-white f-14 p-2 pointer`}
+                      onClick={() => handleSaveChange(list, setList, updateAction, item.id, fieldName)}
+                    />
+                  ) : (
+                    <span
+                      title="Edit"
+                      className={`feather icon-edit pending-bg text-white f-14 p-2 pointer`}
+                      onClick={() => handleEdit(list, setList, item.id)}
+                    />
+                  )}
                   {item.status ? (
                     <span
-                      className="feather icon-check success-bg text-white f-12 fw-bolder p-2 ml-1 pointer"
+                      title="Visible"
+                      className="feather icon-eye success-bg text-white f-14 fw-bolder p-2 ml-1 pointer"
                       onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
                     />
                   ) : (
                     <span
-                      className="feather icon-x hold-bg text-white f-12 fw-bolder p-2 ml-1 pointer"
+                      title="Not Visible"
+                      className="feather icon-eye-off hold-bg text-white f-14 fw-bolder p-2 ml-1 pointer"
                       onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
                     />
                   )}
@@ -256,6 +278,18 @@ const Index = () => {
               settingsActions.getOrganizationInfo,
               settingsActions.updateOrganizationInfo,
               'Organisation'
+            )}
+          </MainCard>
+        </Col>
+        <Col md={4}>
+          <MainCard title="Status List" cardClass="danger">
+            {renderList(
+              statusList,
+              setStatusList,
+              settingsActions.addStatusInfo,
+              settingsActions.getStatusInfo,
+              settingsActions.updateStatusInfo,
+              'Status'
             )}
           </MainCard>
         </Col>

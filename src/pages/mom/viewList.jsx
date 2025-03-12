@@ -10,6 +10,7 @@ import EnhancedTable from '../../components/Table';
 import { useDispatch, useSelector } from 'react-redux';
 import { meetingsActions } from '../../store/mom/momSlice';
 import { userActions } from '../../store/user/userSlice';
+import { settingsActions } from 'store/settings/settingSlice';
 
 export default function CollapsibleTable() {
   const Role = localStorage.getItem('role');
@@ -31,10 +32,12 @@ export default function CollapsibleTable() {
   });
   const MeetingLists = useSelector((state) => state.meetings.data);
   const userLists = useSelector((state) => state.users.data);
+  const statusLists = useSelector((state) => state.settings.statusData);
 
   useEffect(() => {
     dispatch(userActions.getuserInfo());
     dispatch(meetingsActions.getMeetingsInfo());
+    dispatch(settingsActions.getStatusInfo());
   }, []);
 
   useEffect(() => {
@@ -120,19 +123,31 @@ export default function CollapsibleTable() {
 
   // Filter rows based on search input
   const filteredRows = useMemo(() => {
-    return data?.filter((row) => {
-      // Check if the parent row matches the search
-      const parentMatch = parentHeaders.some(
-        (phead) => row[phead.id] && row[phead.id].toString().toLowerCase().includes(search.toLowerCase())
-      );
+    return data
+      ?.map((row) => {
+        const searchLower = search.toLowerCase();
 
-      // Check if any child row (discussion point) matches the search
-      const childMatch = row.discussionPoints?.some((point) =>
-        headers.some((head) => point[head.id] && point[head.id].toString().toLowerCase().includes(search.toLowerCase()))
-      );
+        // Convert the entire parent row to a string and check for a match
+        const parentMatch = Object.values(row).some((value) => value && value.toString().toLowerCase().includes(searchLower));
 
-      return parentMatch || childMatch;
-    });
+        // Filter child rows (DiscussionPoints) that match the search in any field
+        const filteredChildRows = (row.DiscussionsPoint || []).filter((point) =>
+          Object.values(point).some((value) => value && value.toString().toLowerCase().includes(searchLower))
+        );
+
+        // If the parent matches, keep all child rows
+        if (parentMatch) {
+          return { ...row, DiscussionsPoint: row.DiscussionsPoint };
+        }
+
+        // If any child rows match, show them along with the parent row
+        if (filteredChildRows.length > 0) {
+          return { ...row, DiscussionsPoint: filteredChildRows };
+        }
+
+        return null; // Exclude row if no match
+      })
+      .filter(Boolean); // Remove null rows
   }, [search, data]);
 
   const sortedRows = useMemo(() => {
@@ -203,18 +218,25 @@ export default function CollapsibleTable() {
 
   // Function to count discussion point statuses
   const countStatuses = (data) => {
-    const statusCounts = {
-      Pending: 0,
-      Completed: 0,
-      TotalTasks: 0
-    };
+    const statusCounts = { TotalTasks: 0 };
 
+    if (!Array.isArray(data?.DiscussionsPoint)) {
+      return statusCounts; // Return default if DiscussionsPoint is missing
+    }
+
+    // Initialize counts dynamically from statusLists
+    statusLists?.Result?.forEach((status) => {
+      statusCounts[status.StatusTitle] = 0;
+    });
+
+    // Count occurrences of each status
     data.DiscussionsPoint.forEach((point) => {
-      if (point.Status === '1') {
-        statusCounts.Pending++;
-      } else if (point.Status === '2') {
-        statusCounts.Completed++;
+      const statusTitle = statusLists?.Result?.find((s) => String(s.StatusId) === String(point.Status))?.StatusTitle;
+
+      if (statusTitle) {
+        statusCounts[statusTitle] = (statusCounts[statusTitle] || 0) + 1;
       }
+
       statusCounts.TotalTasks++;
     });
 
@@ -237,11 +259,6 @@ export default function CollapsibleTable() {
 
   const transformData = (discussions, userLists) => {
     if (!discussions || !Array.isArray(discussions)) return [];
-    const statusLabels = {
-      1: 'Pending',
-      2: 'Completed',
-      3: 'Hold'
-    };
 
     return discussions.map((discussion) => {
       const userIds = discussion.UserId ? discussion.UserId.split(',').map((id) => id.trim()) : [];
@@ -252,9 +269,11 @@ export default function CollapsibleTable() {
           return user?.UserName || '';
         })
         .join(', ');
+
+      const statusTitle = statusLists?.Result?.find((item) => String(item.StatusId) === String(discussion.Status))?.StatusTitle || '';
       return {
         ...discussion,
-        Status: statusLabels[discussion.Status] || '',
+        Status: statusTitle,
         EndDate: moment(discussion.EndDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD') || '',
         StartDate: moment(discussion.StartDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD') || '',
         UserName: officerNames
@@ -269,13 +288,20 @@ export default function CollapsibleTable() {
           <Col className="titleSection">
             <h5 className="m-0 p-0">Meeting Lists</h5>
             <select className="form-control w-30 ml-2" onChange={(e) => handleStatusChangeFilter(e)}>
-              <option value="">Select Status</option>
-              <option value={'1'}>Pending</option>
-              <option value={'2'}>Completed</option>
+              <option value="">All status</option>
+              {statusLists?.Result?.filter((item) => item.Status === '1' && item.StatusId !== '2')?.map((item) => (
+                <option value={item.StatusId}>{item.StatusTitle}</option>
+              ))}
             </select>
           </Col>
           <Col className="actionField">
-            <Form.Control type="text" placeholder="Search.." value={search} onChange={handleSearchChange} className="searchBox" />
+            <Form.Control
+              type="text"
+              placeholder="Search meeting Title / Discussion.."
+              value={search}
+              onChange={handleSearchChange}
+              className="searchBox"
+            />
           </Col>
         </Row>
         <Row>
@@ -302,7 +328,7 @@ export default function CollapsibleTable() {
                   const statusCounts = countStatuses(row);
                   return (
                     <Fragment key={`${row}__${row.id}_${Math.random()}`}>
-                      <tr>
+                      <tr key={`${row}__${row.id}_${Math.random()}`}>
                         <td className="text-center">
                           <span variant="link" onClick={() => toggleRow(row.MeetingId)}>
                             {expandedRows[row.MeetingId] ? (
@@ -397,21 +423,28 @@ export default function CollapsibleTable() {
         </Modal.Header>
         <Modal.Body>
           <div className="userModalBody">
-            <div>
-              <Form.Label className="bold-text">Expected End Date : </Form.Label> {selectedRow.EndDate}
+            <div className="info">
+              <div className="d-flex align-items-center mb-3">
+                <h6 className="bold-text mb-0 p-0 mr-1">Expected End Date : </h6> {selectedRow.EndDate}
+              </div>
+              <div className="d-flex align-items-center mb-3">
+                <h6 className="bold-text  mb-0 p-0 mr-1">Task Discription : </h6> {selectedRow.Description}
+              </div>
             </div>
             <Form.Group>
               <Form.Label>Status</Form.Label>
               <Form.Select
                 className="form-control mb-3" // Add error class for officer field
                 name="Status"
-                defaultValue={selectedRow?.Status}
+                defaultValue={selectedRow?.StatusId}
                 onChange={handleChange}
               >
-                <option value="">Select status</option>
-                <option value="1">In Progress</option>
-                <option value="2">Completed</option>
-                <option value="3">On Hold</option>
+                <option value="" disabled>
+                  Select status
+                </option>
+                {statusLists?.Result?.filter((item) => item.Status === '1' && item.StatusId !== '2')?.map((item) => (
+                  <option value={item.StatusId}>{item.StatusTitle}</option>
+                ))}
               </Form.Select>
             </Form.Group>
             <Form.Group>

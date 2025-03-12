@@ -11,6 +11,7 @@ import Attendance from './attendance';
 import meetingImage from '../../assets/images/meeting.png';
 import { MultiSelect } from 'react-multi-select-component';
 import Textloading from '../../components/Loader/loading';
+import avatar2 from '../../assets/images/user/avatar-2.jpg';
 import axios from 'axios';
 
 const NewPoint = () => {
@@ -208,11 +209,10 @@ const NewPoint = () => {
   }, [currentStep]);
 
   const handleClose = () => {
-    setShow(false);
+    setShowInfo(false);
     setselectedUser(null);
   };
   const handleUserInfo = (user) => {
-    console.log('user', user);
     setselectedUser(user);
     setShowInfo(true);
   };
@@ -391,7 +391,7 @@ const NewPoint = () => {
                                 const user = userList?.Result?.find((u) => u.UserId === item.userId);
                                 if (item.userId !== '') {
                                   return (
-                                    <tr>
+                                    <tr key={`${item.userId}-${idx}_${Math.random()}`}>
                                       <td>{idx + 1}</td>
                                       <td>{user ? user.UserName : ''}</td>
                                       <td>{item.designation}</td>
@@ -433,7 +433,7 @@ const NewPoint = () => {
                               {formFields.map((item, idx) => {
                                 const userIds = Array.isArray(item.officer) ? item.officer : item.officer.split(',');
                                 return (
-                                  <tr>
+                                  <tr key={`${idx}-${idx}-${Math.random()}`}>
                                     <td>{idx + 1}</td>
                                     <td>{item.task}</td>
                                     <td>{moment(item.endDate).format('DD-MM-YYYY')}</td>
@@ -442,7 +442,11 @@ const NewPoint = () => {
                                         {userIds.map((id, index) => {
                                           const user = userList?.Result?.find((u) => u.UserId === id);
                                           return user ? (
-                                            <span key={index} className="label-user" onClick={() => handleUserInfo(user)}>
+                                            <span
+                                              key={`${index}__${Math.random()}`}
+                                              className="label-user"
+                                              onClick={() => handleUserInfo(user)}
+                                            >
                                               {user.UserName}
                                             </span>
                                           ) : null;
@@ -473,7 +477,7 @@ const NewPoint = () => {
         </Col>
       </Row>
       <Modal show={showInfo} onHide={handleClose} animation={false}>
-        <Modal.Header>
+        <Modal.Header closeButton>
           <Modal.Title>
             <h5>User Details</h5>
           </Modal.Title>
@@ -481,19 +485,42 @@ const NewPoint = () => {
         <Modal.Body>
           <Row>
             <Col md={5}>
-              <div className="d-flex justify-content-center align-items-center">
-                <img src={selectedUser?.ImgPath || ''} alt="userImage" />
-                <h4>{selectedUser.UserName}</h4>
-                <h6>{selectedUser.OrganisationTitle}</h6>
+              <div className="userInfo-left">
+                <img src={selectedUser?.ImgPath || avatar2} alt="userImage" />
+                <h4>{selectedUser?.UserName}</h4>
+                <span>{selectedUser?.DesignationTitle}</span>
               </div>
             </Col>
             <Col md={7}>
-              <div>
-                <div></div>
+              <div className="userInfo-right">
+                <div className="userInfo-data">
+                  <h6>Division : </h6>
+                  <span>{selectedUser?.EmployeeDivisionTitle}</span>
+                </div>
+                <div className="userInfo-data">
+                  <h6>Employment : </h6> <span>{selectedUser?.EmployementTitle}</span>
+                </div>
+                <div className="userInfo-data">
+                  <h6>Gender : </h6>
+                  <span>{selectedUser?.Gender}</span>
+                </div>
+                <div className="userInfo-data">
+                  <h6>Mobile : </h6>
+                  <span>{selectedUser?.Mobile}</span>
+                </div>
+                <div className="userInfo-data">
+                  <h6>Organization : </h6>
+                  <span>{selectedUser?.OrganisationTitle}</span>
+                </div>
               </div>
             </Col>
           </Row>
         </Modal.Body>
+        <Modal.Footer>
+          <Button className="btn btn-sm btn-secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
       </Modal>
     </Container>
   );

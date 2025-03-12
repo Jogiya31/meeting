@@ -8,6 +8,7 @@ export const authInfo = (data) => {
   });
 };
 
+/////////////////// user api  ///////////////////
 export const alluserInfo = () => {
   const url = `/GetUserDetails`;
   return axiosClient().get(url, {
@@ -30,10 +31,10 @@ export const updateuserInfo = (data) => {
   });
 };
 
-export const GetDesignationDetails = (data) => {
-  const payload = data.payload;
+/////////////////// Designation api  ///////////////////
+export const GetDesignationDetails = () => {
   const url = `/GetDesignationDetails`;
-  return axiosClient().get(url, payload, {
+  return axiosClient().get(url, {
     'Content-Type': 'application/json'
   });
 };
@@ -52,10 +53,10 @@ export const UpdateDesignation = (data) => {
   });
 };
 
-export const GetDivisionDetails = (data) => {
-  const payload = data.payload;
+/////////////////// Division api  ///////////////////
+export const GetDivisionDetails = () => {
   const url = `/GetDivisionDetails`;
-  return axiosClient().get(url, payload, {
+  return axiosClient().get(url, {
     'Content-Type': 'application/json'
   });
 };
@@ -74,10 +75,10 @@ export const UpdateDivision = (data) => {
   });
 };
 
-export const GetOrganisationDetails = (data) => {
-  const payload = data.payload;
+/////////////////// Organisation api  ///////////////////
+export const GetOrganisationDetails = () => {
   const url = `/GetOrganisationDetails`;
-  return axiosClient().get(url, payload, {
+  return axiosClient().get(url, {
     'Content-Type': 'application/json'
   });
 };
@@ -96,10 +97,10 @@ export const UpdateOrganisation = (data) => {
   });
 };
 
-export const GetEmployementDetails = (data) => {
-  const payload = data.payload;
+/////////////////// Employement api  ///////////////////
+export const GetEmployementDetails = () => {
   const url = `/GetEmployementDetails`;
-  return axiosClient().get(url, payload, {
+  return axiosClient().get(url, {
     'Content-Type': 'application/json'
   });
 };
@@ -118,6 +119,29 @@ export const UpdateEmployement = (data) => {
   });
 };
 
+/////////////////// Status api  ///////////////////
+export const GetStatusDetails = () => {
+  const url = `/GetStatusDetails`;
+  return axiosClient().get(url, {
+    'Content-Type': 'application/json'
+  });
+};
+export const AddStatusDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Save_Status`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const UpdateStatus = (data) => {
+  const payload = data.payload;
+  const url = `/Update_Status`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+
+/////////////////// Meetings api  ///////////////////
 export const getMeetings = () => {
   const url = `/GetMeetingDiscussionAttendanceDetails`;
   return axiosClient().get(url, {
@@ -145,6 +169,7 @@ export const addDiscussionDetails = (data) => {
     'Content-Type': 'application/json'
   });
 };
+
 export const updateDiscussionDetails = (data) => {
   const payload = data.payload;
   const url = `/Update_DiscussionPoint`;

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form } from 'react-bootstrap';
 import avatar2 from '../../assets/images/user/avatar-2.jpg';
 import api from '../../api';
-import { Link } from 'react-router-dom';
 import edit from '../../assets/images/edit.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../../store/user/userSlice';
@@ -12,8 +11,17 @@ const UserList = () => {
   const dispatch = useDispatch();
   const [selectedUser, setselectedUser] = useState(null);
   const [errors, setErrors] = useState({});
-  const [show, setShow] = useState(false);
   const [showregister, setShowregister] = useState(false);
+  const [genderDataList, setGenderDataList] = useState([
+    {
+      GenderId: 1,
+      GenderTitle: 'Male'
+    },
+    {
+      GenderId: 2,
+      GenderTitle: 'Female'
+    }
+  ]);
   const [formData, setFormData] = useState({
     UserName: '',
     EmployementId: '',
@@ -22,7 +30,8 @@ const UserList = () => {
     OrganizationId: '',
     Mobile: '',
     Status: '0',
-    ImgPath: '',
+    Gender: '',
+    ImgPath: avatar2,
     CreatedBy: 'Admin'
   });
 
@@ -46,7 +55,7 @@ const UserList = () => {
   }, []);
 
   const handleClose = () => {
-    setShow(false);
+    setShowregister(false);
   };
 
   const handleShowRegister = () => {
@@ -59,6 +68,7 @@ const UserList = () => {
       OrganizationId: '',
       Mobile: '',
       Status: '',
+      Gender: '',
       ImgPath: '',
       CreatedBy: ''
     });
@@ -67,19 +77,37 @@ const UserList = () => {
 
   const validate = () => {
     let newErrors = {};
+
     if (!formData.UserName) newErrors.UserName = 'User name is required';
     if (!formData.DesignationId) newErrors.DesignationId = 'Designation is required';
     if (!formData.EmployementId) newErrors.EmployementId = 'Employment type is required';
     if (!formData.EmployeementDivisionId) newErrors.EmployeementDivisionId = 'Division is required';
     if (!formData.OrganizationId) newErrors.OrganizationId = 'Organization is required';
-    if (!formData.Mobile) newErrors.mobile = 'Mobile is required';
-    if (!formData.Status) newErrors.status = 'Status is required';
+    if (!formData.Gender) newErrors.Gender = 'Gender is required';
+
+    // Mobile Number Validation
+    if (!formData.Mobile) {
+      newErrors.Mobile = 'Mobile number is required';
+    } else if (!/^\d{10}$/.test(formData.Mobile)) {
+      newErrors.Mobile = 'Mobile number must be exactly 10 digits';
+    }
+
+    if (!formData.Status) newErrors.Status = 'Status is required';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === 'Mobile') {
+      if (/^\d{0,10}$/.test(value)) {
+        setFormData({ ...formData, [name]: value });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleFileChange = (e) => {
@@ -100,6 +128,7 @@ const UserList = () => {
       EmployeementDivisionId: formData.EmployeementDivisionId,
       OrganizationId: formData.OrganizationId,
       Mobile: formData.Mobile,
+      Gender: formData.Gender,
       Status: formData.Status,
       ImgPath: formData.ImgPath || ''
     };
@@ -120,6 +149,7 @@ const UserList = () => {
       .then(() => {
         getUserList();
         handleClose();
+        setShowregister(false);
       })
       .catch((err) => console.error('Error saving user:', err));
   };
@@ -134,6 +164,7 @@ const UserList = () => {
         OrganizationId: selectedUser.OrganisationId,
         Mobile: selectedUser.Mobile,
         Status: selectedUser.Status,
+        Gender: selectedUser.Gender,
         ImgPath: selectedUser.ImgPath || '',
         CreatedBy: 'Admin'
       });
@@ -318,6 +349,7 @@ const UserList = () => {
                       <option value={item.OrganisationId}>{item.OrganisationTitle}</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.OrganisationId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col>
@@ -326,14 +358,31 @@ const UserList = () => {
                   <Form.Control
                     type="text"
                     name="Mobile"
-                    placeholder="Enter mobile number..."
+                    placeholder="Enter 10-digit mobile number..."
                     value={formData.Mobile}
                     onChange={handleChange}
+                    isInvalid={!!errors.Mobile}
+                    maxLength={10}
                   />
+                  <Form.Control.Feedback type="invalid">{errors.Mobile}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
             <Row>
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label>Gender</Form.Label>
+                  <Form.Select name="Gender" value={formData.Gender} className="custom-form-select" onChange={handleChange}>
+                    <option value="" disabled>
+                      Select Gender...
+                    </option>
+                    {genderDataList?.map((item) => (
+                      <option value={item.GenderTitle}>{item.GenderTitle}</option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.GenderTitle}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Status</Form.Label>

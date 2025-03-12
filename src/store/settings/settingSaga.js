@@ -5,14 +5,17 @@ import {
   AddDivisionDetails,
   AddEmployementDetails,
   AddOrganisationDetails,
+  AddStatusDetails,
   GetDesignationDetails,
   GetDivisionDetails,
   GetEmployementDetails,
   GetOrganisationDetails,
+  GetStatusDetails,
   UpdateDesignation,
   UpdateDivision,
   UpdateEmployement,
-  UpdateOrganisation
+  UpdateOrganisation,
+  UpdateStatus
 } from '../../api/api';
 import { toast } from 'react-toastify';
 
@@ -260,6 +263,69 @@ function* handleUpdateOrganizationInfo(data) {
   }
 }
 
+// Saga function to handle fetching Organization information
+function* handleStatusInfo() {
+  try {
+    // Call the API to fetch Status information
+    const response = yield call(GetStatusDetails);
+    // Check if the response status is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.getStatusInfoSuccess(data || []));
+    } else {
+      // If response status is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.getStatusInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Status information
+function* handleAddStatusInfo(data) {
+  try {
+    // Call the API to fetch Status information
+    const response = yield call(AddStatusDetails, data);
+    // Check if the response status is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.addStatusInfoSuccess(data || []));
+    } else {
+      // If response status is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.addStatusInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Status information
+function* handleUpdateStatusInfo(data) {
+  try {
+    // Call the API to fetch Status information
+    const response = yield call(UpdateStatus, data);
+    // Check if the response status is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.updateStatusInfoSuccess(data || []));
+    } else {
+      // If response status is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.updateStatusInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+
+
+
 // Watcher saga to take latest action of fetching user information
 export default function* settingsSaga() {
   yield takeLatest(settingsActions.getDesignationInfo.type, handleDesignationInfo);
@@ -277,4 +343,8 @@ export default function* settingsSaga() {
   yield takeLatest(settingsActions.getOrganizationInfo.type, handleOrganizationInfo);
   yield takeLatest(settingsActions.addOrganizationInfo.type, handleAddOrganizationInfo);
   yield takeLatest(settingsActions.updateOrganizationInfo.type, handleUpdateOrganizationInfo);
+
+  yield takeLatest(settingsActions.getStatusInfo.type, handleStatusInfo);
+  yield takeLatest(settingsActions.addStatusInfo.type, handleAddStatusInfo);
+  yield takeLatest(settingsActions.updateStatusInfo.type, handleUpdateStatusInfo);
 }

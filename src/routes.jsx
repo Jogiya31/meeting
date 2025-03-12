@@ -1,10 +1,13 @@
 import React, { Suspense, Fragment, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-
 import Loader from './components/Loader/Loader';
 import AdminLayout from './layouts/AdminLayout';
+import { useAuth } from './contexts/AuthContext';
 
-import { BASE_URL } from './config/constant';
+const AuthGuard = ({ children }) => {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" />;
+};
 
 export const renderRoutes = (routes = []) => (
   <Suspense fallback={<Loader />}>
@@ -16,11 +19,12 @@ export const renderRoutes = (routes = []) => (
 
         return (
           <Route
+            exact={route.exact}
             key={i}
             path={route.path}
             element={
               <Guard>
-                <Layout>{route.routes ? renderRoutes(route.routes) : <Element props={true} />}</Layout>
+                <Layout>{route.routes ? renderRoutes(route.routes) : <Element />}</Layout>
               </Guard>
             }
           />
@@ -30,56 +34,70 @@ export const renderRoutes = (routes = []) => (
   </Suspense>
 );
 
+const Dashboard = lazy(() => import('./pages/dashboard'));
+const Users = lazy(() => import('./pages/users'));
+const Settings = lazy(() => import('./pages/settings'));
+const NewPoints = lazy(() => import('./pages/mom'));
+const ViewList = lazy(() => import('./pages/mom/viewList'));
+const Attendance = lazy(() => import('./pages/mom/attendance'));
+const Login = lazy(() => import('./pages/auth/SignIn'));
+const SignOut = lazy(() => import('./pages/auth/SignOut'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
 const routes = [
   {
-    exact: 'true',
+    exact: true,
     path: '/login',
-    element: lazy(() => import('./pages/auth/SignIn'))
+    element: Login
   },
   {
-    exact: 'true',
+    exact: true,
     path: '/meetings/logout',
-    element: lazy(() => import('./pages/auth/SignOut'))
+    element: SignOut
   },
   {
     path: '*',
     layout: AdminLayout,
+    guard: AuthGuard,
     routes: [
       {
-        exact: 'true',
+        exact: true,
+        path: '/',
+        element: Dashboard
+      },
+      {
+        exact: true,
         path: '/meetings/dashboard',
-        element: lazy(() => import('./pages/dashboard'))
+        element: Dashboard
       },
-
       {
-        exact: 'true',
+        exact: true,
         path: '/meetings/users',
-        element: lazy(() => import('./pages/users'))
+        element: Users
       },
       {
-        exact: 'true',
+        exact: true,
         path: '/meetings/newPoints',
-        element: lazy(() => import('./pages/mom'))
+        element: NewPoints
       },
       {
-        exact: 'true',
+        exact: true,
         path: '/meetings/viewPoints',
-        element: lazy(() => import('./pages/mom/viewList'))
+        element: ViewList
       },
       {
-        exact: 'true',
+        exact: true,
         path: '/meetings/meeting-attendance',
-        element: lazy(() => import('./pages/mom/attendance'))
+        element: Attendance
       },
       {
-        exact: 'true',
+        exact: true,
         path: '/meetings/masterSettings',
-        element: lazy(() => import('./pages/settings'))
+        element: Settings
       },
       {
         path: '*',
-        exact: 'true',
-        element: () => <Navigate to={BASE_URL} />
+        element: NotFound // <-- Set NotFound page for unknown routes
       }
     ]
   }

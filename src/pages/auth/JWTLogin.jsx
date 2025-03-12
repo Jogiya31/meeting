@@ -5,21 +5,24 @@ import { Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { authActions } from '../../store/auth/authrSlice';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { useAuth } from '../../contexts/AuthContext';
 const JWTLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [error, setError] = useState('');
   const [saveCredentials, setSaveCredentials] = useState(false);
   const loginDeatils = useSelector((state) => state.auth.data);
   useEffect(() => {
     const logged = localStorage.getItem('loggedIn');
     if (logged && loginDeatils) {
-      navigate('/dashboard');
+      login();
+      navigate('/meeteings/dashboard');
     } else {
       navigate('/login');
     }
-  }, []);
+  }, [loginDeatils]);
 
   const handleSubmit = (values, { setSubmitting }) => {
     setError('');
@@ -41,7 +44,7 @@ const JWTLogin = () => {
   useEffect(() => {
     if (loginDeatils?.Result) {
       localStorage.setItem('loggedIn', true);
-      localStorage.setItem('role', loginDeatils.Result[0].Role); 
+      localStorage.setItem('role', loginDeatils.Result[0].Role);
       navigate('/dashboard');
     } else {
       navigate('/login');

@@ -200,21 +200,40 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       </div>
     </div>
   );
+
   const validate = () => {
     let newErrors = {};
+
     if (!formData.UserName) newErrors.UserName = 'User name is required';
     if (!formData.DesignationId) newErrors.DesignationId = 'Designation is required';
     if (!formData.EmployementId) newErrors.EmployementId = 'Employment type is required';
     if (!formData.EmployeementDivisionId) newErrors.EmployeementDivisionId = 'Division is required';
     if (!formData.OrganizationId) newErrors.OrganizationId = 'Organization is required';
-    if (!formData.Mobile) newErrors.Mobile = 'Mobile is required';
+
+    // Mobile Number Validation
+    if (!formData.Mobile) {
+      newErrors.Mobile = 'Mobile number is required';
+    } else if (!/^\d{10}$/.test(formData.Mobile)) {
+      newErrors.Mobile = 'Mobile number must be exactly 10 digits';
+    }
+
     if (!formData.Status) newErrors.Status = 'Status is required';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === 'Mobile') {
+      if (/^\d{0,10}$/.test(value)) {
+        setFormData({ ...formData, [name]: value });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -244,6 +263,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       setShowregister(false);
     }, 500);
   };
+
   useEffect(() => {
     if (newUserName && userList?.Result) {
       const updatedUser = userList.Result.find((user) => user.UserName === newUserName);
@@ -282,7 +302,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
           <Form autoComplete="off">
             <Box extra="header-danger" customHeader={customHeader}>
               {formFields.map((field, index) => (
-                <Row key={index} className="mb-2">
+                <Row key={`${index}-${Math.random()}`} className="mb-2">
                   <Col>
                     <div className="lineForm">
                       <Form.Select
@@ -357,6 +377,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                     onChange={handleChange}
                     isInvalid={!!errors.UserName}
                   />
+                  <Form.Control.Feedback type="invalid">{errors.UserName}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col>
@@ -376,6 +397,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                       <option value={item.DesignationId}>{item.DesignationTitle}</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.DesignationId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
@@ -397,6 +419,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                       <option value={item.EmployeementId}>{item.EmployeementTitle}</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.EmployementId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col>
@@ -416,6 +439,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                       <option value={item.DivisionId}>{item.DivisionTitle}</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.EmployeementDivisionId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
@@ -437,6 +461,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                       <option value={item.OrganisationId}>{item.OrganisationTitle}</option>
                     ))}
                   </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.OrganisationId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col>
@@ -450,6 +475,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                     onChange={handleChange}
                     isInvalid={!!errors.Mobile}
                   />
+                  <Form.Control.Feedback type="invalid">{errors.Mobile}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
