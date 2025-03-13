@@ -9,47 +9,32 @@ import { useAuth } from '../../contexts/AuthContext';
 const JWTLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loggedIn, login } = useAuth();
 
   const [error, setError] = useState('');
   const [saveCredentials, setSaveCredentials] = useState(false);
-  const loginDeatils = useSelector((state) => state.auth.data);
-  useEffect(() => {
-    const logged = localStorage.getItem('loggedIn');
-    if (logged && loginDeatils) {
-      login();
-      navigate('/meeteings/dashboard');
-    } else {
-      navigate('/login');
-    }
-  }, [loginDeatils]);
+  const loginDetails = useSelector((state) => state.auth.data);
 
   const handleSubmit = (values, { setSubmitting }) => {
     setError('');
-    dispatch(authActions.getauthInfo(values))
-      .unwrap()
-      .then(() => {
-        if (saveCredentials) {
-          localStorage.setItem('loggedIn', true);
-        }
-      })
-      .catch((err) => {
-        setError(err || 'An unexpected error occurred. Please try again later.');
-      })
-      .finally(() => {
-        setSubmitting(false);
-      });
+    dispatch(authActions.getauthInfo(values));
+    setSubmitting(false);
   };
+  // Redirect logged-in users to dashboard
+  useEffect(() => {
+    if (loggedIn) {
+      navigate('/meetings/dashboard');
+    }
+  }, [loggedIn, navigate]);
 
   useEffect(() => {
-    if (loginDeatils?.Result) {
+    if (loginDetails?.Result && loginDetails.Result.length > 0) {
       localStorage.setItem('loggedIn', true);
-      localStorage.setItem('role', loginDeatils.Result[0].Role);
-      navigate('/dashboard');
-    } else {
-      navigate('/login');
+      localStorage.setItem('role', loginDetails?.Result[0]?.Role);
+      login(loginDetails?.Result[0]);
+      navigate('/meetings/dashboard');
     }
-  }, [loginDeatils]);
+  }, [loginDetails]);
 
   return (
     <Formik

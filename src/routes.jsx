@@ -5,8 +5,8 @@ import AdminLayout from './layouts/AdminLayout';
 import { useAuth } from './contexts/AuthContext';
 
 const AuthGuard = ({ children }) => {
-  const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
+  const { loggedIn } = useAuth();
+  return loggedIn ? children : <Navigate to="/meetings/login" />;
 };
 
 export const renderRoutes = (routes = []) => (
@@ -47,7 +47,12 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const routes = [
   {
     exact: true,
-    path: '/login',
+    path: '/',
+    element: () => <Navigate to="/meetings/login" />
+  },
+  {
+    exact: true,
+    path: '/meetings/login',
     element: Login
   },
   {
@@ -62,7 +67,7 @@ const routes = [
     routes: [
       {
         exact: true,
-        path: '/',
+        path: '/meetings',
         element: Dashboard
       },
       {
