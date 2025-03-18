@@ -442,7 +442,7 @@ export default function CollapsibleTable() {
                 <option value="" disabled>
                   Select status
                 </option>
-                {statusLists?.Result?.filter((item) => item.Status === '1' && item.StatusId !== '2')?.map((item) => (
+                {statusLists?.Result?.filter((item) => item.Status === '1')?.map((item) => (
                   <option value={item.StatusId}>{item.StatusTitle}</option>
                 ))}
               </Form.Select>
