@@ -10,7 +10,6 @@ const Signout = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   useEffect(() => {
-    localStorage.removeItem('loggedIn');
     logout();
     dispatch(authActions.clearData());
     navigate('/meetings/login');
