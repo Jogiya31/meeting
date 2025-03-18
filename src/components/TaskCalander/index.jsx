@@ -1,27 +1,27 @@
-import React, { useState } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import { Modal, Button, Form } from "react-bootstrap";
+import React, { useState } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { Modal, Button, Form } from 'react-bootstrap';
 
-const TaskCalendar = () => {
+const TaskCalendar = ({ extra }) => {
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [task, setTask] = useState("");
+  const [task, setTask] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   // Handle date click (Add Task)
   const handleDateClick = (info) => {
     setSelectedDate(info.dateStr);
-    setTask("");
+    setTask('');
     setShowModal(true);
   };
 
   // Save new task
   const handleSaveTask = () => {
-    if (task.trim() !== "") {
+    if (task.trim() !== '') {
       setEvents([...events, { id: Date.now(), title: task, start: selectedDate }]);
     }
     setShowModal(false);
@@ -36,11 +36,7 @@ const TaskCalendar = () => {
 
   // Save edited task
   const handleUpdateTask = () => {
-    setEvents(
-      events.map((event) =>
-        event.id === selectedEvent.id ? { ...event, title: task } : event
-      )
-    );
+    setEvents(events.map((event) => (event.id === selectedEvent.id ? { ...event, title: task } : event)));
     setShowEditModal(false);
   };
 
@@ -51,8 +47,7 @@ const TaskCalendar = () => {
   };
 
   return (
-    <div className="container mt-4">
-      {/* <h3 className="mb-3 text-center">📅 Task & Notes Calendar</h3> */}
+    <div className={`${extra}`}>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
@@ -64,21 +59,18 @@ const TaskCalendar = () => {
       {/* Add Task Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Add Task for {selectedDate}</Modal.Title>
+          <Modal.Title>
+            <h5>Add Task for {selectedDate}</h5>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Control
-            type="text"
-            placeholder="Enter task..."
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-          />
+          <Form.Control type="text" placeholder="Enter task..." value={task} onChange={(e) => setTask(e.target.value)} />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" className='btn btn-sm' onClick={() => setShowModal(false)}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSaveTask}>
+          <Button variant="primary" className='btn btn-sm' onClick={handleSaveTask}>
             Save Task
           </Button>
         </Modal.Footer>
@@ -90,12 +82,7 @@ const TaskCalendar = () => {
           <Modal.Title>Edit Task</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Control
-            type="text"
-            placeholder="Edit task..."
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-          />
+          <Form.Control type="text" placeholder="Edit task..." value={task} onChange={(e) => setTask(e.target.value)} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleDeleteTask}>

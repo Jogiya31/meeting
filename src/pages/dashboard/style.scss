@@ -1,0 +1,49 @@
+.dashboard-cal {
+  .fc {
+    .fc-scrollgrid {
+      width: auto;
+      .fc-scrollgrid-section-header {
+        .fc-scroller-harness {
+          background-color: #12429d;
+        }
+      }
+    }
+    .fc-toolbar {
+      margin-bottom: 0.6rem !important;
+      .fc-toolbar-title {
+        font-size: 1.3em !important;
+        margin: 0px;
+      }
+      .fc-button {
+        padding: 0.2rem 0.65em;
+      }
+    }
+    .fc-view-harness.fc-view-harness-active,
+    .fc-dayGridMonth-view.fc-view.fc-daygrid {
+      height: 383px !important;
+    }
+    .fc-col-header {
+      width: 100% !important;
+    }
+    .fc-col-header-cell {
+      background-color: #12429d;
+      .fc-col-header-cell-cushion {
+        color: #fff;
+      }
+    }
+    .fc-daygrid-day.fc-day-today .fc-daygrid-day-top .fc-daygrid-day-number{
+      color: #0c64e7 !important;
+      font-weight: 600;
+    }
+    .fc-daygrid-day-number {
+      color: #201f1f;
+    }
+    .fc-daygrid-body {
+      width: 100% !important;
+      .fc-scrollgrid-sync-table {
+        width: 100% !important;
+        height: 100% !important;
+      }
+    }
+  }
+}

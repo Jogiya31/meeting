@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { dashboardActions } from '../../store/dashboard/dashboardSlice';
 import DonutChart from '../../components/chart/DonutChart';
 import TaskCalendar from 'components/TaskCalander';
+import './style.scss';
 
 const DashDefault = () => {
   const dispatch = useDispatch();
@@ -158,7 +159,9 @@ const DashDefault = () => {
           </Card>
         </Col>
         <Col md={6} lg={6} xl={6} xxl={6}>
-          <TaskCalendar />
+          <Card className="customcard p-3 m-0">            
+            <TaskCalendar extra='dashboard-cal'/>
+          </Card>
         </Col>
       </Row>
     </React.Fragment>
