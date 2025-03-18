@@ -979,9 +979,13 @@ button.sortBtn.btn.btn-info,
   .customcard.card {
     min-height: 160px !important;
     border-radius: 10px;
-    h6 {
-      font-size: 15px;
-      font-weight: 500;
+    box-shadow: 0 0 15px #d5d5d5;
+    .card-body {
+      padding: 22px;
+      h6 {
+        font-size: 15px;
+        font-weight: 500;
+      }
     }
   }
 }
@@ -1158,5 +1162,5 @@ button.sortBtn.btn.btn-info,
   color: #ffffff;
 }
 .text-c-default {
-  color: #071525;
+  color: #062344;
 }

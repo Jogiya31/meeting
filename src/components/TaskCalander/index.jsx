@@ -52,7 +52,7 @@ const TaskCalendar = () => {
 
   return (
     <div className="container mt-4">
-      <h3 className="mb-3 text-center">📅 Task & Notes Calendar</h3>
+      {/* <h3 className="mb-3 text-center">📅 Task & Notes Calendar</h3> */}
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"

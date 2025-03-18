@@ -3,6 +3,7 @@ import { Row, Col, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { dashboardActions } from '../../store/dashboard/dashboardSlice';
 import DonutChart from '../../components/chart/DonutChart';
+import TaskCalendar from 'components/TaskCalander';
 
 const DashDefault = () => {
   const dispatch = useDispatch();
@@ -156,9 +157,9 @@ const DashDefault = () => {
             </Card.Body>
           </Card>
         </Col>
-      </Row>
-      <Row>
-        <Col>{/* <TaskCalendar /> */}</Col>
+        <Col md={6} lg={6} xl={6} xxl={6}>
+          <TaskCalendar />
+        </Col>
       </Row>
     </React.Fragment>
   );
