@@ -143,7 +143,7 @@ const DashDefault = () => {
                     <div className="row d-flex align-items-center">
                       <div className="col-9">
                         <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                          <i className={` f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalInprogress}</i>
+                          <i className={`text-c-default f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalInprogress}</i>
                         </h3>
                       </div>
                     </div>
