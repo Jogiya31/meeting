@@ -34,7 +34,7 @@ const DashDefault = () => {
                     </div>
                   </div>
                 </Col>
-                <Col className="d-flex  justify-content-end">
+                <Col className="d-flex  justify-content-end align-items-center">
                   <i className="fas fa-users text-c-brown f-80 m-r-5"></i>
                 </Col>
               </Row>
@@ -57,7 +57,7 @@ const DashDefault = () => {
                     </div>
                   </div>
                 </Col>
-                <Col className="d-flex  justify-content-end">
+                <Col className="d-flex  justify-content-end align-items-center">
                   <i className="fas fa-handshake text-c-blue f-80 m-r-5"></i>
                 </Col>
               </Row>
@@ -80,7 +80,7 @@ const DashDefault = () => {
                     </div>
                   </div>
                 </Col>
-                <Col className="d-flex  justify-content-end">
+                <Col className="d-flex  justify-content-end align-items-center">
                   <i className="fas fa-list text-c-purple f-80 m-r-5"></i>
                 </Col>
               </Row>
@@ -103,7 +103,7 @@ const DashDefault = () => {
                     </div>
                   </div>
                 </Col>
-                <Col className="d-flex  justify-content-end">
+                <Col className="d-flex  justify-content-end align-items-center">
                   <DonutChart percentage={calculatePercentage(stats?.TotalComplete, stats?.TotalTask)} PercentageColor="#098a30" />
                 </Col>
               </Row>
@@ -126,7 +126,7 @@ const DashDefault = () => {
                     </div>
                   </div>
                 </Col>
-                <Col className="d-flex  justify-content-end">
+                <Col className="d-flex  justify-content-end align-items-center">
                   <DonutChart percentage={calculatePercentage(stats?.TotalPending, stats?.TotalTask)} PercentageColor="#791864" />
                 </Col>
               </Row>
@@ -149,7 +149,7 @@ const DashDefault = () => {
                     </div>
                   </div>
                 </Col>
-                <Col className="d-flex  justify-content-end">
+                <Col className="d-flex  justify-content-end align-items-center">
                   <DonutChart percentage={calculatePercentage(stats?.TotalInprogress, stats?.TotalTask)} PercentageColor="#f4a100" />
                 </Col>
               </Row>
