@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
-import { userActions } from '../../store/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { meetingsActions } from '../../store/mom/momSlice';
+import { dashboardActions } from '../../store/dashboard/dashboardSlice';
 
 const DashDefault = () => {
   const dispatch = useDispatch();
-  const userList = useSelector((state) => state.users.data);
-  const MeetingLists = useSelector((state) => state.meetings.data);
+  const dashboardCountInfo = useSelector((state) => state.dashboard.data);
 
   useEffect(() => {
-    // Call the GET API to fetch users
-    dispatch(userActions.getuserInfo());
-    dispatch(meetingsActions.getMeetingsInfo());
+    dispatch(dashboardActions.getdashboardInfo());
   }, []);
 
   return (
@@ -25,10 +21,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-blue f-30 m-r-5`}>
-                      {' '}
-                      {userList?.Result?.filter((item) => item.Status === '1').length}
-                    </i>
+                    <i className={`feather users text-c-blue f-30 m-r-5`}>{dashboardCountInfo?.Result[0]?.TotalUser}</i>
                   </h3>
                 </div>
               </div>
@@ -42,7 +35,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-green f-30 m-r-5`}> {MeetingLists?.MeetingDetails?.length} </i>
+                    <i className={`feather users text-c-green f-30 m-r-5`}>{dashboardCountInfo?.Result[0]?.TotalMeeting}</i>
                   </h3>
                 </div>
               </div>
@@ -56,7 +49,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-red f-30 m-r-5`}> 0</i>
+                    <i className={`feather users text-c-red f-30 m-r-5`}>{dashboardCountInfo?.Result[0]?.TotalTask}</i>
                   </h3>
                 </div>
               </div>
@@ -70,7 +63,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-green f-30 m-r-5`}> 0 </i>
+                    <i className={`feather users text-c-green f-30 m-r-5`}>{dashboardCountInfo?.Result[0]?.TotalComplete}</i>
                   </h3>
                 </div>
               </div>
@@ -84,7 +77,7 @@ const DashDefault = () => {
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-red f-30 m-r-5`}> 0 </i>
+                    <i className={`feather users text-c-red f-30 m-r-5`}>{dashboardCountInfo?.Result[0]?.TotalPending}</i>
                   </h3>
                 </div>
               </div>
@@ -94,11 +87,11 @@ const DashDefault = () => {
         <Col xl={6} xxl={4}>
           <Card className="customcard">
             <Card.Body>
-              <h6 className="mb-4">Total tasks on hold</h6>
+              <h6 className="mb-4">Total tasks Inprogress</h6>
               <div className="row d-flex align-items-center">
                 <div className="col-9">
                   <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                    <i className={`feather users text-c-red f-30 m-r-5`}> 0 </i>
+                    <i className={`feather users text-c-red f-30 m-r-5`}>{dashboardCountInfo?.Result[0]?.TotalInprogress}</i>
                   </h3>
                 </div>
               </div>

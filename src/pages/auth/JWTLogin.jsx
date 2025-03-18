@@ -22,7 +22,7 @@ const JWTLogin = () => {
   };
   // Redirect logged-in users to dashboard
   useEffect(() => {
-    if (loggedIn) {
+    if (loggedIn || localStorage.getItem('loggedIn')) {
       navigate('/meetings/dashboard');
     }
   }, [loggedIn, navigate]);

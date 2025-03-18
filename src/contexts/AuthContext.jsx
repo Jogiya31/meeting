@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -7,6 +7,10 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState('');
+
+  useEffect(() => {
+    setLoggedIn(localStorage.getItem('loggedIn'));
+  }, []);
 
   const login = (userDetails) => {
     setUser(userDetails);

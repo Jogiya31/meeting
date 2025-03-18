@@ -1,9 +1,18 @@
 import axiosClient from './axiosClient';
 
+////////////////// login api /////////////////////////
 export const authInfo = (data) => {
   const payload = data.payload;
   const url = `/GetLoginUser`;
   return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+
+/////////////// dashboard api ///////////////////////
+export const getdashboardinfo = () => {
+  const url = `/GetDashboardDetails`;
+  return axiosClient().get(url, {
     'Content-Type': 'application/json'
   });
 };

@@ -3,6 +3,7 @@ import userSaga from '../store/user/userSaga';
 import settingsSaga from '../store/settings/settingSaga';
 import authSaga from '../store/auth/authSaga';
 import MeetingsSaga from '../store/mom/momSaga';
+import dashboardSaga from '../store/dashboard/dashboardSaga';
 
 /**
  * used to allow a Redux store to interact with resources itself asynchronously
@@ -13,6 +14,8 @@ export default function* rootSaga() {
   yield all([
     // Call and run the auth
     authSaga(),
+    // Call and run the auth
+    dashboardSaga(),
     // Call and run the userSaga
     userSaga(),
     // Call and run the userSaga
