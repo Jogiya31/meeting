@@ -84,14 +84,17 @@ const TaskCalendar = ({ extra, eventsData, handleEvets, handleSelectedEvent }) =
         eventClick={handleEventClick}
         eventContent={(eventInfo) => (
           <div
+            className="C_event"
             style={{
               backgroundColor: eventInfo.event.backgroundColor,
               padding: '3px',
               borderRadius: '3px',
-              width: 'fit-content',
               fontSize: '11px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              textOverflow: 'ellipsis',
+              overflow:'hidden'
             }}
+            title={eventInfo.event.title}
           >
             {eventInfo.event.title}
           </div>

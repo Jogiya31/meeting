@@ -284,6 +284,7 @@ export default function CollapsibleTable() {
       return {
         ...discussion,
         Status: statusTitle,
+        StatusId: discussion.Status,
         EndDate: moment(discussion.EndDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD') || '',
         StartDate: moment(discussion.StartDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD') || '',
         UserName: officerNames
@@ -353,9 +354,9 @@ export default function CollapsibleTable() {
                             {row.MeetingTitle}
                           </span>
                         </td>
-                        <td>{moment(row.MeetingDate).format('DD-MM-YYYY')}</td>
+                        <td>{moment(row.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</td>
                         <td>
-                          <label to="#" className="label theme-bg text-white f-12 fw-bolder">
+                          <label to="#" className="label total-bg text-white f-12 fw-bolder">
                             {statusCounts.TotalTasks}
                           </label>
                         </td>
@@ -445,11 +446,10 @@ export default function CollapsibleTable() {
             </div>
             <Form.Group>
               <Form.Label>Status</Form.Label>
-              {console.log('selectedRow', selectedRow)}
               <Form.Select
                 className="form-control mb-3" // Add error class for officer field
                 name="Status"
-                defaultValue={selectedRow?.StatusId}
+                defaultValue={Number(selectedRow?.StatusId)}
                 onChange={handleChange}
               >
                 <option value="" disabled>

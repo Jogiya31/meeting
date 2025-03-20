@@ -146,7 +146,7 @@ const NewPoint = () => {
       await Promise.all([...attendanceRequests, ...discussionRequests]);
 
       // Navigate after all API calls complete
-      navigate('/meetings/viewPoints');
+      navigate('/meetings/view');
     } catch (error) {
       console.error('API call failed:', error);
     }

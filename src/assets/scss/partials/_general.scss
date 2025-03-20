@@ -102,12 +102,16 @@ label {
   background: $theme-color3;
 }
 
+.total-bg {
+  background: linear-gradient(-135deg, #001611, #00d1ff);
+}
+
 .pending-bg {
-  background: $pending-color;
+  background: linear-gradient(-135deg, #161000, #e3a009);
 }
 
 .completed-bg {
-  background: $completed-color;
+  background: linear-gradient(-135deg, #081c00, #00d76b);
 }
 
 .hold-bg {
