@@ -952,7 +952,6 @@ button.sortBtn.btn.btn-info,
   }
 }
 
-
 /////////////////backgorund color//////////////////////
 
 .bg-color-1 {
@@ -1042,7 +1041,7 @@ button.sortBtn.btn.btn-info,
 .text-c-green {
   color: #098a30;
 }
-.text-c-gree {
+.text-c-voilet {
   color: #271879;
 }
 .text-c-red {
@@ -1070,7 +1069,7 @@ button.sortBtn.btn.btn-info,
   color: #062344;
 }
 
-///////////////////
+////////////////////////////////////////////////
 
 .rmsc label {
   margin-bottom: 0;
@@ -1103,6 +1102,14 @@ button.sortBtn.btn.btn-info,
       h6 {
         font-size: 15px;
         font-weight: 500;
+      }
+    }
+    &:hover {
+      .card-body {
+        .icons {
+          font-size: 84px;
+          transition: 0.5s;
+        }
       }
     }
   }
@@ -1162,6 +1169,57 @@ button.sortBtn.btn.btn-info,
     }
     span {
       width: 60%;
+    }
+  }
+}
+
+.btn-danger {
+  font-weight: 500 !important;
+}
+
+.colorOptionGreen {
+  background-color: #098a30;
+}
+.colorOptionBlue {
+  background-color: #12429d;
+}
+.colorOptionRed {
+  background-color: #991c1c;
+}
+.colorOptionYellow {
+  background-color: #f4a100;
+  height: 20px;
+  width: 20px;
+}
+.user-table-right {
+  display: flex;
+  align-items: center;
+  .userSearch {
+    padding: 10px;
+    height: 40px;
+  }
+  button {
+    i {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+}
+.dropdown {
+  .color-dropdown {
+    &::after {
+      content: none !important;
+    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }
+  .dropdown-menu {
+    padding: 0;
+    &::before {
+      left: 0;
     }
   }
 }

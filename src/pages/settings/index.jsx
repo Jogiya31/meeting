@@ -230,7 +230,7 @@ const Index = () => {
   return (
     <div>
       <Row>
-        <Col md={4}>
+        <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Division List" cardClass="info">
             {renderList(
               divisionList,
@@ -243,8 +243,8 @@ const Index = () => {
           </MainCard>
         </Col>
 
-        <Col md={4}>
-          <MainCard title="Employment List" cardClass="warning">
+        <Col sm={12} md={12} xl={6} xxl={4}>
+          <MainCard title="Employment Type" cardClass="warning">
             {renderList(
               employmentTypeList,
               setEmploymentTypeList,
@@ -256,7 +256,7 @@ const Index = () => {
           </MainCard>
         </Col>
 
-        <Col md={4}>
+        <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Designation List" cardClass="success">
             {renderList(
               designationList,
@@ -269,8 +269,8 @@ const Index = () => {
           </MainCard>
         </Col>
 
-        <Col md={4}>
-          <MainCard title="Organisation List" cardClass="purple">
+        <Col sm={12} md={12} xl={6} xxl={4}>
+          <MainCard title="Company List" cardClass="purple">
             {renderList(
               organisationList,
               setOrganisationList,
@@ -281,8 +281,8 @@ const Index = () => {
             )}
           </MainCard>
         </Col>
-        <Col md={4}>
-          <MainCard title="Status List" cardClass="danger">
+        <Col sm={12} md={12} xl={6} xxl={4}>
+          <MainCard title="Tasks Status" cardClass="danger">
             {renderList(
               statusList,
               setStatusList,

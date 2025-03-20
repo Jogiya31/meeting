@@ -185,16 +185,16 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
           value={userFilter}
           onChange={handleUserFilter}
           overrideStrings={{
-            selectSomeItems: 'Select Multiple Officers'
+            selectSomeItems: "Select employee's.."
           }}
           hasSelectAll={true}
           valueRenderer={(selected, _options) => {
             if (selected.length === 1) {
               return selected[0].label; // Show the single selected user's name
             } else if (selected.length > 1) {
-              return `${selected.length} Officers Selected`; // Show count for multiple selections
+              return `${selected.length} Employee's Selected`; // Show count for multiple selections
             }
-            return 'Select Multiple Officers'; // Default text when none are selected
+            return "Select employee's.."; // Default text when none are selected
           }}
         />
       </div>
@@ -208,7 +208,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
     if (!formData.DesignationId) newErrors.DesignationId = 'Designation is required';
     if (!formData.EmployementId) newErrors.EmployementId = 'Employment type is required';
     if (!formData.EmployeementDivisionId) newErrors.EmployeementDivisionId = 'Division is required';
-    if (!formData.OrganizationId) newErrors.OrganizationId = 'Organization is required';
+    if (!formData.OrganizationId) newErrors.OrganizationId = 'Company is required';
 
     // Mobile Number Validation
     if (!formData.Mobile) {
@@ -311,7 +311,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                         value={field.userId}
                         onChange={(e) => handleOfficerChange(index, e.target.value)}
                       >
-                        <option value="">Select an officer</option>
+                        <option value="">Select an employee</option>
                         {userList?.Result?.map((item) => (
                           <option
                             key={item.UserId}
@@ -360,7 +360,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       <Modal show={showregister} onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <h4>Add User</h4>
+            <h4>Add Employee</h4>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

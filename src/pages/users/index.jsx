@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form } from 'react-bootstrap';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form, Pagination, InputGroup } from 'react-bootstrap';
 import avatar2 from '../../assets/images/user/avatar-2.jpg';
 import api from '../../api';
 import edit from '../../assets/images/edit.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../../store/user/userSlice';
 import { settingsActions } from '../../store/settings/settingSlice';
+import { FaSort } from 'react-icons/fa';
 
 const UserList = () => {
   const dispatch = useDispatch();
   const [selectedUser, setselectedUser] = useState(null);
   const [errors, setErrors] = useState({});
   const [showregister, setShowregister] = useState(false);
+  const [data, setData] = useState([]);
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [search, setSearch] = useState('');
+
   const [genderDataList, setGenderDataList] = useState([
     {
       GenderId: 1,
@@ -53,6 +61,12 @@ const UserList = () => {
     dispatch(settingsActions.getEmployeementInfo());
     dispatch(settingsActions.getOrganizationInfo());
   }, []);
+
+  useEffect(() => {
+    if (userList) {
+      setData(userList?.Result || []);
+    }
+  }, [userList]);
 
   const handleClose = () => {
     setShowregister(false);
@@ -172,36 +186,127 @@ const UserList = () => {
     }
   }, [selectedUser]);
 
+  const parentHeaders = [
+    { id: 'UserName', label: 'User Name' },
+    { id: 'DesignationTitle', label: 'Designation' },
+    { id: 'EmployeeDivisionTitle', label: 'Division' },
+    { id: 'EmployementTitle', label: 'Type' },
+    { id: 'OrganisationTitle', label: 'Company Name' },
+    { id: 'Status', label: 'Status' }
+  ];
+
+  // Filter rows based on search input
+  const filteredRows = useMemo(() => {
+    return data
+      ?.filter((row) => {
+        const searchLower = search.toLowerCase();
+  
+        // List of keys to search in
+        const searchableKeys = [
+          "UserName",
+          "OrganisationTitle",
+          "EmployeeDivisionTitle",
+          "EmployementTitle",
+          "DesignationTitle"
+        ];
+  
+        // Check if any of the selected fields contain the search term
+        return searchableKeys.some((key) => 
+          row[key] && row[key].toLowerCase().includes(searchLower)
+        );
+      });
+  }, [search, data]);
+  
+  
+  
+
+  const sortedRows = useMemo(() => {
+    return [...filteredRows].sort((a, b) => {
+      if (orderBy === '') return 0;
+      return order === 'asc' ? (a[orderBy] < b[orderBy] ? -1 : 1) : a[orderBy] > b[orderBy] ? -1 : 1;
+    });
+  }, [filteredRows, order, orderBy]);
+
+  const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+  const visibleRows = useMemo(
+    () => sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [sortedRows, page, rowsPerPage]
+  );
+
+  const renderPaginationItems = () => {
+    const pagesToShow = 3;
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+    if (totalPages <= 1) 1; // Hide pagination if only one page
+
+    const startPage = Math.max(0, Math.min(page - Math.floor(pagesToShow / 2), totalPages - pagesToShow));
+    const endPage = Math.min(startPage + pagesToShow, totalPages);
+
+    return Array.from({ length: endPage - startPage }, (_, i) => startPage + i).map((pageIndex) => (
+      <Pagination.Item key={pageIndex} active={pageIndex === page} onClick={() => handleChangePage(pageIndex)}>
+        {pageIndex + 1}
+      </Pagination.Item>
+    ));
+  };
+
+  const handleChangePage = (newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(0); // Reset page when search is modified
+  };
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
   return (
     <React.Fragment>
       <Row>
         <Col>
           <Card className="Recent-Users widget-focus-lg header-info">
             <Card.Header className="d-flex justify-content-between align-items-center py-2">
-              <Card.Title as="h5">Current Users</Card.Title>
-              <CardSubtitle className="flex">
-                <Button onClick={() => handleShowRegister()} className="m-0 mt-1 btn-sm fw-bolder">
-                  <i className="feather icon-plus" />
-                  Add Users
+              <Card.Title as="h5">List of Resourses</Card.Title>
+              <CardSubtitle className="user-table-right">
+                <input
+                  type="text"
+                  placeholder="Search.."
+                  value={search}
+                  onChange={handleSearchChange}
+                  className="form-control mr-2 userSearch"
+                />
+                <Button onClick={() => handleShowRegister()} className="m-0 fw-bolder">
+                  <i className="feather icon-plus"> Add </i>
                 </Button>
               </CardSubtitle>
             </Card.Header>
-            <Card.Body className="px-0 py-0">
+            <Card.Body className="p-3 pt-0 dark-table">
               <Table responsive hover className="recent-users">
                 <thead className="header-bg">
                   <tr>
                     <th></th>
-                    <th>User Name</th>
-                    <th>Designation</th>
-                    <th>Division</th>
-                    <th>Type</th>
-                    <th>Organization</th>
-                    <th className="w-10">Status</th>
+                    {parentHeaders.map((headCell, idx) => (
+                      <th className="" key={`${headCell}_${idx} ${headCell.id === 'status' && 'w-10'}`}>
+                        <Button variant="link" onClick={() => handleRequestSort(headCell.id)} className="pl-0 pr-0">
+                          {headCell.label}
+                          {orderBy === headCell.id ? <FaSort className={order === 'desc' ? 'rotate-180' : ''} /> : null}
+                        </Button>
+                      </th>
+                    ))}
                     <th className="text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {userList?.Result?.map((item, index) => {
+                  {visibleRows.map((item, index) => {
                     return (
                       <tr className="unread" key={`${index}-${Math.random()}`}>
                         <td>
@@ -247,6 +352,22 @@ const UserList = () => {
                   })}
                 </tbody>
               </Table>
+              <Pagination className="custom-pagination">
+                <InputGroup className="pagination-select">
+                  <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage}>
+                    {[5, 10, 25, 50].map((rowsPerPageOption) => (
+                      <option key={rowsPerPageOption} value={rowsPerPageOption}>
+                        {rowsPerPageOption}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </InputGroup>
+                <div className="flex">
+                  <Pagination.Prev onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
+                  {renderPaginationItems()}
+                  <Pagination.Next onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
+                </div>
+              </Pagination>
             </Card.Body>
           </Card>
         </Col>

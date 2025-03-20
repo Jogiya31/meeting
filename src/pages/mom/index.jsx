@@ -315,11 +315,9 @@ const NewPoint = () => {
                             options={userListOption}
                             value={userListOption.filter((option) => formFields[index].officer.split(',').includes(option.value))} // Convert string to array for selection
                             onChange={(selected) => handleFieldChange(index, 'officer', selected)}
-                            overrideStrings={{ selectSomeItems: 'Select Multiple Officers' }}
+                            overrideStrings={{ selectSomeItems: 'Assign to..' }}
                             hasSelectAll={true}
-                            valueRenderer={(selected) =>
-                              selected.length > 0 ? selected.map((s) => s.label).join(', ') : 'Select Multiple Officers'
-                            }
+                            valueRenderer={(selected) => (selected.length > 0 ? selected.map((s) => s.label).join(', ') : 'Assign to..')}
                           />
                         </div>
                         <div className="w-15 ml-1">
@@ -367,10 +365,10 @@ const NewPoint = () => {
                   </Col>
 
                   <Col md={12} className="mt-3">
-                    <Accordion defaultActiveKey="0">
+                    <Accordion defaultActiveKey="1">
                       <Accordion.Item eventKey="1">
                         <Accordion.Header className="mb-3">
-                          <label className="fs-6 text-secondary m-0 ">Attendance List</label>
+                          <label className="fs-6 m-0 report-label pointer">Attendance List</label>
                         </Accordion.Header>
                         <Accordion.Body className="p-0 dark-table">
                           <Table responsive hover>
@@ -382,7 +380,7 @@ const NewPoint = () => {
                                 <th className="w-60">Name</th>
                                 <th className="w-20">Designation</th>
                                 <th className="w-20">Division</th>
-                                <th className="w-20">Organization</th>
+                                <th className="w-20">Company</th>
                                 <th className="w-20">Mobile</th>
                               </tr>
                             </thead>
@@ -412,10 +410,10 @@ const NewPoint = () => {
                   </Col>
 
                   <Col md={12} className="mt-3">
-                    <Accordion defaultActiveKey="0">
+                    <Accordion defaultActiveKey="1">
                       <Accordion.Item eventKey="1">
                         <Accordion.Header className="mb-3">
-                          <label className="fs-6 text-secondary  m-0">Discussion Points</label>
+                          <label className="fs-6 m-0 report-label pointer">Discussion Points</label>
                         </Accordion.Header>
                         <Accordion.Body className="p-0 inner-table">
                           <Table responsive hover>
@@ -426,7 +424,7 @@ const NewPoint = () => {
                                 </th>
                                 <th className="w-60">Discussion Points</th>
                                 <th className="w-20">End date</th>
-                                <th className="w-20">Officer Name</th>
+                                <th className="w-20">Assign To</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -509,7 +507,7 @@ const NewPoint = () => {
                   <span>{selectedUser?.Mobile}</span>
                 </div>
                 <div className="userInfo-data">
-                  <h6>Organization : </h6>
+                  <h6>Company : </h6>
                   <span>{selectedUser?.OrganisationTitle}</span>
                 </div>
               </div>

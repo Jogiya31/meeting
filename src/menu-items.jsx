@@ -17,7 +17,7 @@ const menuItems = {
         },
         {
           id: 'users',
-          title: 'Users',
+          title: 'ManPower',
           type: 'item',
           url: '/meetings/users',
           classes: 'nav-item',
@@ -66,14 +66,14 @@ const menuItems = {
           children: [
             {
               id: 'todays_Point',
-              title: 'Todays Points',
+              title: 'New Meeting',
               type: 'item',
               url: '/meetings/newPoints',
               display: true
             },
             {
               id: 'view_history',
-              title: 'View Histoy',
+              title: 'View Meetings',
               type: 'item',
               url: '/meetings/viewPoints',
               display: true
@@ -97,7 +97,7 @@ const menuItems = {
       children: [
         {
           id: 'settings',
-          title: 'Settings',
+          title: 'Master Data',
           type: 'item',
           url: '/meetings/masterSettings',
           classes: 'nav-item',

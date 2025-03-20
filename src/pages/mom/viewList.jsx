@@ -11,10 +11,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { meetingsActions } from '../../store/mom/momSlice';
 import { userActions } from '../../store/user/userSlice';
 import { settingsActions } from 'store/settings/settingSlice';
+import { useStore } from '../../contexts/DataContext';
 
 export default function CollapsibleTable() {
   const Role = localStorage.getItem('role');
   const dispatch = useDispatch();
+  const { filterWith } = useStore();
+  const { filterValue } = useStore();
   const [data, setData] = useState([]);
   const [expandedRows, setExpandedRows] = useState({});
   const [order, setOrder] = useState('asc');
@@ -121,34 +124,40 @@ export default function CollapsibleTable() {
     setPage(0); // Reset page when search is modified
   };
 
-  // Filter rows based on search input
   const filteredRows = useMemo(() => {
     return data
       ?.map((row) => {
         const searchLower = search.toLowerCase();
 
-        // Convert the entire parent row to a string and check for a match
-        const parentMatch = Object.values(row).some((value) => value && value.toString().toLowerCase().includes(searchLower));
+        // Define searchable fields in the parent object
+        const parentFields = ['MeetingTitle'];
 
-        // Filter child rows (DiscussionPoints) that match the search in any field
-        const filteredChildRows = (row.DiscussionsPoint || []).filter((point) =>
-          Object.values(point).some((value) => value && value.toString().toLowerCase().includes(searchLower))
+        // Check if any parent field contains the search substring
+        const parentMatch = parentFields.some((key) => row[key] && row[key].toLowerCase().includes(searchLower));
+
+        // Filter DiscussionsPoint based on Status and Search
+        const filteredDiscussions = (row.DiscussionsPoint || []).filter(
+          (point) =>
+            (filterValue ? Number(point.Status) === Number(filterValue) : true) &&
+            (!search || (point.Description && point.Description.toLowerCase().includes(searchLower)))
         );
 
-        // If the parent matches, keep all child rows
-        if (parentMatch) {
-          return { ...row, DiscussionsPoint: row.DiscussionsPoint };
+        // Filter Attendance records based on search
+        const filteredAttendance = (row.Attendance || []).filter((attendee) =>
+          ['UserName', 'OrganisationTitle', 'DesignationTitle', 'DivisionTitle', 'Mobile'].some(
+            (key) => attendee[key] && attendee[key].toLowerCase().includes(searchLower)
+          )
+        );
+
+        // Ensure the row is included ONLY if discussions match the filterValue
+        if (filteredDiscussions.length > 0) {
+          return { ...row, DiscussionsPoint: filteredDiscussions, Attendance: filteredAttendance };
         }
 
-        // If any child rows match, show them along with the parent row
-        if (filteredChildRows.length > 0) {
-          return { ...row, DiscussionsPoint: filteredChildRows };
-        }
-
-        return null; // Exclude row if no match
+        return null; // Exclude row if no DiscussionsPoint matches filterValue
       })
       .filter(Boolean); // Remove null rows
-  }, [search, data]);
+  }, [search, data, filterValue]); // Include filterValue in dependencies
 
   const sortedRows = useMemo(() => {
     return [...filteredRows].sort((a, b) => {
@@ -198,6 +207,7 @@ export default function CollapsibleTable() {
   };
 
   const handleStatusChangeFilter = (e) => {
+    filterWith(null);
     const value = e.target.value;
     if (value) {
       const filteredData = filterDataByStatus(MeetingLists?.MeetingDetails, value);
@@ -287,9 +297,9 @@ export default function CollapsibleTable() {
         <Row className="tableHeaderSection">
           <Col className="titleSection">
             <h5 className="m-0 p-0">Meeting Lists</h5>
-            <select className="form-control w-30 ml-2" onChange={(e) => handleStatusChangeFilter(e)}>
+            <select className="form-control w-30 ml-2" onChange={(e) => handleStatusChangeFilter(e)} defaultValue={filterValue}>
               <option value="">All status</option>
-              {statusLists?.Result?.filter((item) => item.Status === '1' && item.StatusId !== '2')?.map((item) => (
+              {statusLists?.Result?.filter((item) => item.Status === '1')?.map((item) => (
                 <option value={item.StatusId}>{item.StatusTitle}</option>
               ))}
             </select>
@@ -419,7 +429,9 @@ export default function CollapsibleTable() {
       </Card>
       <Modal show={show} onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
-          <Modal.Title>Update Details</Modal.Title>
+          <Modal.Title>
+            <h5>Update Details</h5>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="userModalBody">
@@ -433,6 +445,7 @@ export default function CollapsibleTable() {
             </div>
             <Form.Group>
               <Form.Label>Status</Form.Label>
+              {console.log('selectedRow', selectedRow)}
               <Form.Select
                 className="form-control mb-3" // Add error class for officer field
                 name="Status"
@@ -488,7 +501,7 @@ export default function CollapsibleTable() {
                 <th className="w-30">Name</th>
                 <th className="w-20">Designation</th>
                 <th className="w-10">Division</th>
-                <th className="w-20">Organization</th>
+                <th className="w-20">Company</th>
                 <th className="w-20">Mobile</th>
               </tr>
             </thead>

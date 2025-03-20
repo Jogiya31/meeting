@@ -26,24 +26,12 @@ const DonutChart = ({ percentage, PercentageColor }) => {
       .innerRadius(radius - thickness)
       .outerRadius(radius);
 
-    const pie = d3
-      .pie()
-      .value((d) => d.value)
-      .sort(null);
-
-    const data = [
-      { value: percentage, color: PercentageColor }, // Orange
-      { value: 100 - percentage, color: '#0d2a4d' } // Dark Blue
-    ];
-
-    // Draw arcs
+    // Draw background arc
     svg
-      .selectAll('path')
-      .data(pie(data))
-      .enter()
       .append('path')
+      .datum({ startAngle: 0, endAngle: 2 * Math.PI })
       .attr('d', arc)
-      .attr('fill', (d) => d.data.color);
+      .attr('fill', '#0d2a4d');
 
     // Center text
     svg
@@ -53,6 +41,25 @@ const DonutChart = ({ percentage, PercentageColor }) => {
       .attr('font-size', '14px')
       .attr('font-weight', '600')
       .text(`${percentage}%`);
+
+    // Animated foreground arc (percentage)
+    const foreground = svg
+      .append('path')
+      .datum({ startAngle: 0, endAngle: 0 }) // Start at 0
+      .attr('d', arc)
+      .attr('fill', PercentageColor);
+
+    // Animate the percentage arc
+    foreground
+      .transition()
+      .duration(1000)
+      .attrTween('d', function (d) {
+        const interpolate = d3.interpolate(0, (percentage / 100) * 2 * Math.PI);
+        return function (t) {
+          d.endAngle = interpolate(t);
+          return arc(d);
+        };
+      });
   }, [percentage]);
 
   return <div ref={chartRef}></div>;
