@@ -3,7 +3,6 @@ import MainCard from '../../components/Card/MainCard';
 import { Button, Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { settingsActions } from 'store/settings/settingSlice';
-import { toast } from 'react-toastify';
 
 const Index = () => {
   const dispatch = useDispatch();

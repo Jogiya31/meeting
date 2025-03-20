@@ -2,6 +2,7 @@ import React from 'react';
 import { Card} from 'react-bootstrap';
 import Breadcrumb from '../../layouts/AdminLayout/Breadcrumb';
 import AuthLogin from './JWTLogin';
+import logo from "../../assets/images/logo.png"
 
 const Signin1 = () => {
   return (
@@ -18,7 +19,7 @@ const Signin1 = () => {
           <Card className="borderless text-center">
             <Card.Body>
               <div className="mb-4">
-                <i className="feather icon-unlock auth-icon" />
+                <img src={logo} alt='' width={70} />
               </div>
               <AuthLogin />
             </Card.Body>
