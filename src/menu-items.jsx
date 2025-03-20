@@ -68,14 +68,14 @@ const menuItems = {
               id: 'todays_Point',
               title: 'New Meeting',
               type: 'item',
-              url: '/meetings/newPoints',
+              url: '/meetings/new',
               display: true
             },
             {
               id: 'view_history',
               title: 'View Meetings',
               type: 'item',
-              url: '/meetings/viewPoints',
+              url: '/meetings/view',
               display: true
             },
             {

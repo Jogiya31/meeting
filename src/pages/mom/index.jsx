@@ -13,10 +13,12 @@ import { MultiSelect } from 'react-multi-select-component';
 import Textloading from '../../components/Loader/loading';
 import avatar2 from '../../assets/images/user/avatar-2.jpg';
 import axios from 'axios';
+import { useStore } from '../../contexts/DataContext';
 
 const NewPoint = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { store } = useStore();
   const API_URL = import.meta.env.VITE_APP_API_BASE_URL;
   const Role = localStorage.getItem('role');
   const [currentDate, setcurrentDate] = useState(null);
@@ -48,6 +50,13 @@ const NewPoint = () => {
       );
     }
   }, [userList]);
+
+  useEffect(() => {
+    if (store) {
+      setcurrentDate(store.MeetingDate);
+      setdiscussionDate(moment(store.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY'));
+    }
+  }, [store]);
 
   const handleAddField = () => {
     setFormFields([...formFields, { task: '', endDate: null, officer: '' }]);

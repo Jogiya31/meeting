@@ -82,12 +82,12 @@ const routes = [
       },
       {
         exact: true,
-        path: '/meetings/newPoints',
+        path: '/meetings/new',
         element: NewPoints
       },
       {
         exact: true,
-        path: '/meetings/viewPoints',
+        path: '/meetings/view',
         element: ViewList
       },
       {

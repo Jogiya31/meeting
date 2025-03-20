@@ -997,11 +997,11 @@ button.sortBtn.btn.btn-info,
 .bg-color-5 {
   background: hsla(176, 61%, 87%, 1);
 
-  background: linear-gradient(180deg, hsla(176, 61%, 87%, 1) 0%, hsla(150, 54%, 86%, 1) 50%, hsla(301, 68%, 84%, 1) 100%);
+  background: linear-gradient(10deg, hsla(176, 61%, 87%, 1) 0%, hsla(150, 54%, 86%, 1) 50%, hsla(301, 68%, 84%, 1) 100%);
 
-  background: -moz-linear-gradient(180deg, hsla(176, 61%, 87%, 1) 0%, hsla(150, 54%, 86%, 1) 50%, hsla(301, 68%, 84%, 1) 100%);
+  background: -moz-linear-gradient(10deg, hsla(176, 61%, 87%, 1) 0%, hsla(150, 54%, 86%, 1) 50%, hsla(301, 68%, 84%, 1) 100%);
 
-  background: -webkit-linear-gradient(180deg, hsla(176, 61%, 87%, 1) 0%, hsla(150, 54%, 86%, 1) 50%, hsla(301, 68%, 84%, 1) 100%);
+  background: -webkit-linear-gradient(10deg, hsla(176, 61%, 87%, 1) 0%, hsla(150, 54%, 86%, 1) 50%, hsla(301, 68%, 84%, 1) 100%);
 }
 .bg-color-6 {
   background: hsla(298, 68%, 90%, 1);
@@ -1031,6 +1031,42 @@ button.sortBtn.btn.btn-info,
   background: -moz-linear-gradient(180deg, hsla(356, 68%, 91%, 1) 0%, hsla(140, 60%, 82%, 1) 50%, hsla(316, 66%, 80%, 1) 100%);
 
   background: -webkit-linear-gradient(180deg, hsla(356, 68%, 91%, 1) 0%, hsla(140, 60%, 82%, 1) 50%, hsla(316, 66%, 80%, 1) 100%);
+}
+.bg-color-9 {
+  background: hsla(211, 66%, 87%, 1);
+
+  background: linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(348, 67%, 88%, 1) 50%, hsla(272, 26%, 72%, 1) 100%);
+
+  background: -moz-linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(348, 67%, 88%, 1) 50%, hsla(272, 26%, 72%, 1) 100%);
+
+  background: -webkit-linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(348, 67%, 88%, 1) 50%, hsla(272, 26%, 72%, 1) 100%);
+}
+.bg-color-10 {
+  background: hsla(177, 87%, 79%, 1);
+
+  background: linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(235, 89%, 70%, 1) 100%);
+
+  background: -moz-linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(235, 89%, 70%, 1) 100%);
+
+  background: -webkit-linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(235, 89%, 70%, 1) 100%);
+}
+.bg-color-11 {
+  background: hsla(298, 68%, 90%, 1);
+
+  background: linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%);
+
+  background: -moz-linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%);
+
+  background: -webkit-linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%);
+}
+.bg-color-12 {
+  background: hsla(64, 41%, 92%, 1);
+
+  background: linear-gradient(45deg, hsla(64, 41%, 92%, 1) 0%, hsla(196, 83%, 84%, 1) 50%, hsla(305, 75%, 83%, 1) 100%);
+
+  background: -moz-linear-gradient(45deg, hsla(64, 41%, 92%, 1) 0%, hsla(196, 83%, 84%, 1) 50%, hsla(305, 75%, 83%, 1) 100%);
+
+  background: -webkit-linear-gradient(45deg, hsla(64, 41%, 92%, 1) 0%, hsla(196, 83%, 84%, 1) 50%, hsla(305, 75%, 83%, 1) 100%);
 }
 
 /////////////////////text color////////////////////////////////////
@@ -1069,7 +1105,18 @@ button.sortBtn.btn.btn-info,
   color: #062344;
 }
 
-////////////////////////////////////////////////
+//////////////////////////Calander css/////////////////////////////////////
+
+.fc-h-event {
+  background-color: transparent;
+  border: none;
+}
+
+///////////////////////////////////////////////////////////
+
+.login-logo {
+  width: 70px;
+}
 
 .rmsc label {
   margin-bottom: 0;
@@ -1104,14 +1151,10 @@ button.sortBtn.btn.btn-info,
         font-weight: 500;
       }
     }
-    &:hover {
-      .card-body {
-        .icons {
-          font-size: 84px;
-          transition: 0.5s;
-        }
-      }
-    }
+  }
+  .calander-card {
+    border-radius: 10px;
+    box-shadow: 0 0 15px #d5d5d5;
   }
 }
 
@@ -1222,4 +1265,9 @@ button.sortBtn.btn.btn-info,
       left: 0;
     }
   }
+}
+
+
+.animate-icons{
+  transition: cubic-bezier(0.47, 0, 0.745, 0.715);
 }

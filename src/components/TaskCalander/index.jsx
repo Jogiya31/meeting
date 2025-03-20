@@ -2,9 +2,14 @@ import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Modal, Button, Form, Row, Col, Dropdown } from 'react-bootstrap';
+import { Modal, Button, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useStore } from '../../contexts/DataContext';
 
-const TaskCalendar = ({ extra, eventsData, handleEvets }) => {
+const TaskCalendar = ({ extra, eventsData, handleEvets, handleSelectedEvent }) => {
+  const navigate = useNavigate();
+  const { addInStore } = useStore();
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [task, setTask] = useState('');
@@ -18,38 +23,40 @@ const TaskCalendar = ({ extra, eventsData, handleEvets }) => {
 
   // Handle date click (Add Task)
   const handleDateClick = (info) => {
+    // navigate('/meetings/new')
     setSelectedDate(info.dateStr);
-    setTask('');
-    setEventColor('#098a30');
-    setSelectedEvent(null); // Reset for new task
+    addInStore({ MeetingDate: info.dateStr });
+    // setTask('');
+    // setEventColor('#098a30');
+    // setSelectedEvent(null); // Reset for new task
     setShowModal(true);
   };
 
   // Save or Update Task
   const handleSaveOrUpdateTask = () => {
-    if (!task.trim()) return;
-
-    if (selectedEvent) {
-      // Update existing task
-      setEvents((prevEvents) =>
-        prevEvents.map((event) => (event.id === selectedEvent.id ? { ...event, title: task, backgroundColor: eventColor } : event))
-      );
-    } else {
-      // Add new task
-      handleEvets([...events, { id: Date.now().toString(), title: task, start: selectedDate, backgroundColor: eventColor }]);
-      // setEvents([...events, { id: Date.now().toString(), title: task, start: selectedDate, backgroundColor: eventColor }]);
-    }
-
+    // if (!task.trim()) return;
+    // if (selectedEvent) {
+    //   // Update existing task
+    //   setEvents((prevEvents) =>
+    //     prevEvents.map((event) => (event.id === selectedEvent.id ? { ...event, title: task, backgroundColor: eventColor } : event))
+    //   );
+    // } else {
+    //   // Add new task
+    //   handleEvets([...events, { id: Date.now().toString(), title: task, start: selectedDate, backgroundColor: eventColor }]);
+    //   // setEvents([...events, { id: Date.now().toString(), title: task, start: selectedDate, backgroundColor: eventColor }]);
+    // }
+    navigate('/meetings/new');
     setShowModal(false);
   };
 
   // Handle event click (Edit Task)
   const handleEventClick = (info) => {
     setSelectedEvent({ id: info.event.id, title: info.event.title });
-    setTask(info.event.title);
-    setEventColor(info.event.backgroundColor || '#098a30');
-    setSelectedDate(info.event.startStr);
-    setShowModal(true);
+    handleSelectedEvent(info.event.id);
+    // setTask(info.event.title);
+    // setEventColor(info.event.backgroundColor || '#098a30');
+    // setSelectedDate(info.event.startStr);
+    // setShowModal(true);
   };
 
   // Delete Task
@@ -76,7 +83,16 @@ const TaskCalendar = ({ extra, eventsData, handleEvets }) => {
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         eventContent={(eventInfo) => (
-          <div style={{ backgroundColor: eventInfo.event.backgroundColor, padding: '5px', borderRadius: '5px' }}>
+          <div
+            style={{
+              backgroundColor: eventInfo.event.backgroundColor,
+              padding: '3px',
+              borderRadius: '3px',
+              width: 'fit-content',
+              fontSize: '11px',
+              cursor: 'pointer'
+            }}
+          >
             {eventInfo.event.title}
           </div>
         )}
@@ -84,7 +100,7 @@ const TaskCalendar = ({ extra, eventsData, handleEvets }) => {
       />
 
       {/* Dynamic Add/Edit Task Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      {/* <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
             <h5>{selectedEvent ? 'Edit Task' : `Add Event on ${selectedDate}`}</h5>
@@ -150,6 +166,32 @@ const TaskCalendar = ({ extra, eventsData, handleEvets }) => {
             {selectedEvent ? 'Update Task' : 'Save Task'}
           </Button>
         </Modal.Footer>
+      </Modal> */}
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Body>
+          <Row className="mt-4 d-flex justify-content-center">
+            <Col md={8} className="d-flex flex-column justify-content-center align-items-center">
+              <motion.i
+                className="feather icon-alert-circle text-c-yellow f-80"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              />
+              <p className="f-w-600 text-center mt-3">Do you want to create a new meeting on {selectedDate} </p>
+            </Col>
+          </Row>
+          <Row className="mt-4">
+            <Col className="d-flex justify-content-center">
+              <Button className="btn btn-sm btn-secondary" onClick={() => setShowModal(false)}>
+                Cancel
+              </Button>
+              <Button className="btn btn-sm btn-primary" onClick={handleSaveOrUpdateTask}>
+                Create
+              </Button>
+            </Col>
+          </Row>
+        </Modal.Body>
       </Modal>
     </div>
   );

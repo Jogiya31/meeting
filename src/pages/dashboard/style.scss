@@ -31,7 +31,7 @@
         color: #fff;
       }
     }
-    .fc-daygrid-day.fc-day-today .fc-daygrid-day-top .fc-daygrid-day-number{
+    .fc-daygrid-day.fc-day-today .fc-daygrid-day-top .fc-daygrid-day-number {
       color: #0c64e7 !important;
       font-weight: 600;
     }
@@ -46,4 +46,10 @@
       }
     }
   }
+}
+
+.dashboardModalHeader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
