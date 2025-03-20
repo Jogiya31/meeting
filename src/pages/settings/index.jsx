@@ -3,6 +3,7 @@ import MainCard from '../../components/Card/MainCard';
 import { Button, Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { settingsActions } from 'store/settings/settingSlice';
+import { toast } from 'react-toastify';
 
 const Index = () => {
   const dispatch = useDispatch();
@@ -76,6 +77,7 @@ const Index = () => {
   }, [designationDataList, divisionDataList, employeementDataList, organizationDataList, statusDataList]);
 
   const handleEdit = (list, setList, id) => {
+    alert('Caution! Updating this information may alter its original meaning. Proceed carefully.');
     setList(list.map((item) => (item.id === id ? { ...item, isEditing: true } : item)));
   };
 
