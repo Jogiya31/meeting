@@ -701,7 +701,7 @@ button.sortBtn.btn.btn-info,
 // card css//
 .info {
   .card-header h5:after {
-    background-color: $primary-color;
+    background-color: $light-primary-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -711,21 +711,21 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $primary-color;
+        background-color: $light-primary-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $primary-color;
+      background-color: $light-primary-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #fff;
+        color: #333;
       }
 
       .point {
@@ -736,18 +736,17 @@ button.sortBtn.btn.btn-info,
   .footer {
     button {
       border: none;
-      background-color: $primary-color;
-      color: #fff;
+      background-color: $light-primary-color;
+      color: #333;
       &:hover {
         opacity: 1;
       }
     }
   }
 }
-
 .warning {
   .card-header h5:after {
-    background-color: $warning-color;
+    background-color: $light-warning-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -757,29 +756,29 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $warning-color;
+        background-color: $light-warning-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $warning-color;
+      background-color: $light-warning-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #fff;
+        color: #333;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $warning-color;
-      color: #fff;
+      background-color: $light-warning-color;
+      color: #333;
       &:hover {
         opacity: 1;
       }
@@ -788,7 +787,7 @@ button.sortBtn.btn.btn-info,
 }
 .success {
   .card-header h5:after {
-    background-color: $success-color;
+    background-color: $light-success-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -798,38 +797,37 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $success-color;
+        background-color: $light-success-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $success-color;
+      background-color: $light-success-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #fff;
+        color: #333;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $success-color;
-      color: #fff;
+      background-color: $light-success-color;
+      color: #333;
       &:hover {
       }
     }
   }
 }
-
 .secondary {
   .card-header h5:after {
-    background-color: $secondary-color;
+    background-color: $light-secondary-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -839,29 +837,29 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $secondary-color;
+        background-color: $light-secondary-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $secondary-color;
+      background-color: $light-secondary-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #fff;
+        color: #333;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $secondary-color;
-      color: #fff;
+      background-color: $light-secondary-color;
+      color: #333;
       &:hover {
         opacity: 1;
       }
@@ -870,7 +868,7 @@ button.sortBtn.btn.btn-info,
 }
 .danger {
   .card-header h5:after {
-    background-color: $danger-color;
+    background-color: $light-danger-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -880,39 +878,38 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $danger-color;
+        background-color: $light-danger-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $danger-color;
+      background-color: $light-danger-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #fff;
+        color: #333;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $danger-color;
-      color: #fff;
+      background-color: $light-danger-color;
+      color: #333;
       &:hover {
         opacity: 1;
       }
     }
   }
 }
-
 .purple {
   .card-header h5:after {
-    background-color: $purple-color;
+    background-color: $light-purple-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -922,29 +919,70 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $purple-color;
+        background-color: $light-purple-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $purple-color;
+      background-color: $light-purple-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #fff;
+        color: #333;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $purple-color;
-      color: #fff;
+      background-color: $light-purple-color;
+      color: #333;
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+.brown {
+  .card-header h5:after {
+    background-color: $light-brown-color;
+  }
+  .c-card-body {
+    max-height: 250px;
+    overflow-y: auto;
+    h6 {
+      font-weight: 600;
+    }
+    .card-header {
+      h5:after {
+        background-color: $light-brown-color;
+      }
+    }
+    .custom-cards {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: $light-brown-color;
+      margin: 10px 0;
+      padding: 7px 7px;
+      border-radius: 4px;
+      label,
+      span,
+      p {
+        color: #333;
+      }
+    }
+  }
+  .footer {
+    button {
+      border: none;
+      background-color: $light-brown-color;
+      color: #333;
       &:hover {
         opacity: 1;
       }

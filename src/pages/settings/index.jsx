@@ -283,7 +283,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Task Status" cardClass="danger">
+          <MainCard title="Task Status" cardClass="brown">
             {renderList(
               statusList,
               setStatusList,
