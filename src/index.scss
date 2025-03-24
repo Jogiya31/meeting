@@ -701,7 +701,7 @@ button.sortBtn.btn.btn-info,
 // card css//
 .info {
   .card-header h5:after {
-    background-color: $light-primary-color;
+    background-color: $primary-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -711,21 +711,21 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $light-primary-color;
+        background-color: $primary-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $light-primary-color;
+      background-color: $primary-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #333;
+        color: #fff;
       }
 
       .point {
@@ -736,8 +736,8 @@ button.sortBtn.btn.btn-info,
   .footer {
     button {
       border: none;
-      background-color: $light-primary-color;
-      color: #333;
+      background-color: $primary-color;
+      color: #fff;
       &:hover {
         opacity: 1;
       }
@@ -746,7 +746,7 @@ button.sortBtn.btn.btn-info,
 }
 .warning {
   .card-header h5:after {
-    background-color: $light-warning-color;
+    background-color: $warning-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -756,29 +756,29 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $light-warning-color;
+        background-color: $warning-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $light-warning-color;
+      background-color: $warning-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #333;
+        color: #fff;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $light-warning-color;
-      color: #333;
+      background-color: $warning-color;
+      color: #fff;
       &:hover {
         opacity: 1;
       }
@@ -787,7 +787,7 @@ button.sortBtn.btn.btn-info,
 }
 .success {
   .card-header h5:after {
-    background-color: $light-success-color;
+    background-color: $success-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -797,29 +797,29 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $light-success-color;
+        background-color: $success-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $light-success-color;
+      background-color: $success-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #333;
+        color: #fff;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $light-success-color;
-      color: #333;
+      background-color: $success-color;
+      color: #fff;
       &:hover {
       }
     }
@@ -827,7 +827,7 @@ button.sortBtn.btn.btn-info,
 }
 .secondary {
   .card-header h5:after {
-    background-color: $light-secondary-color;
+    background-color: $secondary-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -837,29 +837,29 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $light-secondary-color;
+        background-color: $secondary-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $light-secondary-color;
+      background-color: $secondary-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #333;
+        color: #fff;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $light-secondary-color;
-      color: #333;
+      background-color: $secondary-color;
+      color: #fff;
       &:hover {
         opacity: 1;
       }
@@ -868,7 +868,7 @@ button.sortBtn.btn.btn-info,
 }
 .danger {
   .card-header h5:after {
-    background-color: $light-danger-color;
+    background-color: $danger-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -878,29 +878,29 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $light-danger-color;
+        background-color: $danger-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $light-danger-color;
+      background-color: $danger-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #333;
+        color: #fff;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $light-danger-color;
-      color: #333;
+      background-color: $danger-color;
+      color: #fff;
       &:hover {
         opacity: 1;
       }
@@ -909,7 +909,7 @@ button.sortBtn.btn.btn-info,
 }
 .purple {
   .card-header h5:after {
-    background-color: $light-purple-color;
+    background-color: $purple-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -919,29 +919,29 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $light-purple-color;
+        background-color: $purple-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $light-purple-color;
+      background-color: $purple-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #333;
+        color: #fff;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $light-purple-color;
-      color: #333;
+      background-color: $purple-color;
+      color: #fff;
       &:hover {
         opacity: 1;
       }
@@ -950,7 +950,7 @@ button.sortBtn.btn.btn-info,
 }
 .brown {
   .card-header h5:after {
-    background-color: $light-brown-color;
+    background-color: $brown-color;
   }
   .c-card-body {
     max-height: 250px;
@@ -960,29 +960,29 @@ button.sortBtn.btn.btn-info,
     }
     .card-header {
       h5:after {
-        background-color: $light-brown-color;
+        background-color: $brown-color;
       }
     }
     .custom-cards {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: $light-brown-color;
+      background-color: $brown-color;
       margin: 10px 0;
       padding: 7px 7px;
       border-radius: 4px;
       label,
       span,
       p {
-        color: #333;
+        color: #fff;
       }
     }
   }
   .footer {
     button {
       border: none;
-      background-color: $light-brown-color;
-      color: #333;
+      background-color: $brown-color;
+      color: #fff;
       &:hover {
         opacity: 1;
       }

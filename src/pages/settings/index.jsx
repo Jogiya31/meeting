@@ -196,7 +196,7 @@ const Index = () => {
                   {item.status ? (
                     <span
                       title="Visible"
-                      className="feather icon-eye success-bg text-white f-14 fw-bolder p-2 ml-1 pointer"
+                      className="feather icon-eye completed-bg text-white f-14 fw-bolder p-2 ml-1 pointer"
                       onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
                     />
                   ) : (
