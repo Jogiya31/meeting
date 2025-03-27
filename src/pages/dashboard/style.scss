@@ -53,3 +53,18 @@
   width: 100%;
   justify-content: space-between;
 }
+
+.events {
+  .event-list {
+    list-style: none;
+    .item {
+      margin-bottom: 10px;
+      span {
+        padding: 5px;
+        background-color: darkgreen;
+        color: #fff;
+        margin-right: 10px;
+      }
+    }
+  }
+}

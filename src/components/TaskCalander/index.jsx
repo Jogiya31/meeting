@@ -12,10 +12,8 @@ const TaskCalendar = ({ extra, eventsData, handleEvets, handleSelectedEvent }) =
   const { addInStore } = useStore();
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [task, setTask] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [eventColor, setEventColor] = useState('#098a30');
 
   useEffect(() => {
     setEvents(eventsData);
@@ -23,40 +21,22 @@ const TaskCalendar = ({ extra, eventsData, handleEvets, handleSelectedEvent }) =
 
   // Handle date click (Add Task)
   const handleDateClick = (info) => {
-    // navigate('/meetings/new')
     setSelectedDate(info.dateStr);
     addInStore({ MeetingDate: info.dateStr });
-    // setTask('');
-    // setEventColor('#098a30');
-    // setSelectedEvent(null); // Reset for new task
     setShowModal(true);
   };
 
   // Save or Update Task
   const handleSaveOrUpdateTask = () => {
-    // if (!task.trim()) return;
-    // if (selectedEvent) {
-    //   // Update existing task
-    //   setEvents((prevEvents) =>
-    //     prevEvents.map((event) => (event.id === selectedEvent.id ? { ...event, title: task, backgroundColor: eventColor } : event))
-    //   );
-    // } else {
-    //   // Add new task
-    //   handleEvets([...events, { id: Date.now().toString(), title: task, start: selectedDate, backgroundColor: eventColor }]);
-    //   // setEvents([...events, { id: Date.now().toString(), title: task, start: selectedDate, backgroundColor: eventColor }]);
-    // }
     navigate('/meetings/new');
     setShowModal(false);
   };
 
   // Handle event click (Edit Task)
   const handleEventClick = (info) => {
-    setSelectedEvent({ id: info.event.id, title: info.event.title });
-    handleSelectedEvent(info.event.id);
-    // setTask(info.event.title);
-    // setEventColor(info.event.backgroundColor || '#098a30');
-    // setSelectedDate(info.event.startStr);
-    // setShowModal(true);
+    const selectedEvents = info.event.extendedProps.events; // Access stored events
+    setSelectedEvent(selectedEvents); // Store full list for display
+    handleSelectedEvent(selectedEvents);
   };
 
   // Delete Task

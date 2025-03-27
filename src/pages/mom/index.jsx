@@ -266,6 +266,7 @@ const NewPoint = () => {
                               placeholderText="Start Date"
                               dateFormat="dd-MM-yyyy"
                               name="startdate"
+                              maxDate={new Date()} // Disable future dates 
                             />
                           </div>
                           <div>

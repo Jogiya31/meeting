@@ -329,9 +329,9 @@ const UserList = () => {
                         </td>{' '}
                         <td>
                           {item.Status === '1' ? (
-                            <label className="label theme-bg text-white f-12">Active</label>
+                            <label className="label theme-bg text-white f-12">In service</label>
                           ) : (
-                            <label className="label theme-bg2 text-white f-12">Not Active</label>
+                            <label className="label theme-bg2 text-white f-12">Not in Service</label>
                           )}
                         </td>
                         <td>
@@ -511,7 +511,7 @@ const UserList = () => {
                     <Form.Check
                       inline
                       type="radio"
-                      label="Active"
+                      label="In service"
                       name="Status"
                       value="1"
                       checked={formData.Status === '1'}
@@ -520,7 +520,7 @@ const UserList = () => {
                     <Form.Check
                       inline
                       type="radio"
-                      label="Not Active"
+                      label="Not in service"
                       name="Status"
                       value="0"
                       checked={formData.Status === '0'}

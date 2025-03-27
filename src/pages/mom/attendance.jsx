@@ -301,6 +301,17 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
         <Col>
           <Form autoComplete="off">
             <Box extra="header-danger" customHeader={customHeader}>
+              <Row>
+                <Col>
+                  <div className="lineForm-header">
+                    <h5 className='p-0'>Employee</h5>
+                    <h5>Designation</h5>
+                    <h5>Division</h5>
+                    <h5>Company</h5>
+                    <h5>Mobile</h5>
+                  </div>
+                </Col>
+              </Row>
               {formFields.map((field, index) => (
                 <Row key={`${index}-${Math.random()}`} className="mb-2">
                   <Col>
@@ -338,7 +349,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                         name="organization"
                         className="ml-1"
                         value={field.organization}
-                        placeholder="Organization"
+                        placeholder="Company"
                         disabled
                       />
                       <Form.Control type="text" name="mobile" className="ml-1" value={field.mobile} placeholder="Mobile" disabled />

@@ -22,6 +22,8 @@ const DashDefault = () => {
   const { filterWith } = useStore();
   const [events, setEvents] = useState([]);
   const [showInfo, setshowInfo] = useState(false);
+  const [showInfoDetails, setshowInfoDetails] = useState(false);
+  const [selectedEvents, setSelectedEvents] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const dashboardCountInfo = useSelector((state) => state.dashboard.data);
@@ -35,20 +37,51 @@ const DashDefault = () => {
   }, []);
 
   useEffect(() => {
-    if (MeetingLists?.MeetingDetails) {
-      setEvents(
-        MeetingLists?.MeetingDetails.map((row) => ({
+    if (MeetingLists?.MeetingDetails?.length > 0) {
+      // Group meetings by date
+      const groupedEvents = MeetingLists.MeetingDetails.reduce((acc, row) => {
+        const formattedDate = moment(row.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD');
+
+        if (!acc[formattedDate]) {
+          acc[formattedDate] = [];
+        }
+
+        acc[formattedDate].push({
           id: row.MeetingId,
           title: row.MeetingTitle,
-          start: moment(row.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD'),
-          backgroundColor: '#098a30'
-        }))
+          start: row.MeetingDate,
+          description: row.MeetingDescription
+        });
+
+        return acc;
+      }, {});
+
+      // Convert grouped data to events
+      setEvents(
+        Object.keys(groupedEvents).map((date) => {
+          const eventsForDate = groupedEvents[date];
+          return {
+            id: eventsForDate[0].id, // Use date as ID
+            title: eventsForDate.length === 1 ? eventsForDate[0].title : `${eventsForDate.length} Events`, // Show title if 1, count if >1
+            start: date,
+            backgroundColor: '#098a30',
+            events: eventsForDate // Store full event details for later use
+          };
+        })
       );
     }
   }, [MeetingLists]);
 
   useEffect(() => {
-    if (selectedEventId) setSelectedMeeting(MeetingLists?.MeetingDetails.filter((item) => item.MeetingId === selectedEventId));
+    console.log('selectedEvents', selectedEvents);
+    if (selectedEvents.length) setshowInfo(true);
+  }, [selectedEvents]);
+
+  useEffect(() => {
+    if (selectedEventId) {
+      setSelectedMeeting(MeetingLists?.MeetingDetails.filter((item) => item.MeetingId === selectedEventId.id));
+      setshowInfoDetails(true);
+    }
   }, [selectedEventId]);
 
   useEffect(() => {
@@ -83,6 +116,10 @@ const DashDefault = () => {
 
   const handleClose = () => {
     setshowInfo(false);
+    setshowInfoDetails(false);
+    setSelectedEventId(null);
+    setSelectedMeeting(null);
+    setSelectedEvents([]);
   };
 
   const exportPdf = () => {
@@ -99,6 +136,7 @@ const DashDefault = () => {
     });
     setshowInfo(false);
   };
+
   return (
     <React.Fragment>
       <Row className="dashboard-cards">
@@ -150,7 +188,7 @@ const DashDefault = () => {
                       </div>
                     </Col>
                     <Col className="d-flex  justify-content-end align-items-center">
-                    <motion.i
+                      <motion.i
                         className="fas fa-handshake text-c-blue icons f-80 m-r-5"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
@@ -179,7 +217,7 @@ const DashDefault = () => {
                       </div>
                     </Col>
                     <Col className="d-flex justify-content-end align-items-center">
-                    <motion.i
+                      <motion.i
                         className="fas fa-list text-c-purple icons f-80 m-r-5"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
@@ -273,17 +311,18 @@ const DashDefault = () => {
         </Col>
         <Col sm={12} md={6} lg={6} xl={6} xxl={6}>
           <Card className="calander-card p-3 m-0">
-            <TaskCalendar extra="dashboard-cal" eventsData={events} handleEvets={handleEvents} handleSelectedEvent={setSelectedEventId} />
+            <TaskCalendar extra="dashboard-cal" eventsData={events} handleEvets={handleEvents} handleSelectedEvent={setSelectedEvents} />
           </Card>
         </Col>
       </Row>
 
-      <Modal size="xl" show={showInfo} onHide={handleClose} animation={false}>
-        <Modal.Header closeButton>
+      <Modal size="xl" show={showInfoDetails} animation={false}>
+        <Modal.Header>
           <Modal.Title className="dashboardModalHeader">
             <h5>Meeting Details</h5>
             <img src={pdf_i} width={30} className="mr-1 pointer" alt="" onClick={exportPdf} />
           </Modal.Title>
+          <span className='pointer' onClick={handleClose}> X </span>
         </Modal.Header>
         <Modal.Body className="p-4" ref={pdfContent}>
           <Row>
@@ -401,6 +440,29 @@ const DashDefault = () => {
               </Accordion>
             </Col>
           </Row>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showInfo} animation={false}>
+        <Modal.Header>
+          <Modal.Title className="dashboardModalHeader">
+            <h5>Events for this day </h5>
+          </Modal.Title>
+          <span className='pointer' onClick={handleClose}> X </span>
+        </Modal.Header>
+        <Modal.Body className="p-4" ref={pdfContent}>
+          {selectedEvents.length > 0 && (
+            <div className="events">
+              <ul className="event-list">
+                {selectedEvents.map((event, index) => (
+                  <li key={event.id} className="item pointer" onClick={() => setSelectedEventId(event)}>
+                    <span>{index + 1}</span>
+                    {event.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </Modal.Body>
       </Modal>
     </React.Fragment>
