@@ -36,8 +36,10 @@ const NewPoint = () => {
   const [userListOption, setUserListOptions] = useState([]); // User options state
   const [showInfo, setShowInfo] = useState(false);
   const [selectedUser, setselectedUser] = useState(null);
+  const [selectedMeeting, setselectedMeeting] = useState(null);
   const stepsList = ['Create Meeting', 'Mark Attendance', 'Discussion Points', 'Review'];
   const userList = useSelector((state) => state.users.data);
+  const MeetingLists = useSelector((state) => state.meetings.data);
 
   useEffect(() => {
     dispatch(userActions.getuserInfo());
@@ -57,6 +59,39 @@ const NewPoint = () => {
       setdiscussionDate(moment(store.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY'));
     }
   }, [store]);
+
+  useEffect(() => {
+    if (selectedMeeting?.MeetingDate) {
+      const parsedDate = moment(selectedMeeting.MeetingDate, 'DD-MM-YYYY HH:mm:ss').toDate();
+      handleDiscussionDate(parsedDate);
+    }
+
+    if (selectedMeeting?.MeetingTime) {
+      const parsedTime = moment(`2024-01-01T${selectedMeeting.MeetingTime}`, 'YYYY-MM-DDTHH:mm:ss.SSSSSSS').toDate();
+      handleDiscussionTime(parsedTime);
+    }
+
+    if (selectedMeeting?.MeetingTitle) {
+      handleTitle(selectedMeeting.MeetingTitle);
+    }
+    if (selectedMeeting?.Attendance.length) {
+      setAttendanceData(
+        selectedMeeting?.Attendance.map((item) => ({
+          userId: item.UserId,
+          designation: item.DesignationTitle,
+          division: item.DivisionTitle,
+          organization: item.OrganisationTitle,
+          mobile: item.Mobile,
+          isOther: false
+        }))
+      );
+    }
+    if (selectedMeeting?.DiscussionsPoint.length) {
+      setFormFields(
+        selectedMeeting?.DiscussionsPoint.map((item) => ({ task: item.Description, endDate: item.EndDate, officer: item.UserId }))
+      );
+    }
+  }, [selectedMeeting]);
 
   const handleAddField = () => {
     setFormFields([...formFields, { task: '', endDate: null, officer: '' }]);
@@ -147,9 +182,7 @@ const NewPoint = () => {
 
       // Navigate after all API calls complete
       navigate('/meetings/view');
-    } catch (error) {
-      console.error('API call failed:', error);
-    }
+    } catch (error) {}
   };
 
   const handleDiscussionDate = (date) => {
@@ -162,15 +195,14 @@ const NewPoint = () => {
 
   const handleDiscussionTime = (date) => {
     setcurrentTime(date);
-    if (date && !isNaN(date)) {
+    if (date instanceof Date && !isNaN(date)) {
       setTimeError(false);
     }
   };
 
-  const handleTitle = (e) => {
-    const value = e.target.value;
+  const handleTitle = (value) => {
     setmeetingTitle(value);
-    setTitleError(!value.trim());
+    setTitleError(!value?.trim());
   };
 
   const validateStep1 = () => {
@@ -225,11 +257,61 @@ const NewPoint = () => {
     setselectedUser(user);
     setShowInfo(true);
   };
+  const handleEditMeeting = (item) => {
+    setselectedMeeting(item);
+  };
 
   return (
     <Container fluid>
       <Row>
         <Col>
+          <Row>
+            <Col>
+              <h5 className="mb-3 theme-color">Draft Meetings</h5>
+            </Col>
+          </Row>
+          <Row>
+            {MeetingLists?.MeetingDetails?.map((item, idx) => (
+              <Col md={3} key={`${idx}-${idx}-${Math.random()}`}>
+                <div className="card project-task" onClick={() => handleEditMeeting(item)}>
+                  <div className="card-body">
+                    <div className="row align-items-center justify-content-center">
+                      <div className="col">
+                        <h5 className="m-0">
+                          <i className="far fa-edit m-r-10"></i>Meeting
+                        </h5>
+                      </div>
+                      <div className="col-auto">
+                        <label className="badge theme-bg2 text-white f-14 f-w-400 float-end">{((idx + 1) / 4) * 100}% Done</label>
+                      </div>
+                    </div>
+                    <h6 className="mt-3 mb-3">
+                      Steps Complete: <span className="text-muted">{idx + 1}/4</span>
+                    </h6>
+                    <div className="progress">
+                      <div
+                        className="progress-bar progress-c-theme"
+                        role="progressbar"
+                        style={{ width: `${((idx + 1) / 4) * 100}%`, height: '6px' }}
+                        aria-valuenow="60"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                    <h6 className="mt-3 mb-0">
+                      Title : <span className="text-muted">{item.MeetingTitle}</span>
+                    </h6>
+                    <h6 className="mt-3 mb-0">
+                      Date : <span className="text-muted">{moment(item.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</span>
+                    </h6>
+                    <h6 className="mt-3 mb-0 ">
+                      Time : <span className="text-muted">{moment(item.MeetingTime, 'HH:mm:ss.SSSSSSS').format('hh:mm A')}</span>
+                    </h6>
+                  </div>
+                </div>
+              </Col>
+            ))}
+          </Row>
           <Stepper
             steps={stepsList}
             currentStep={currentStep}
@@ -266,7 +348,7 @@ const NewPoint = () => {
                               placeholderText="Start Date"
                               dateFormat="dd-MM-yyyy"
                               name="startdate"
-                              maxDate={new Date()} // Disable future dates 
+                              maxDate={new Date()} // Disable future dates
                             />
                           </div>
                           <div>

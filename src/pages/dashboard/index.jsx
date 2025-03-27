@@ -73,7 +73,6 @@ const DashDefault = () => {
   }, [MeetingLists]);
 
   useEffect(() => {
-    console.log('selectedEvents', selectedEvents);
     if (selectedEvents.length) setshowInfo(true);
   }, [selectedEvents]);
 

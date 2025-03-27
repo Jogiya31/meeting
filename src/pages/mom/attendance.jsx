@@ -10,7 +10,6 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   const Role = localStorage.getItem('role');
   const dispatch = useDispatch();
   const userList = useSelector((state) => state.users.data);
-  const loader = useSelector((state) => state.users.loader);
   const designationDataList = useSelector((state) => state.settings.designationData);
   const divisionDataList = useSelector((state) => state.settings.divisionData);
   const employeementDataList = useSelector((state) => state.settings.employeementData);
@@ -53,9 +52,21 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
 
   useEffect(() => {
     if (userList?.Result) {
-      setUserListOptions(
-        userList.Result?.filter((item) => item.Status === '1').map((item) => ({ label: item.UserName, value: item.UserId }))
-      );
+      const activeUsers = userList.Result.filter((item) => item.Status === '1');
+      setUserListOptions(activeUsers.map((item) => ({ label: item.UserName, value: item.UserId })));
+
+
+       // Preselect users from initialFields
+       if (initialFields.length) {
+        const preselectedUsers = initialFields
+          .map((field) => {
+            const user = activeUsers.find((u) => u.UserId.toString() === field.userId);
+            return user ? { label: user.UserName, value: user.UserId } : null;
+          })
+          .filter(Boolean); // Remove null values
+
+          setuserFilter(preselectedUsers);
+      }
     }
   }, [userList]);
 

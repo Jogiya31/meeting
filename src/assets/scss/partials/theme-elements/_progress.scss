@@ -12,7 +12,7 @@
 }
 
 .progress {
-  height: 12px;
+  height: 6px;
   font-size: 10px;
   background-color: $theme-background;
   border-radius: 0;
@@ -32,11 +32,15 @@
     }
 
     &.progress-c-theme {
-      background: $theme-color;
+      background: $bg-brand-color-1;
     }
 
     &.progress-c-theme2 {
       background: $theme-color2;
+    }
+
+    &.progress-c-theme3 {
+      background: $theme-color3;
     }
 
     @each $color, $value in $theme-colors {
