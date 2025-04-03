@@ -8,6 +8,7 @@ const initialState = {
   employeementData: [],
   organizationData: [],
   statusData: [],
+  projectData: [],
   success: false,
   message: ''
 };
@@ -263,6 +264,88 @@ const settingsSlice = createSlice({
       state.success = false; // Set success flag to false
     },
 
+    //////////////////////////////////// Project//////////////////////////////////////
+    // Action to initiate fetching Project information
+    getProjectInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Project information
+    getProjectInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+      state.projectData = action.payload; // Store received data
+    },
+    // Action to handle failure in fetching Project information
+    getProjectInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+    // Action to initiate fetching Project information
+    addProjectInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Project information
+    addProjectInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching Project information
+    addProjectInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+    // Action to initiate fetching Project information
+    updateProjectInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Project information
+    updateProjectInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching Project information
+    updateProjectInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    // Action to  delete information
+    deleteDiscussionById(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful  delete information
+    deleteDiscussionByIdSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure delete information
+    deleteDiscussionByIdFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    // Action to  delete information
+    deleteAttendanceById(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful  delete information
+    deleteAttendanceByIdSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure delete information
+    deleteAttendanceByIdFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
     // Action to clear settings data
     clearData(state) {
       state.designationData = [];
@@ -270,6 +353,7 @@ const settingsSlice = createSlice({
       state.employeementData = [];
       state.organizationData = [];
       state.statusData = [];
+      state.projectData = [];
       state.loader = false; // Set loader to false
       state.success = false; // Set success flag to false
       state.message = ''; // Clear error message

@@ -51,6 +51,22 @@ const meetingsSlice = createSlice({
       state.meetingData = action.payload;
     },
 
+    // Action to initiate fetching update meetings information
+    updateMeetingsInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of update meetings information
+    updateMeetingsInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching update meetings information
+    updateMeetingsInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
     // Action to initiate fetching add Attendance information
     addAttendanceInfo(state) {
       state.loader = true; // Set loader to true while fetching
@@ -62,6 +78,22 @@ const meetingsSlice = createSlice({
     },
     // Action to handle failure in fetching add Attendance information
     addAttendanceInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    // Action to initiate fetching update Attendance information
+    updateAttendanceInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of update Attendance information
+    updateAttendanceInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching update Attendance information
+    updateAttendanceInfoFailed(state, action) {
       state.loader = false; // Set loader to false after fetching
       state.message = action.payload; // Store error message
       state.success = false; // Set success flag to false

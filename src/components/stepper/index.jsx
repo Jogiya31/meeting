@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Container } from 'react-bootstrap';
 import './style.scss';
 
-const Stepper = ({ steps, currentStep, setCurrentStep, onStepChange, nextButttonTitle, children }) => {
+const Stepper = ({ steps, currentStep, setCurrentStep, onStepChange, nextButttonTitle, handleBackButton, backButtonTitle, children }) => {
   const handleNext = () => {
     if (currentStep <= steps.length) {
       const nextStep = currentStep + 1;
@@ -17,6 +17,8 @@ const Stepper = ({ steps, currentStep, setCurrentStep, onStepChange, nextButtton
   const handlePrev = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+    } else {
+      handleBackButton();
     }
   };
 
@@ -42,8 +44,8 @@ const Stepper = ({ steps, currentStep, setCurrentStep, onStepChange, nextButtton
       </div>
       {children}
       <div className="d-flex justify-content-center mt-4">
-        <Button variant="secondary" onClick={handlePrev} disabled={currentStep === 1}>
-          Back
+        <Button variant="secondary" onClick={handlePrev}>
+          {backButtonTitle ? backButtonTitle : ''}
         </Button>
         <Button variant="primary" onClick={handleNext}>
           {nextButttonTitle ? nextButttonTitle : 'Next'}

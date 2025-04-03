@@ -59,6 +59,7 @@
     list-style: none;
     .item {
       margin-bottom: 10px;
+      color: #0c64e7;
       span {
         padding: 5px;
         background-color: darkgreen;
@@ -66,5 +67,11 @@
         margin-right: 10px;
       }
     }
+  }
+}
+
+.swal2-modal {
+  .swal2-title {
+    font-size: 1.5rem;
   }
 }

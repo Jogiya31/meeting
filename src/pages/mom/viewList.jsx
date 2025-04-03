@@ -45,7 +45,7 @@ export default function CollapsibleTable() {
 
   useEffect(() => {
     if (MeetingLists) {
-      setData(MeetingLists?.MeetingDetails || []);
+      setData(MeetingLists?.MeetingDetails?.filter((item) => Number(item.Draft) === 4) || []);
     }
   }, [MeetingLists]);
 

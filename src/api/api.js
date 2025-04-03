@@ -150,6 +150,32 @@ export const UpdateStatus = (data) => {
   });
 };
 
+
+/////////////////// Project api  ///////////////////
+export const GetProjectDetails = () => {
+  const url = `/GetProjectDetails`;
+  return axiosClient().get(url, {
+    'Content-Type': 'application/json'
+  });
+};
+export const AddProjectDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Save_Project`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const UpdateProject = (data) => {
+  const payload = data.payload;
+  const url = `/Update_Project`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+
+
+
+
 /////////////////// Meetings api  ///////////////////
 export const getMeetings = () => {
   const url = `/GetMeetingDiscussionAttendanceDetails`;
@@ -164,9 +190,23 @@ export const addMeetingsDetails = (data) => {
     'Content-Type': 'application/json'
   });
 };
+export const updateMeetingsDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Update_Meeting`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
 export const addAttendanceDetails = (data) => {
   const payload = data.payload;
   const url = `/Save_Attendance`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const updateAttendanceDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Update_Attendance`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });

@@ -197,28 +197,16 @@ const UserList = () => {
 
   // Filter rows based on search input
   const filteredRows = useMemo(() => {
-    return data
-      ?.filter((row) => {
-        const searchLower = search.toLowerCase();
-  
-        // List of keys to search in
-        const searchableKeys = [
-          "UserName",
-          "OrganisationTitle",
-          "EmployeeDivisionTitle",
-          "EmployementTitle",
-          "DesignationTitle"
-        ];
-  
-        // Check if any of the selected fields contain the search term
-        return searchableKeys.some((key) => 
-          row[key] && row[key].toLowerCase().includes(searchLower)
-        );
-      });
+    return data?.filter((row) => {
+      const searchLower = search.toLowerCase();
+
+      // List of keys to search in
+      const searchableKeys = ['UserName', 'OrganisationTitle', 'EmployeeDivisionTitle', 'EmployementTitle', 'DesignationTitle'];
+
+      // Check if any of the selected fields contain the search term
+      return searchableKeys.some((key) => row[key] && row[key].toLowerCase().includes(searchLower));
+    });
   }, [search, data]);
-  
-  
-  
 
   const sortedRows = useMemo(() => {
     return [...filteredRows].sort((a, b) => {
@@ -372,7 +360,7 @@ const UserList = () => {
           </Card>
         </Col>
       </Row>
-      <Modal show={showregister} onHide={handleClose} animation={false}>
+      <Modal size="xl" show={showregister} onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
           <Modal.Title>
             <h5>{selectedUser ? 'Update User Details' : 'Add User'}</h5>

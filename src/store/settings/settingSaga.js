@@ -5,16 +5,19 @@ import {
   AddDivisionDetails,
   AddEmployementDetails,
   AddOrganisationDetails,
+  AddProjectDetails,
   AddStatusDetails,
   GetDesignationDetails,
   GetDivisionDetails,
   GetEmployementDetails,
   GetOrganisationDetails,
+  GetProjectDetails,
   GetStatusDetails,
   UpdateDesignation,
   UpdateDivision,
   UpdateEmployement,
   UpdateOrganisation,
+  UpdateProject,
   UpdateStatus
 } from '../../api/api';
 import { toast } from 'react-toastify';
@@ -324,6 +327,66 @@ function* handleUpdateStatusInfo(data) {
   }
 }
 
+// Saga function to handle fetching Organization information
+function* handleProjectInfo() {
+  try {
+    // Call the API to fetch Project information
+    const response = yield call(GetProjectDetails);
+    // Check if the response Project is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.getProjectInfoSuccess(data || []));
+    } else {
+      // If response Project is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.getProjectInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Project information
+function* handleAddProjectInfo(data) {
+  try {
+    // Call the API to fetch Project information
+    const response = yield call(AddProjectDetails, data);
+    // Check if the response Project is 200 (OK)
+    if (response.Project === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.addProjectInfoSuccess(data || []));
+    } else {
+      // If response Project is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.addProjectInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Project information
+function* handleUpdateProjectInfo(data) {
+  try {
+    // Call the API to fetch Project information
+    const response = yield call(UpdateProject, data);
+    // Check if the response Project is 200 (OK)
+    if (response.Project === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.updateProjectInfoSuccess(data || []));
+    } else {
+      // If response Project is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.updateProjectInfoFailed(error.message)); // Dispatch failure action
+  }
+}
 
 
 // Watcher saga to take latest action of fetching user information
@@ -347,4 +410,8 @@ export default function* settingsSaga() {
   yield takeLatest(settingsActions.getStatusInfo.type, handleStatusInfo);
   yield takeLatest(settingsActions.addStatusInfo.type, handleAddStatusInfo);
   yield takeLatest(settingsActions.updateStatusInfo.type, handleUpdateStatusInfo);
+
+  yield takeLatest(settingsActions.getProjectInfo.type, handleProjectInfo);
+  yield takeLatest(settingsActions.addProjectInfo.type, handleAddProjectInfo);
+  yield takeLatest(settingsActions.updateProjectInfo.type, handleUpdateProjectInfo);
 }

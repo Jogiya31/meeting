@@ -1,6 +1,5 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { dashboardActions } from './dashboardSlice';
-import { toast } from 'react-toastify';
 import { getdashboardinfo } from '../../api/api';
 
 // Saga function to handle fetching dashboard information

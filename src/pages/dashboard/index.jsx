@@ -14,6 +14,7 @@ import { userActions } from '../../store/user/userSlice';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { motion } from 'framer-motion';
+import { settingsActions } from '../../store/settings/settingSlice';
 
 const DashDefault = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const DashDefault = () => {
     dispatch(dashboardActions.getdashboardInfo());
     dispatch(meetingsActions.getMeetingsInfo());
     dispatch(userActions.getuserInfo());
+    dispatch(settingsActions.getProjectInfo());
   }, []);
 
   useEffect(() => {

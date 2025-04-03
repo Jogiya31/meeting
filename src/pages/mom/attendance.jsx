@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../../store/user/userSlice';
 import { MultiSelect } from 'react-multi-select-component';
 import { settingsActions } from '../../store/settings/settingSlice';
+import Swal from 'sweetalert2';
 
 const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => {
   const Role = localStorage.getItem('role');
@@ -15,7 +16,9 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   const employeementDataList = useSelector((state) => state.settings.employeementData);
   const organizationDataList = useSelector((state) => state.settings.organizationData);
   const [formFields, setFormFields] = useState(
-    initialFields.length ? initialFields : [{ userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false }]
+    initialFields.length
+      ? [...initialFields, { AttendanceId: '', userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false }]
+      : [{ AttendanceId: '', userId: '', designation: '', division: '', organization: '', mobile: '', isOther: false }]
   );
   const [userListOption, setUserListOptions] = useState([]); // User options state
   const [userFilter, setuserFilter] = useState([]); // user filter state
@@ -55,9 +58,8 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       const activeUsers = userList.Result.filter((item) => item.Status === '1');
       setUserListOptions(activeUsers.map((item) => ({ label: item.UserName, value: item.UserId })));
 
-
-       // Preselect users from initialFields
-       if (initialFields.length) {
+      // Preselect users from initialFields
+      if (initialFields.length) {
         const preselectedUsers = initialFields
           .map((field) => {
             const user = activeUsers.find((u) => u.UserId.toString() === field.userId);
@@ -65,7 +67,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
           })
           .filter(Boolean); // Remove null values
 
-          setuserFilter(preselectedUsers);
+        setuserFilter(preselectedUsers);
       }
     }
   }, [userList]);
@@ -110,10 +112,32 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
     }
   };
 
-  const handleDeleteField = (index) => {
-    if (window.confirm('Are you sure you want to delete this row?')) {
-      setFormFields((prevFields) => prevFields.filter((_, i) => i !== index));
-    }
+  const handleDeleteField = (attendanceId, index) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (attendanceId) {
+          dispatch(
+            settingsActions.deleteAttendanceById({
+              AttendanceId: attendanceId
+            })
+          );
+        }
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'Your file has been deleted.',
+          icon: 'success'
+        });
+        setFormFields((prevFields) => prevFields.filter((_, i) => i !== index));
+      }
+    });
   };
 
   const handleAddField = () => {
@@ -315,7 +339,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
               <Row>
                 <Col>
                   <div className="lineForm-header">
-                    <h5 className='p-0'>Employee</h5>
+                    <h5 className="p-0">Employee</h5>
                     <h5>Designation</h5>
                     <h5>Division</h5>
                     <h5>Company</h5>
@@ -366,7 +390,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                       <Form.Control type="text" name="mobile" className="ml-1" value={field.mobile} placeholder="Mobile" disabled />
 
                       {formFields.length > 1 && (
-                        <Button variant="danger" onClick={() => handleDeleteField(index)} className="sortBtn ml-1">
+                        <Button variant="danger" onClick={() => handleDeleteField(field.AttendanceId, index)} className="sortBtn ml-1">
                           <i className="feather icon-x m-0" />
                         </Button>
                       )}
