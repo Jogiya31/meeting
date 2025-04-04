@@ -7,10 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../../store/user/userSlice';
 import { settingsActions } from '../../store/settings/settingSlice';
 import { FaSort } from 'react-icons/fa';
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
 
 const UserList = () => {
   const dispatch = useDispatch();
+  const Role = localStorage.getItem('role');
   const [selectedUser, setselectedUser] = useState(null);
+  const [currentDate, setcurrentDate] = useState(null);
   const [errors, setErrors] = useState({});
   const [showregister, setShowregister] = useState(false);
   const [data, setData] = useState([]);
@@ -36,11 +40,13 @@ const UserList = () => {
     DesignationId: '',
     EmployeementDivisionId: '',
     OrganizationId: '',
+    AssociatedOfficerId: '',
+    ServiceDate: '',
     Mobile: '',
     Status: '0',
     Gender: '',
     ImgPath: avatar2,
-    CreatedBy: 'Admin'
+    CreatedBy: Role
   });
 
   const userList = useSelector((state) => state.users.data);
@@ -80,6 +86,8 @@ const UserList = () => {
       DesignationId: '',
       EmployeementDivisionId: '',
       OrganizationId: '',
+      AssociatedOfficerId: '',
+      ServiceDate: '',
       Mobile: '',
       Status: '',
       Gender: '',
@@ -102,10 +110,7 @@ const UserList = () => {
     // Mobile Number Validation
     if (!formData.Mobile) {
       newErrors.Mobile = 'Mobile number is required';
-    } else if (!/^\d{10}$/.test(formData.Mobile)) {
-      newErrors.Mobile = 'Mobile number must be exactly 10 digits';
     }
-
     if (!formData.Status) newErrors.Status = 'Status is required';
 
     setErrors(newErrors);
@@ -114,7 +119,6 @@ const UserList = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === 'Mobile') {
       if (/^\d{0,10}$/.test(value)) {
         setFormData({ ...formData, [name]: value });
@@ -131,6 +135,15 @@ const UserList = () => {
     if (file) reader.readAsDataURL(file);
   };
 
+  const handleServiceDate = (date) => {
+    setcurrentDate(date);
+    if (date instanceof Date && !isNaN(date)) {
+      setFormData({ ...formData, ServiceDate: date || '' });
+    }else{
+      setFormData({ ...formData, ServiceDate: '' });
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -141,6 +154,8 @@ const UserList = () => {
       EmployementId: formData.EmployementId,
       EmployeementDivisionId: formData.EmployeementDivisionId,
       OrganizationId: formData.OrganizationId,
+      AssociatedOfficerId: formData.AssociatedOfficerId,
+      serviceDate: formData.ServiceDate || '',
       Mobile: formData.Mobile,
       Gender: formData.Gender,
       Status: formData.Status,
@@ -150,10 +165,10 @@ const UserList = () => {
     if (selectedUser) {
       // Update User Payload
       updatedData.UserId = selectedUser.UserId;
-      updatedData.ModifyBy = 'SuperAdmin';
+      updatedData.ModifyBy = Role;
     } else {
       // Save New User Payload
-      updatedData.CreatedBy = 'Admin';
+      updatedData.CreatedBy = Role;
     }
 
     const endpoint = selectedUser ? '/Update_User' : '/Save_User';
@@ -176,12 +191,18 @@ const UserList = () => {
         DesignationId: selectedUser.DesignationId,
         EmployeementDivisionId: selectedUser.EmployeementDivisionId,
         OrganizationId: selectedUser.OrganisationId,
+        AssociatedOfficerId: selectedUser.AssociatedOfficerId,
+        ServiceDate: selectedUser.ServiceDate || '',
         Mobile: selectedUser.Mobile,
         Status: selectedUser.Status,
         Gender: selectedUser.Gender,
         ImgPath: selectedUser.ImgPath || '',
-        CreatedBy: 'Admin'
+        CreatedBy: Role
       });
+      if (selectedUser?.ServiceDate) {
+        const parsedDate = moment(selectedUser?.ServiceDate, 'DD-MM-YYYY HH:mm:ss').toDate();
+        setcurrentDate(parsedDate);
+      }
     } else {
     }
   }, [selectedUser]);
@@ -191,6 +212,7 @@ const UserList = () => {
     { id: 'DesignationTitle', label: 'Designation' },
     { id: 'EmployeeDivisionTitle', label: 'Division' },
     { id: 'EmployementTitle', label: 'Type' },
+    { id: 'AssociatedOfficer', label: 'Associated Officer' },
     { id: 'OrganisationTitle', label: 'Company Name' },
     { id: 'Status', label: 'Status' }
   ];
@@ -201,7 +223,14 @@ const UserList = () => {
       const searchLower = search.toLowerCase();
 
       // List of keys to search in
-      const searchableKeys = ['UserName', 'OrganisationTitle', 'EmployeeDivisionTitle', 'EmployementTitle', 'DesignationTitle'];
+      const searchableKeys = [
+        'UserName',
+        'OrganisationTitle',
+        'EmployeeDivisionTitle',
+        'EmployementTitle',
+        'DesignationTitle',
+        'AssociatedOfficer'
+      ];
 
       // Check if any of the selected fields contain the search term
       return searchableKeys.some((key) => row[key] && row[key].toLowerCase().includes(searchLower));
@@ -313,8 +342,13 @@ const UserList = () => {
                           <p className="m-0">{item.EmployementTitle}</p>
                         </td>
                         <td>
+                          <p className="m-0">
+                            {userList?.Result.map((user) => (user.UserId === item.AssociatedOfficerId ? <span>{user.UserName}</span> : ''))}
+                          </p>
+                        </td>
+                        <td>
                           <h6 className="mb-1">{item.OrganisationTitle}</h6>
-                        </td>{' '}
+                        </td>
                         <td>
                           {item.Status === '1' ? (
                             <label className="label theme-bg text-white f-12">In service</label>
@@ -474,6 +508,42 @@ const UserList = () => {
                     maxLength={10}
                   />
                   <Form.Control.Feedback type="invalid">{errors.Mobile}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label>Associated Officer</Form.Label>
+                  <Form.Select
+                    name="AssociatedOfficerId"
+                    value={formData.AssociatedOfficerId}
+                    className="custom-form-select"
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Select officer...
+                    </option>
+                    {userList?.Result?.filter((item) => item.Status === '1' && item.EmployementId === '1').map((item) => (
+                      <option value={item.UserId}>{item.UserName}</option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.AssociatedOfficerId}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label>Service Date</Form.Label>
+                  <DatePicker
+                    selected={currentDate}
+                    className="form-control"
+                    onChange={handleServiceDate}
+                    placeholderText="Start Date"
+                    dateFormat="dd-MM-yyyy"
+                    name="ServiceDate"
+                    maxDate={new Date()} // Disable future dates
+                  />
+                  <Form.Control.Feedback type="invalid">{errors.ServiceDate}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>

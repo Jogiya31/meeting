@@ -503,12 +503,12 @@ const NewPoint = () => {
               <Row>
                 {draftMeetings?.map((item, idx) => (
                   <Col md={3} key={`${idx}-${idx}-${Math.random()}`}>
-                    <div className="card project-task ">
+                    <div className="card project-task pointer" onClick={() => handleEditMeeting(item)}>
                       <div className="card-body">
                         <div className="row align-items-center justify-content-center">
                           <div className="col">
                             <Link>
-                              <h5 className="m-0 pointer text-success" onClick={() => handleEditMeeting(item)}>
+                              <h5 className="m-0 pointer text-success" >
                                 <i className="far fa-edit m-r-10"></i>Meeting
                               </h5>
                             </Link>
@@ -545,7 +545,7 @@ const NewPoint = () => {
                 ))}
                 <Col md={3} key={`${Math.random()}`}>
                   <div
-                    className="card project-task "
+                    className="card project-task pointer"
                     onClick={() => {
                       setDraftMeetings(null);
                       setselectedMeeting(null);
