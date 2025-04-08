@@ -38,7 +38,6 @@ const Dashboard = lazy(() => import('./pages/dashboard'));
 const Users = lazy(() => import('./pages/users'));
 const Settings = lazy(() => import('./pages/settings'));
 const NewPoints = lazy(() => import('./pages/mom'));
-const DraftMeeting = lazy(() => import('./pages/mom/draftMeeting'));
 const ViewList = lazy(() => import('./pages/mom/viewList'));
 const Attendance = lazy(() => import('./pages/mom/attendance'));
 const Login = lazy(() => import('./pages/auth/SignIn'));
@@ -80,11 +79,6 @@ const routes = [
         exact: true,
         path: '/meetings/users',
         element: Users
-      },
-      {
-        exact: true,
-        path: '/meetings/draft',
-        element: DraftMeeting
       },
       {
         exact: true,
