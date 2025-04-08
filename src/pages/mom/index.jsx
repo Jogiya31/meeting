@@ -21,7 +21,7 @@ import { settingsActions } from 'store/settings/settingSlice';
 const NewPoint = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { store } = useStore();
+  const { store, currentMeetingId } = useStore();
   const API_URL = import.meta.env.VITE_APP_API_BASE_URL;
   const Role = localStorage.getItem('role');
   const [currentDate, setcurrentDate] = useState(null);
@@ -44,7 +44,7 @@ const NewPoint = () => {
   const [selectedMeeting, setselectedMeeting] = useState(null);
   const [draftMeetings, setDraftMeetings] = useState(null);
   const [isDraftMeetings, setIsDraftMeetings] = useState(false);
-  const [currentMeetingId, setcurrentMeetingId] = useState(null);
+  const [meetingId, setMeetingId] = useState('');
   const stepsList = ['Create Meeting', 'Mark Attendance', 'Discussion Points', 'Review'];
   const userList = useSelector((state) => state.users.data);
   const projectList = useSelector((state) => state.settings.projectData);
@@ -73,19 +73,17 @@ const NewPoint = () => {
   useEffect(() => {
     setDraftMeetings(MeetingLists?.MeetingDetails?.filter((item) => item.Draft < 4));
 
-    if (selectedMeeting?.MeetingId) {
-      setcurrentMeetingId(selectedMeeting?.MeetingId);
+    if (selectedMeeting) {
+      setMeetingId(selectedMeeting?.MeetingId);
     }
     if (selectedMeeting?.MeetingDate) {
       const parsedDate = moment(selectedMeeting.MeetingDate, 'DD-MM-YYYY HH:mm:ss').toDate();
       handleDiscussionDate(parsedDate);
     }
-
     if (selectedMeeting?.MeetingTime) {
       const parsedTime = moment(`2024-01-01T${selectedMeeting.MeetingTime}`, 'YYYY-MM-DDTHH:mm:ss.SSSSSSS').toDate();
       handleDiscussionTime(parsedTime);
     }
-
     if (selectedMeeting?.MeetingTitle) {
       handleTitle(selectedMeeting.MeetingTitle);
     }
@@ -99,7 +97,8 @@ const NewPoint = () => {
           organization: item.OrganisationTitle,
           mobile: item.Mobile,
           isOther: false,
-          associatedOfficer: item.AssociatedOfficerId
+          associatedOfficer: item.AssociatedOfficerId,
+          Status: item.Status
         }))
       );
     }
@@ -125,7 +124,7 @@ const NewPoint = () => {
   };
 
   const handleAddField = () => {
-    setFormFields([...formFields, { task: '', endDate: null, officer: '' }]);
+    setFormFields([...formFields, { task: '', endDate: null, officer: '', projectId: '' }]);
     setTimeout(() => lastInputRef.current?.focus(), 0);
     setErrors([...errors, { task: false, endDate: false, officer: false }]);
   };
@@ -161,7 +160,7 @@ const NewPoint = () => {
       if (result.isConfirmed) {
         if (discussionId) {
           dispatch(
-            settingsActions.deleteDiscussionById({
+            meetingsActions.deleteDiscussionInfo({
               DiscussionId: discussionId
             })
           );
@@ -174,10 +173,6 @@ const NewPoint = () => {
         setFormFields((prevFields) => prevFields.filter((_, i) => i !== index));
       }
     });
-    if (window.confirm('Are you sure you want to delete this row?')) {
-      setFormFields(formFields.filter((_, i) => i !== index));
-      setErrors(errors.filter((_, i) => i !== index));
-    }
   };
 
   const handleSaveAll = async () => {
@@ -187,7 +182,7 @@ const NewPoint = () => {
     // Update meeting information after successfully saving or updating discussion points
     dispatch(
       meetingsActions.updateMeetingsInfo({
-        MeetingId: currentMeetingId,
+        MeetingId: meetingId,
         MeetingTitle: meetingTitle,
         MeetingDate: currentDate,
         MeetingTime: currentTime,
@@ -252,21 +247,14 @@ const NewPoint = () => {
         );
         return true;
       } else if (!currentMeetingId) {
-        // Only create a new meeting if there's no existing one
-        const meetingResponse = axios.post(`${API_URL}/Save_Meeting`, {
-          MeetingTitle: meetingTitle,
-          MeetingDate: currentDate,
-          MeetingTime: currentTime,
-          CreatedBy: Role
-        });
-
-        const meetingId = meetingResponse?.data?.MeetingId;
-        if (!meetingId) {
-          console.log('Meeting ID not received. Stopping execution.');
-          return false;
-        }
-
-        setcurrentMeetingId(meetingId);
+        dispatch(
+          meetingsActions.addMeetingsInfo({
+            MeetingTitle: meetingTitle,
+            MeetingDate: currentDate,
+            MeetingTime: currentTime,
+            CreatedBy: Role
+          })
+        );
         return true;
       }
     } catch (error) {
@@ -287,27 +275,20 @@ const NewPoint = () => {
       return false;
     } else {
       try {
-        // Get the existing attendance records from selectedMeeting
-        const existingAttendance = selectedMeeting?.Attendance || [];
-
         const attendanceRequests = filteredAttendance.map((item) => {
-          const isExisting = existingAttendance.some((att) => att.UserId === item.userId);
-
           const requestPayload = {
-            MeetingId: currentMeetingId,
-            UserId: item.userId,
-            CreatedBy: isExisting ? undefined : Role, // Only set CreatedBy for new records
-            ModifyBy: isExisting ? Role : undefined // Only set ModifyBy for existing records
+            MeetingId: meetingId,
+            UserId: item.userId
           };
 
           // If attendanceId is not available, treat it as a new attendance record (Save)
           if (!item.AttendanceId) {
-            return axios.post(`${API_URL}/Save_Attendance`, requestPayload);
+            return axios.post(`${API_URL}/Save_Attendance`, { ...requestPayload, CreatedBy: Role });
           }
-
           // If attendanceId is available, update the attendance record (Update)
           return axios.post(`${API_URL}/Update_Attendance`, {
             ...requestPayload,
+            ModifyBy: Role,
             AttendanceId: item.AttendanceId // Include AttendanceId for update
           });
         });
@@ -317,7 +298,7 @@ const NewPoint = () => {
         // Update meeting information after successfully saving or updating attendance
         dispatch(
           meetingsActions.updateMeetingsInfo({
-            MeetingId: currentMeetingId,
+            MeetingId: meetingId,
             MeetingTitle: meetingTitle,
             MeetingDate: currentDate,
             MeetingTime: currentTime,
@@ -338,8 +319,8 @@ const NewPoint = () => {
     const newErrors = formFields.map((field) => ({
       task: !field.task,
       endDate: !field.endDate,
-      officer: !field.officer
-      // projectId: !field.projectId
+      officer: !field.officer,
+      projectId: !field.projectId
     }));
     setErrors(newErrors);
     return newErrors.every((error) => !Object.values(error).includes(true));
@@ -362,33 +343,27 @@ const NewPoint = () => {
       if (isValid) {
         try {
           const discussionRequests = formFields.map((item) => {
-            const isExisting = selectedMeeting ? item.id : undefined; // Check if the DiscussionId exists
 
             const requestPayload = {
-              MeetingId: currentMeetingId,
+              MeetingId: meetingId,
               Description: item.task,
               DiscussionId: item.discussionId,
               StartDate: currentDate,
               EndDate: item.endDate,
               UserId: item.officer,
               Reason: selectedMeeting ? item.reason || '' : '',
-              Status: selectedMeeting ? 2 : '', // Status is set only for existing discussions
-              ProjectId: item.projectId || '',
-              ModifyBy: selectedMeeting ? Role : '',
-              CreatedBy: selectedMeeting ? '' : Role // CreatedBy is set only for new discussions
+              Status: selectedMeeting ? 1 : '', // set status pending by default for new record
+              ProjectId: item.projectId || ''
             };
-
-            // If there is no DiscussionId (new discussion), call Save_DiscussionPoint API
-            if (!isExisting) {
-              console.log('requestPayload', requestPayload);
-              return axios.post(`${API_URL}/Save_DiscussionPoint`, requestPayload);
+            if (!item.discussionId) {
+              return axios.post(`${API_URL}/Save_DiscussionPoint`, { ...requestPayload, CreatedBy: Role });
+            } else {
+              return axios.post(`${API_URL}/update_DiscussionPoint`, {
+                ...requestPayload,
+                ModifyBy: Role,
+                DiscussionId: item.id // Include DiscussionId for update
+              });
             }
-
-            // If there is a DiscussionId (existing discussion), call update_DiscussionPoint API
-            return axios.post(`${API_URL}/update_DiscussionPoint`, {
-              ...requestPayload,
-              DiscussionId: item.id // Include DiscussionId for update
-            });
           });
 
           Promise.all(discussionRequests);
@@ -396,7 +371,7 @@ const NewPoint = () => {
           // Update meeting information after successfully saving or updating discussion points
           dispatch(
             meetingsActions.updateMeetingsInfo({
-              MeetingId: currentMeetingId,
+              MeetingId: meetingId,
               MeetingTitle: meetingTitle,
               MeetingDate: currentDate,
               MeetingTime: currentTime,
@@ -474,15 +449,24 @@ const NewPoint = () => {
   };
 
   useEffect(() => {
-    getDraftMeetings();
     if (currentStep === 2) {
-      
+      if (currentMeetingId) {
+        setMeetingId(currentMeetingId);
+        dispatch(
+          meetingsActions.updateMeetingsInfo({
+            MeetingId: currentMeetingId || '', // Use existing meeting ID
+            MeetingTitle: meetingTitle,
+            MeetingDate: currentDate,
+            MeetingTime: currentTime,
+            Draft: 1,
+            ModifyBy: Role
+          })
+        );
+      }
     }
     if (currentStep === 3) {
-      setAttendanceData([]);
     }
     if (currentStep === 4) {
-      setFormFields([{ task: '', endDate: null, officer: '', projectId: '', id: '', reason: '', status: '', discussionId: '' }]);
     }
     if (currentStep === 5) {
       handleSaveAll();
@@ -508,7 +492,7 @@ const NewPoint = () => {
                         <div className="row align-items-center justify-content-center">
                           <div className="col">
                             <Link>
-                              <h5 className="m-0 pointer text-success" >
+                              <h5 className="m-0 pointer text-success">
                                 <i className="far fa-edit m-r-10"></i>Meeting
                               </h5>
                             </Link>

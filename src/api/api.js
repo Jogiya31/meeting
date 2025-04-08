@@ -150,7 +150,6 @@ export const UpdateStatus = (data) => {
   });
 };
 
-
 /////////////////// Project api  ///////////////////
 export const GetProjectDetails = () => {
   const url = `/GetProjectDetails`;
@@ -172,9 +171,6 @@ export const UpdateProject = (data) => {
     'Content-Type': 'application/json'
   });
 };
-
-
-
 
 /////////////////// Meetings api  ///////////////////
 export const getMeetings = () => {
@@ -222,6 +218,22 @@ export const addDiscussionDetails = (data) => {
 export const updateDiscussionDetails = (data) => {
   const payload = data.payload;
   const url = `/Update_DiscussionPoint`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+
+export const deleteAttendanceDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Delete_Attendance`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+
+export const deleteDiscussionDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Delete_Discussion`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });

@@ -1370,3 +1370,14 @@ button.sortBtn.btn.btn-info,
     font-size: 0.9rem;
   }
 }
+
+.view-Meetings {
+  .table {
+    .body-row {
+      .row-data {
+        max-width: 180px;
+        overflow: overlay;
+      }
+    }
+  }
+}

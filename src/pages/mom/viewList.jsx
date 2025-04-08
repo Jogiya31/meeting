@@ -384,7 +384,7 @@ export default function CollapsibleTable() {
                       <tr>
                         <td colSpan={7} className="p-0">
                           <Collapse in={expandedRows[row.MeetingId]}>
-                            <div className="p-3 bg-light border transition-all duration-300 ease-in-out inner-table">
+                            <div className="p-3 bg-light border transition-all duration-300 ease-in-out inner-table view-Meetings">
                               {userLists?.Result ? (
                                 <EnhancedTable
                                   data={transformData(row.DiscussionsPoint, userLists) || []}

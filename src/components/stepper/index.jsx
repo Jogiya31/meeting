@@ -44,9 +44,13 @@ const Stepper = ({ steps, currentStep, setCurrentStep, onStepChange, nextButtton
       </div>
       {children}
       <div className="d-flex justify-content-center mt-4">
-        <Button variant="secondary" onClick={handlePrev}>
-          {backButtonTitle ? backButtonTitle : ''}
-        </Button>
+        {backButtonTitle === 'Back' && currentStep === 1 ? (
+          ''
+        ) : (
+          <Button variant="secondary" onClick={handlePrev}>
+            {backButtonTitle ? backButtonTitle : ''}
+          </Button>
+        )}
         <Button variant="primary" onClick={handleNext}>
           {nextButttonTitle ? nextButttonTitle : 'Next'}
         </Button>

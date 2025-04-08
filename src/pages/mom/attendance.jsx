@@ -6,6 +6,7 @@ import { userActions } from '../../store/user/userSlice';
 import { MultiSelect } from 'react-multi-select-component';
 import { settingsActions } from '../../store/settings/settingSlice';
 import Swal from 'sweetalert2';
+import { meetingsActions } from 'store/mom/momSlice';
 
 const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => {
   const Role = localStorage.getItem('role');
@@ -125,7 +126,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       if (result.isConfirmed) {
         if (attendanceId) {
           dispatch(
-            settingsActions.deleteAttendanceById({
+            meetingsActions.deleteAttendanceInfo({
               AttendanceId: attendanceId
             })
           );

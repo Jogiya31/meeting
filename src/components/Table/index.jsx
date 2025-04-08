@@ -176,7 +176,7 @@ function EnhancedTable({
             const isItemSelected = selected.includes(row.id);
             const count = idx + 1;
             return (
-              <tr key={`${row.id}-${count}_${Math.random()}`} className={isItemSelected ? 'table-active' : ''}>
+              <tr key={`${row.id}-${count}_${Math.random()}`} className={`body-row ${isItemSelected ? 'table-active' : ''}`}>
                 {enableSelectRows && (
                   <td>
                     <Form.Check type="checkbox" checked={isItemSelected} className="p-0 text-center" onChange={() => handleClick(row.id)} />
@@ -184,7 +184,7 @@ function EnhancedTable({
                 )}
                 {enableSno && <td>{count}</td>}
                 {headers.map((header) => (
-                  <td key={header.id}>{row[header.id]}</td>
+                  <td key={header.id} className='row-data'>{row[header.id]}</td>
                 ))}
                 {/* Add action button to each row and float it to the right */}
                 {rowactions && <td className="text-end action">{rowactions(row)}</td>}

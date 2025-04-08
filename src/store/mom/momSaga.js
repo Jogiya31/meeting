@@ -1,6 +1,16 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { meetingsActions } from './momSlice';
-import { addAttendanceDetails, addDiscussionDetails, addMeetingsDetails, getMeetings, updateAttendanceDetails, updateDiscussionDetails, updateMeetingsDetails } from '../../api/api';
+import {
+  addAttendanceDetails,
+  addDiscussionDetails,
+  addMeetingsDetails,
+  deleteAttendanceDetails,
+  deleteDiscussionDetails,
+  getMeetings,
+  updateAttendanceDetails,
+  updateDiscussionDetails,
+  updateMeetingsDetails
+} from '../../api/api';
 import { toast } from 'react-toastify';
 
 // Saga function to handle fetching Meetings information
@@ -66,7 +76,6 @@ function* handleUpdateMeetingsInfo(data) {
   }
 }
 
-
 // Saga function to handle fetching add Attendance information
 function* handleAddAttendanceInfo(data) {
   try {
@@ -108,8 +117,6 @@ function* handleUpdateAttendanceInfo(data) {
     yield put(meetingsActions.updateAttendanceInfoFailed(error.message)); // Dispatch failure action
   }
 }
-
-
 
 // Saga function to handle fetching add Discussion information
 function* handleAddDiscussionInfo(data) {
@@ -153,6 +160,47 @@ function* handleupdateDiscussionInfo(data) {
   }
 }
 
+// Saga function to handle fetching delete Attendance information
+function* handledeleteAttendanceInfo(data) {
+  try {
+    // Call the API to fetch delete Attendance information
+    const response = yield call(deleteAttendanceDetails, data);
+    // Check if the response status is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(meetingsActions.deleteAttendanceInfoSuccess(data || []));
+    } else {
+      // If response status is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(meetingsActions.deleteAttendanceInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+
+// Saga function to handle fetching delete Discussion information
+function* handledeleteDiscussionInfo(data) {
+  try {
+    // Call the API to fetch delete Discussion information
+    const response = yield call(deleteDiscussionDetails, data);
+    // Check if the response status is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(meetingsActions.deleteDiscussionInfoSuccess(data || []));
+    } else {
+      // If response status is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(meetingsActions.deleteDiscussionInfoFailed(error.message)); // Dispatch failure action
+  }
+}
 
 // Watcher saga to take latest action of fetching Meetings information
 export default function* MeetingsSaga() {
@@ -163,4 +211,6 @@ export default function* MeetingsSaga() {
   yield takeLatest(meetingsActions.updateAttendanceInfo.type, handleUpdateAttendanceInfo);
   yield takeLatest(meetingsActions.addDiscussionInfo.type, handleAddDiscussionInfo);
   yield takeLatest(meetingsActions.updateDiscussionInfo.type, handleupdateDiscussionInfo);
+  yield takeLatest(meetingsActions.deleteAttendanceInfo.type, handledeleteAttendanceInfo);
+  yield takeLatest(meetingsActions.deleteDiscussionInfo.type, handledeleteDiscussionInfo);
 }

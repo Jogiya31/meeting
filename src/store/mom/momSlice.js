@@ -35,7 +35,6 @@ const meetingsSlice = createSlice({
     // Action to initiate fetching add meetings information
     addMeetingsInfo(state) {
       state.loader = true; // Set loader to true while fetching
-      state.meetingData = [];
     },
     // Action to handle successful retrieval of add meetings information
     addMeetingsInfoSuccess(state, action) {
@@ -126,6 +125,38 @@ const meetingsSlice = createSlice({
     },
     // Action to handle failure in fetching updateDiscussion information
     updateDiscussionInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    // Action to initiate fetching deleteAttendance information
+    deleteAttendanceInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of deleteAttendance information
+    deleteAttendanceInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching deleteAttendance information
+    deleteAttendanceInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    // Action to initiate fetching deleteDiscussion information
+    deleteDiscussionInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of deleteDiscussion information
+    deleteDiscussionInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching deleteDiscussion information
+    deleteDiscussionInfoFailed(state, action) {
       state.loader = false; // Set loader to false after fetching
       state.message = action.payload; // Store error message
       state.success = false; // Set success flag to false
