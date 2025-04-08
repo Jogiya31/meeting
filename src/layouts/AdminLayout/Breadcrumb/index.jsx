@@ -58,7 +58,7 @@ const Breadcrumb = () => {
 
     if (item.breadcrumbs !== false) {
       breadcrumbContent = (
-        <div className="page-header mb-4">
+        <div className="page-header mb-3">
           <div className="page-block">
             <div className="row align-items-center">
               <div className="col-md-12">

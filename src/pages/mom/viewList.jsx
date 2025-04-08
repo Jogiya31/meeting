@@ -23,7 +23,7 @@ export default function CollapsibleTable() {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
   const [show, setShow] = useState(false);
   const [showAttendanceList, setShowAttendanceList] = useState(false);

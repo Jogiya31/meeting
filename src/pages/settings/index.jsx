@@ -101,8 +101,6 @@ const Index = () => {
         setList(list.map((item) => (item.id === id ? { ...item, isEditing: true } : item)));
       }
     });
-    //alert('Caution! Updating this information may alter its original meaning. Proceed carefully.');
-    //setList(list.map((item) => (item.id === id ? { ...item, isEditing: true } : item)));
   };
 
   const handleChange = (list, setList, id, newValue) => {

@@ -15,7 +15,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { motion } from 'framer-motion';
 import { settingsActions } from '../../store/settings/settingSlice';
-
+import { FaProjectDiagram } from 'react-icons/fa';
 const DashDefault = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,6 +30,7 @@ const DashDefault = () => {
   const dashboardCountInfo = useSelector((state) => state.dashboard.data);
   const MeetingLists = useSelector((state) => state.meetings.data);
   const userList = useSelector((state) => state.users.data);
+  const projectDataList = useSelector((state) => state.settings.projectData);
 
   useEffect(() => {
     dispatch(dashboardActions.getdashboardInfo());
@@ -112,6 +113,9 @@ const DashDefault = () => {
     } else if (card === 'completed') {
       filterWith(3);
       navigate('/meetings/view');
+    } else if (card === 'projects') {
+      filterWith(3);
+      navigate('/meetings/masterSettings');
     }
   };
 
@@ -140,182 +144,206 @@ const DashDefault = () => {
 
   return (
     <React.Fragment>
-      <Row className="dashboard-cards">
-        <Col sm={12} md={6} xl={6} xxl={6}>
-          <Row>
-            <Col sm={12} md={6} xl={6} xxl={6}>
-              <Card className="customcard bg-color-7 pointer" onClick={() => handleCardClick('user')}>
-                <Card.Body>
-                  <Row>
-                    <Col className="d-flex align-items-center">
-                      <div>
-                        <h6 className="mb-4">Total Employee's</h6>
-                        <div className="row d-flex align-items-center">
-                          <div className="col-9">
-                            <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                              <i className={`text-c-brown f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalUser}</i>
-                            </h3>
-                          </div>
+      <div className="dashboard-cards grid-wrapper">
+        <div className="grid-inner">
+          <div className="grid-item">
+            <Card className="customcard bg-color-7 pointer" onClick={() => handleCardClick('user')}>
+              <Card.Body>
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <div>
+                      <h6 className="mb-4">Total Employee's</h6>
+                      <div className="row d-flex align-items-center">
+                        <div className="col-9">
+                          <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                            <i className={`text-c-brown f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalUser}</i>
+                          </h3>
                         </div>
                       </div>
-                    </Col>
-                    <Col className="d-flex  justify-content-end align-items-center">
-                      <motion.i
-                        className="fas fa-users text-c-brown icons f-80 m-r-5"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                      />
-                      {/* <i className="fas fa-users text-c-brown icons f-80 m-r-5"></i> */}
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col sm={12} md={6} xl={6} xxl={6}>
-              <Card className="customcard bg-color-2 pointer" onClick={() => handleCardClick('meeting')}>
-                <Card.Body>
-                  <Row>
-                    <Col className="d-flex align-items-center">
-                      <div>
-                        <h6 className="mb-4">Total meeting's</h6>
-                        <div className="row d-flex align-items-center">
-                          <div className="col-9">
-                            <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                              <i className={`text-c-blue f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalMeeting}</i>
-                            </h3>
-                          </div>
+                    </div>
+                  </Col>
+                  <Col className="d-flex  justify-content-end align-items-center">
+                    <motion.i
+                      className="fas fa-users text-c-brown icons f-80 m-r-5"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </div>
+          <div className="grid-item">
+            <Card className="customcard bg-color-2 pointer" onClick={() => handleCardClick('meeting')}>
+              <Card.Body>
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <div>
+                      <h6 className="mb-4">Total meeting's</h6>
+                      <div className="row d-flex align-items-center">
+                        <div className="col-9">
+                          <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                            <i className={`text-c-blue f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalMeeting}</i>
+                          </h3>
                         </div>
                       </div>
-                    </Col>
-                    <Col className="d-flex  justify-content-end align-items-center">
-                      <motion.i
-                        className="fas fa-handshake text-c-blue icons f-80 m-r-5"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                      />
-                      {/* <i className="fas fa-handshake text-c-blue icons f-80 m-r-5"></i> */}
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col sm={12} md={6} xl={6} xxl={6}>
-              <Card className="customcard bg-color-3 pointer" onClick={() => handleCardClick('meeting')}>
-                <Card.Body>
-                  <Row>
-                    <Col className="d-flex align-items-center">
-                      <div>
-                        <h6 className="mb-4">Total tasks</h6>
-                        <div className="row d-flex align-items-center">
-                          <div className="col-9">
-                            <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                              <i className={`text-c-purple f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalTask}</i>
-                            </h3>
-                          </div>
+                    </div>
+                  </Col>
+                  <Col className="d-flex  justify-content-end align-items-center">
+                    <motion.i
+                      className="fas fa-handshake text-c-blue icons f-80 m-r-5"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </div>
+          <div className="grid-item">
+            <Card className="customcard bg-color-2 pointer" onClick={() => handleCardClick('projects')}>
+              <Card.Body>
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <div>
+                      <h6 className="mb-4">Total Project's</h6>
+                      <div className="row d-flex align-items-center">
+                        <div className="col-9">
+                          <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                            <i className={`text-c-voilet2 f-40 m-r-5`}>{projectDataList?.Result?.length}</i>
+                          </h3>
                         </div>
                       </div>
-                    </Col>
-                    <Col className="d-flex justify-content-end align-items-center">
-                      <motion.i
-                        className="fas fa-list text-c-purple icons f-80 m-r-5"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                      />
-                      {/* <i className="fas fa-list text-c-purple icons f-80 m-r-5"></i> */}
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col sm={12} md={6} xl={6} xxl={6}>
-              <Card className="customcard bg-color-4 pointer" onClick={() => handleCardClick('completed')}>
-                <Card.Body>
-                  <Row>
-                    <Col className="d-flex align-items-center">
-                      <div>
-                        <h6 className="mb-4">Total completed tasks</h6>
-                        <div className="row d-flex align-items-center">
-                          <div className="col-9">
-                            <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                              <i className={`text-c-green f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalComplete}</i>
-                            </h3>
-                          </div>
+                    </div>
+                  </Col>
+                  <Col className="d-flex  justify-content-end align-items-center">
+                    <motion.i
+                      className="text-c-voilet2 icons f-67 m-r-5"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                      children={<FaProjectDiagram />}
+                    />
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </div>
+          <div className="grid-item">
+            <Card className="customcard bg-color-3 pointer" onClick={() => handleCardClick('meeting')}>
+              <Card.Body>
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <div>
+                      <h6 className="mb-4">Total tasks</h6>
+                      <div className="row d-flex align-items-center">
+                        <div className="col-9">
+                          <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                            <i className={`text-c-purple f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalTask}</i>
+                          </h3>
                         </div>
                       </div>
-                    </Col>
-                    <Col className="d-flex  justify-content-end align-items-center">
-                      <DonutChart
-                        percentage={calculatePercentage(stats?.TotalComplete, stats?.TotalTask).toFixed(2)}
-                        PercentageColor="#098a30"
-                      />
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col sm={12} md={6} xl={6} xxl={6}>
-              <Card className="customcard  bg-color-5 pointer" onClick={() => handleCardClick('panding')}>
-                <Card.Body>
-                  <Row>
-                    <Col className="d-flex align-items-center">
-                      <div>
-                        <h6 className="mb-4">Total Panding tasks</h6>
-                        <div className="row d-flex align-items-center">
-                          <div className="col-9">
-                            <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                              <i className={`text-c-pink f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalPending}</i>
-                            </h3>
-                          </div>
+                    </div>
+                  </Col>
+                  <Col className="d-flex justify-content-end align-items-center">
+                    <motion.i
+                      className="fas fa-list text-c-purple icons f-80 m-r-5"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </div>
+          <div className="grid-item">
+            <Card className="customcard bg-color-4 pointer" onClick={() => handleCardClick('completed')}>
+              <Card.Body>
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <div>
+                      <h6 className="mb-4">Total completed tasks</h6>
+                      <div className="row d-flex align-items-center">
+                        <div className="col-9">
+                          <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                            <i className={`text-c-green f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalComplete}</i>
+                          </h3>
                         </div>
                       </div>
-                    </Col>
-                    <Col className="d-flex  justify-content-end align-items-center">
-                      <DonutChart
-                        percentage={calculatePercentage(stats?.TotalPending, stats?.TotalTask).toFixed(2)}
-                        PercentageColor="#791864"
-                      />
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col sm={12} md={6} xl={6} xxl={6}>
-              <Card className="customcard bg-color-6 pointer" onClick={() => handleCardClick('inprogress')}>
-                <Card.Body>
-                  <Row>
-                    <Col className="d-flex align-items-center">
-                      <div>
-                        <h6 className="mb-4">Total tasks Inprogress</h6>
-                        <div className="row d-flex align-items-center">
-                          <div className="col-9">
-                            <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                              <i className={`text-c-default f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalInprogress}</i>
-                            </h3>
-                          </div>
+                    </div>
+                  </Col>
+                  <Col className="d-flex  justify-content-end align-items-center">
+                    <DonutChart
+                      percentage={calculatePercentage(stats?.TotalComplete, stats?.TotalTask).toFixed(2)}
+                      PercentageColor="#098a30"
+                    />
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </div>
+          <div className="grid-item">
+            <Card className="customcard  bg-color-5 pointer" onClick={() => handleCardClick('panding')}>
+              <Card.Body>
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <div>
+                      <h6 className="mb-4">Total Panding tasks</h6>
+                      <div className="row d-flex align-items-center">
+                        <div className="col-9">
+                          <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                            <i className={`text-c-pink f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalPending}</i>
+                          </h3>
                         </div>
                       </div>
-                    </Col>
-                    <Col className="d-flex  justify-content-end align-items-center">
-                      <DonutChart
-                        percentage={calculatePercentage(stats?.TotalInprogress, stats?.TotalTask).toFixed(2)}
-                        PercentageColor="#f4a100"
-                      />
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-        <Col sm={12} md={6} lg={6} xl={6} xxl={6}>
+                    </div>
+                  </Col>
+                  <Col className="d-flex  justify-content-end align-items-center">
+                    <DonutChart
+                      percentage={calculatePercentage(stats?.TotalPending, stats?.TotalTask).toFixed(2)}
+                      PercentageColor="#791864"
+                    />
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </div>
+          <div className="grid-item">
+            <Card className="customcard bg-color-6 pointer" onClick={() => handleCardClick('inprogress')}>
+              <Card.Body>
+                <Row>
+                  <Col className="d-flex align-items-center">
+                    <div>
+                      <h6 className="mb-4">Total tasks Inprogress</h6>
+                      <div className="row d-flex align-items-center">
+                        <div className="col-9">
+                          <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                            <i className={`text-c-default f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalInprogress}</i>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col className="d-flex  justify-content-end align-items-center">
+                    <DonutChart
+                      percentage={calculatePercentage(stats?.TotalInprogress, stats?.TotalTask).toFixed(2)}
+                      PercentageColor="#f4a100"
+                    />
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </div>
+        </div>
+        <div className="grid-item">
           <Card className="calander-card p-3 m-0">
             <TaskCalendar extra="dashboard-cal" eventsData={events} handleEvets={handleEvents} handleSelectedEvent={setSelectedEvents} />
           </Card>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       <Modal size="xl" show={showInfoDetails} animation={false}>
         <Modal.Header>
@@ -323,7 +351,10 @@ const DashDefault = () => {
             <h5>Meeting Details</h5>
             <img src={pdf_i} width={30} className="mr-1 pointer" alt="" onClick={exportPdf} />
           </Modal.Title>
-          <span className='pointer' onClick={handleClose}> X </span>
+          <span className="pointer" onClick={handleClose}>
+            {' '}
+            X{' '}
+          </span>
         </Modal.Header>
         <Modal.Body className="p-4" ref={pdfContent}>
           <Row>
@@ -449,16 +480,20 @@ const DashDefault = () => {
           <Modal.Title className="dashboardModalHeader">
             <h5>Events for this day </h5>
           </Modal.Title>
-          <span className='pointer' onClick={handleClose}> X </span>
+          <span className="pointer" onClick={handleClose}>
+            X
+          </span>
         </Modal.Header>
         <Modal.Body className="p-4" ref={pdfContent}>
           {selectedEvents.length > 0 && (
             <div className="events">
-              <ul className="event-list">
+              <ul className="event-list p-0">
                 {selectedEvents.map((event, index) => (
                   <li key={event.id} className="item pointer" onClick={() => setSelectedEventId(event)}>
-                    <span>{index + 1}</span>
-                    {event.title}
+                    <div className="d-flex align-items-center">
+                      <span>{index + 1}.</span>
+                      <p className="m-0 p-1">{event.title}</p>
+                    </div>
                   </li>
                 ))}
               </ul>

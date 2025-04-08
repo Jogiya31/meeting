@@ -6,7 +6,7 @@ import { userActions } from '../../store/user/userSlice';
 import { MultiSelect } from 'react-multi-select-component';
 import { settingsActions } from '../../store/settings/settingSlice';
 import Swal from 'sweetalert2';
-import { meetingsActions } from 'store/mom/momSlice';
+import { meetingsActions } from '../../store/mom/momSlice';
 
 const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => {
   const Role = localStorage.getItem('role');
@@ -181,6 +181,19 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
   }, [formFields]);
 
   const handleUserFilter = (newSelected) => {
+    const removedUsers = userFilter.filter((prev) => !newSelected.some((curr) => curr.value === prev.value));
+    removedUsers.forEach((removed) => {
+      const existingRecord = initialFields.find((field) => field.userId.toString() === removed.value.toString());
+      if (existingRecord?.AttendanceId) {
+        // Call delete API if user was previously saved
+        dispatch(
+          meetingsActions.deleteAttendanceInfo({
+            AttendanceId: existingRecord.AttendanceId
+          })
+        );
+      }
+    });
+
     setuserFilter(newSelected);
 
     // Extract selected user IDs
