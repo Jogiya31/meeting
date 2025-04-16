@@ -147,7 +147,7 @@ const DashDefault = () => {
       <div className="dashboard-cards grid-wrapper">
         <div className="grid-inner">
           <div className="grid-item">
-            <Card className="customcard bg-color-7 pointer" onClick={() => handleCardClick('user')}>
+            <Card className="customcard mb-1 bg-color-7 pointer" onClick={() => handleCardClick('user')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -175,7 +175,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard bg-color-2 pointer" onClick={() => handleCardClick('meeting')}>
+            <Card className="customcard mb-1 bg-color-2 pointer" onClick={() => handleCardClick('meeting')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -203,7 +203,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard bg-color-2 pointer" onClick={() => handleCardClick('projects')}>
+            <Card className="customcard mb-1 bg-color-12 pointer" onClick={() => handleCardClick('projects')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -232,7 +232,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard bg-color-3 pointer" onClick={() => handleCardClick('meeting')}>
+            <Card className="customcard mb-1 bg-color-3 pointer" onClick={() => handleCardClick('meeting')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -260,7 +260,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard bg-color-4 pointer" onClick={() => handleCardClick('completed')}>
+            <Card className="customcard mb-1 bg-color-4 pointer" onClick={() => handleCardClick('completed')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -286,7 +286,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard  bg-color-5 pointer" onClick={() => handleCardClick('panding')}>
+            <Card className="customcard mb-1  bg-color-5 pointer" onClick={() => handleCardClick('panding')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -312,7 +312,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard bg-color-6 pointer" onClick={() => handleCardClick('inprogress')}>
+            <Card className="customcard mb-1 bg-color-6 pointer" onClick={() => handleCardClick('inprogress')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -339,7 +339,7 @@ const DashDefault = () => {
           </div>
         </div>
         <div className="grid-item">
-          <Card className="calander-card p-3 m-0">
+          <Card className="calander-card p-3 mt-3 mb-1">
             <TaskCalendar extra="dashboard-cal" eventsData={events} handleEvets={handleEvents} handleSelectedEvent={setSelectedEvents} />
           </Card>
         </div>

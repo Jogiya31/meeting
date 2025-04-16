@@ -89,13 +89,13 @@
       &:first-child {
         top: -100px;
         right: -100px;
-        background: $theme-color;
+        background: $theme-color2;
       }
 
       &:last-child {
         left: -100px;
         bottom: -100px;
-        background: $theme-color2;
+        background: $theme-color4;
       }
 
       &.s {
