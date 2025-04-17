@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form, Pagination, InputGroup } from 'react-bootstrap';
-import avatar2 from '../../assets/images/user/avatar-2.jpg';
+import female_i from '../../assets/images/user/female.jpg';
+import male_i from '../../assets/images/user/male.jpg';
 import api from '../../api';
 import edit from '../../assets/images/edit.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../../store/user/userSlice';
 import { settingsActions } from '../../store/settings/settingSlice';
-import { FaSort } from 'react-icons/fa';
+import { FaSort, FaUserCircle, FaUserEdit } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
+import Swal from 'sweetalert2';
 
 const UserList = () => {
   const dispatch = useDispatch();
@@ -43,9 +45,9 @@ const UserList = () => {
     AssociatedOfficerId: '',
     ServiceDate: '',
     Mobile: '',
-    Status: '0',
+    Status: 1,
     Gender: '',
-    ImgPath: avatar2,
+    ImgPath: male_i,
     CreatedBy: Role
   });
 
@@ -70,7 +72,14 @@ const UserList = () => {
 
   useEffect(() => {
     if (userList) {
-      setData(userList?.Result || []);
+      const updatedData = userList?.Result.map((item) => {
+        const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+        return {
+          ...item,
+          AssociatedOfficer: officer ? officer.UserName : ''
+        };
+      });
+      setData(updatedData || []);
     }
   }, [userList]);
 
@@ -139,7 +148,7 @@ const UserList = () => {
     setcurrentDate(date);
     if (date instanceof Date && !isNaN(date)) {
       setFormData({ ...formData, ServiceDate: date || '' });
-    }else{
+    } else {
       setFormData({ ...formData, ServiceDate: '' });
     }
   };
@@ -200,10 +209,13 @@ const UserList = () => {
         CreatedBy: Role
       });
       if (selectedUser?.ServiceDate) {
-        const parsedDate = moment(selectedUser?.ServiceDate, 'DD-MM-YYYY HH:mm:ss').toDate();
-        setcurrentDate(parsedDate);
+        if (selectedUser.ServiceDate === '01-01-1900 00:00:00') {
+          setcurrentDate(null);
+        } else {
+          const parsedDate = moment(selectedUser?.ServiceDate, 'DD-MM-YYYY HH:mm:ss').toDate();
+          setcurrentDate(parsedDate);
+        }
       }
-    } else {
     }
   }, [selectedUser]);
 
@@ -217,20 +229,46 @@ const UserList = () => {
     { id: 'Status', label: 'Status' }
   ];
 
+  const handleToggleStatus = (user) => {
+    const updatedData = {
+      UserName: user.UserName,
+      DesignationId: user.DesignationId,
+      EmployementId: user.EmployementId,
+      EmployeementDivisionId: user.EmployeementDivisionId,
+      OrganizationId: user.OrganizationId,
+      AssociatedOfficerId: user.AssociatedOfficerId,
+      serviceDate: user.ServiceDate || '',
+      Mobile: user.Mobile,
+      Gender: user.Gender,
+      Status: user.Status === '1' ? 0 : 1,
+      ImgPath: user.ImgPath || '',
+      UserId: user.UserId,
+      ModifyBy: Role
+    };
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to change status for this item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        api.post('/Update_User', updatedData).then(() => {
+          getUserList();
+        });
+      }
+    });
+  };
+
   // Filter rows based on search input
   const filteredRows = useMemo(() => {
     return data?.filter((row) => {
       const searchLower = search.toLowerCase();
 
       // List of keys to search in
-      const searchableKeys = [
-        'UserName',
-        'OrganisationTitle',
-        'EmployeeDivisionTitle',
-        'EmployementTitle',
-        'DesignationTitle',
-        'AssociatedOfficer'
-      ];
+      const searchableKeys = ['UserName', 'OrganisationTitle', 'EmployeeDivisionTitle', 'EmployementTitle', 'DesignationTitle','AssociatedOfficer'];
 
       // Check if any of the selected fields contain the search term
       return searchableKeys.some((key) => row[key] && row[key].toLowerCase().includes(searchLower));
@@ -292,7 +330,7 @@ const UserList = () => {
         <Col>
           <Card className="Recent-Users widget-focus-lg header-info">
             <Card.Header className="d-flex justify-content-between align-items-center py-2">
-              <Card.Title as="h5">List of Resourses</Card.Title>
+              <Card.Title as="h5">List of Resource</Card.Title>
               <CardSubtitle className="user-table-right">
                 <input
                   type="text"
@@ -327,7 +365,12 @@ const UserList = () => {
                     return (
                       <tr className="unread" key={`${index}-${Math.random()}`}>
                         <td>
-                          <img className="rounded-circle" style={{ width: '40px' }} src={item.ImgPath || avatar2} alt="activity-user" />
+                          <img
+                            className="rounded-circle"
+                            style={{ width: '40px' }}
+                            src={item.ImgPath || item.Gender === 'Male' ? male_i : female_i}
+                            alt="activity-user"
+                          />
                         </td>
                         <td>
                           <h6 className="mb-1">{item.UserName}</h6>
@@ -342,18 +385,30 @@ const UserList = () => {
                           <p className="m-0">{item.EmployementTitle}</p>
                         </td>
                         <td>
-                          <p className="m-0">
-                            {userList?.Result.map((user) => (user.UserId === item.AssociatedOfficerId ? <span>{user.UserName}</span> : ''))}
-                          </p>
+                          <p className="m-0">{item.AssociatedOfficer}</p>
                         </td>
                         <td>
                           <h6 className="mb-1">{item.OrganisationTitle}</h6>
                         </td>
                         <td>
                           {item.Status === '1' ? (
-                            <label className="label theme-bg text-white f-12">In service</label>
+                            <label
+                              className="label theme-bg text-white f-12 pointer"
+                              onClick={() => {
+                                handleToggleStatus(item); // Set selected user
+                              }}
+                            >
+                              In service
+                            </label>
                           ) : (
-                            <label className="label theme-bg2 text-white f-12">Not in Service</label>
+                            <label
+                              className="label theme-bg2 text-white f-12 pointer"
+                              onClick={() => {
+                                handleToggleStatus(item); // Set selected user
+                              }}
+                            >
+                              Not in Service
+                            </label>
                           )}
                         </td>
                         <td>
@@ -397,7 +452,17 @@ const UserList = () => {
       <Modal size="xl" show={showregister} onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <h5>{selectedUser ? 'Update User Details' : 'Add User'}</h5>
+            <h5>
+              {selectedUser ? (
+                <>
+                  <FaUserEdit className="f-26 text-primary" /> Update User Details
+                </>
+              ) : (
+                <>
+                  <FaUserCircle className="f-26 text-primary" /> Add User
+                </>
+              )}
+            </h5>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -427,12 +492,20 @@ const UserList = () => {
                     onChange={handleChange}
                     isInvalid={!!errors.DesignationId}
                   >
-                    <option value="" disabled>
-                      Select designation...
-                    </option>
-                    {designationDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
-                      <option value={item.DesignationId}>{item.DesignationTitle}</option>
-                    ))}
+                    <option value="">Select designation...</option>
+                    {Array.isArray(designationDataList?.Result)
+                      ? designationDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.DesignationId} value={item.DesignationId}>
+                            {item.DesignationTitle}
+                          </option>
+                        ))
+                      : Object.values(designationDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.DesignationId} value={item.DesignationId}>
+                              {item.DesignationTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{errors.DesignationId}</Form.Control.Feedback>
                 </Form.Group>
@@ -449,12 +522,20 @@ const UserList = () => {
                     onChange={handleChange}
                     isInvalid={!!errors.EmployementId}
                   >
-                    <option value="" disabled>
-                      Select type...
-                    </option>
-                    {employeementDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
-                      <option value={item.EmployeementId}>{item.EmployeementTitle}</option>
-                    ))}
+                    <option value="">Select type...</option>
+                    {Array.isArray(employeementDataList?.Result)
+                      ? employeementDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.EmployeementId} value={item.EmployeementId}>
+                            {item.EmployeementTitle}
+                          </option>
+                        ))
+                      : Object.values(employeementDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.EmployeementId} value={item.EmployeementId}>
+                              {item.EmployeementTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{errors.EmployementId}</Form.Control.Feedback>
                 </Form.Group>
@@ -469,12 +550,20 @@ const UserList = () => {
                     onChange={handleChange}
                     isInvalid={!!errors.EmployeementDivisionId}
                   >
-                    <option value="" disabled>
-                      Select division...
-                    </option>
-                    {divisionDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
-                      <option value={item.DivisionId}>{item.DivisionTitle}</option>
-                    ))}
+                    <option value="">Select division...</option>
+                    {Array.isArray(divisionDataList?.Result)
+                      ? divisionDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.DivisionId} value={item.DivisionId}>
+                            {item.DivisionTitle}
+                          </option>
+                        ))
+                      : Object.values(divisionDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.DivisionId} value={item.DivisionId}>
+                              {item.DivisionTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{errors.EmployeementDivisionId}</Form.Control.Feedback>
                 </Form.Group>
@@ -485,12 +574,20 @@ const UserList = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Organization</Form.Label>
                   <Form.Select name="OrganizationId" value={formData.OrganizationId} className="custom-form-select" onChange={handleChange}>
-                    <option value="" disabled>
-                      Select division...
-                    </option>
-                    {organizationDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
-                      <option value={item.OrganisationId}>{item.OrganisationTitle}</option>
-                    ))}
+                    <option value="">Select division...</option>
+                    {Array.isArray(organizationDataList?.Result)
+                      ? organizationDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.OrganisationId} value={item.OrganisationId}>
+                            {item.OrganisationTitle}
+                          </option>
+                        ))
+                      : Object.values(organizationDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.OrganisationId} value={item.OrganisationId}>
+                              {item.OrganisationTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{errors.OrganisationId}</Form.Control.Feedback>
                 </Form.Group>
@@ -521,12 +618,20 @@ const UserList = () => {
                     className="custom-form-select"
                     onChange={handleChange}
                   >
-                    <option value="" disabled>
-                      Select officer...
-                    </option>
-                    {userList?.Result?.filter((item) => item.Status === '1' && item.EmployementId === '1').map((item) => (
-                      <option value={item.UserId}>{item.UserName}</option>
-                    ))}
+                    <option value="">Select officer...</option>
+                    {Array.isArray(userList?.Result)
+                      ? userList.Result.filter((item) => item.Status === '1' && item.EmployementId === '1').map((item) => (
+                          <option key={item.UserId} value={item.UserId}>
+                            {item.UserName}
+                          </option>
+                        ))
+                      : Object.values(organizationDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.UserId} value={item.UserId}>
+                              {item.UserName}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{errors.AssociatedOfficerId}</Form.Control.Feedback>
                 </Form.Group>
@@ -552,9 +657,7 @@ const UserList = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Gender</Form.Label>
                   <Form.Select name="Gender" value={formData.Gender} className="custom-form-select" onChange={handleChange}>
-                    <option value="" disabled>
-                      Select Gender...
-                    </option>
+                    <option value="">Select Gender...</option>
                     {genderDataList?.map((item) => (
                       <option value={item.GenderTitle}>{item.GenderTitle}</option>
                     ))}
@@ -562,7 +665,7 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.GenderTitle}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col>
+              {/* <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Status</Form.Label>
                   <div>
@@ -586,9 +689,8 @@ const UserList = () => {
                     />
                   </div>
                 </Form.Group>
-              </Col>
-            </Row>
-            <Row>
+              </Col> */}
+
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Upload Image</Form.Label>

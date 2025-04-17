@@ -11,7 +11,8 @@ import Attendance from './attendance';
 import meetingImage from '../../assets/images/meeting.png';
 import { MultiSelect } from 'react-multi-select-component';
 import Textloading from '../../components/Loader/loading';
-import avatar2 from '../../assets/images/user/avatar-2.jpg';
+import male_i from '../../assets/images/user/male.jpg';
+import female_i from '../../assets/images/user/female.jpg';
 import axios from 'axios';
 import { useStore } from '../../contexts/DataContext';
 import { meetingsActions } from '../../store/mom/momSlice';
@@ -343,7 +344,6 @@ const NewPoint = () => {
       if (isValid) {
         try {
           const discussionRequests = formFields.map((item) => {
-
             const requestPayload = {
               MeetingId: meetingId,
               Description: item.task,
@@ -835,7 +835,7 @@ const NewPoint = () => {
           <Row>
             <Col md={5}>
               <div className="userInfo-left">
-                <img src={selectedUser?.ImgPath || avatar2} alt="userImage" />
+                <img src={selectedUser?.ImgPath || selectedUser?.Gender === 'Male' ? male_i : female_i} alt="userImage" />
                 <h4>{selectedUser?.UserName}</h4>
                 <span>{selectedUser?.DesignationTitle}</span>
               </div>

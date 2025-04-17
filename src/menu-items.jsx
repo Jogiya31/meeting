@@ -2,7 +2,7 @@ const menuItems = {
   items: [
     {
       id: 'menu',
-      title: 'Menus',
+      title: '',
       type: 'group',
       icon: 'icon-pages',
       children: [
@@ -66,14 +66,14 @@ const menuItems = {
           children: [
             {
               id: 'todays_Point',
-              title: 'New Meeting',
+              title: 'Create',
               type: 'item',
               url: '/meetings/new',
               display: true
             },
             {
               id: 'view_history',
-              title: 'View Meetings',
+              title: 'Status',
               type: 'item',
               url: '/meetings/view',
               display: true

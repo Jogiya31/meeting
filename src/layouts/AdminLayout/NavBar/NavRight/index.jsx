@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ListGroup, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import avatar1 from '../../../../assets/images/user/avatar-2.jpg';
+import male_i from '../../../../assets/images/user/male.jpg';
 const NavRight = () => {
   const [listOpen, setListOpen] = useState(false);
 
@@ -15,7 +15,7 @@ const NavRight = () => {
             </Dropdown.Toggle>
             <Dropdown.Menu align="end" className="profile-notification">
               <div className="pro-head">
-                <img src={avatar1} className="img-radius" alt="User Profile" />
+                <img src={male_i} className="img-radius" alt="User Profile" />
                 <span>DAID ADMIN</span>
                 <Link to="#" className="dud-logout" title="Logout">
                   <i className="feather icon-log-out" />

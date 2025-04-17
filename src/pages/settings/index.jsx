@@ -4,6 +4,7 @@ import { Button, Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { settingsActions } from 'store/settings/settingSlice';
 import Swal from 'sweetalert2';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const Index = () => {
   const dispatch = useDispatch();
@@ -90,7 +91,7 @@ const Index = () => {
   const handleEdit = (list, setList, id) => {
     Swal.fire({
       title: 'Update',
-      text: `Caution! Updating this information may alter its original meaning. Proceed carefully.`,
+      text: `Click on proceed button, If you want yo update the information`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -126,39 +127,38 @@ const Index = () => {
   };
 
   const handleDelete = async (list, setList, updateAction, id, fieldName) => {
-
     Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to change status for this item?",
-      icon: "warning",
+      title: 'Are you sure?',
+      text: 'Do you want to change status for this item?',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, change it!"
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!'
     }).then(async (result) => {
       if (result.isConfirmed) {
         const updatedItem = list.find((item) => item.id === id);
         if (!updatedItem) return;
-  
+
         const payload = {
           [fieldName + 'Id']: updatedItem.id,
           [fieldName + 'Title']: updatedItem.title,
           ModifyBy: Role,
           Status: updatedItem.status === 1 ? '0' : '1' // Ensure it's a string
         };
-  
+
         try {
           await dispatch(updateAction(payload));
-  
+
           // Create a new array reference to trigger re-render
           setList((prevList) => prevList.map((item) => (item.id === id ? { ...item, status: updatedItem.status === 1 ? 0 : 1 } : item)));
         } catch (error) {
           console.error('Failed to update item:', error);
         }
         Swal.fire({
-          title: "Updated!",
-          text: "Selected item status has been updated.",
-          icon: "success"
+          title: 'Updated!',
+          text: 'Selected item status has been updated.',
+          icon: 'success'
         });
       }
     });
@@ -222,7 +222,7 @@ const Index = () => {
           </div>
           {list?.map((item) => (
             <Row key={item.id}>
-              <Col md={10} sm={10}>
+              <Col md={9} sm={9}>
                 <div className={`d-flex justify-content-between custom-cards ${item.status ? '' : 'op-5'}`}>
                   {item.isEditing ? (
                     <input
@@ -255,15 +255,17 @@ const Index = () => {
                   {item.status ? (
                     <span
                       title="Visible"
-                      className="feather icon-eye theme-bg text-white f-14 fw-bolder p-2 ml-1 pointer"
+                      className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
                       onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
-                    />
+                    >
+                      <FaCheckCircle />
+                    </span>
                   ) : (
                     <span
                       title="Not Visible"
-                      className="feather icon-eye-off hold-bg text-white f-14 fw-bolder p-2 ml-1 pointer"
+                      className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
                       onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
-                    />
+                    ><FaTimesCircle /></span>
                   )}
                 </div>
               </Col>

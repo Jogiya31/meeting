@@ -40,37 +40,35 @@ const DashDefault = () => {
   }, []);
 
   useEffect(() => {
-    if (MeetingLists?.MeetingDetails?.length > 0) {
-      // Group meetings by date
+    if (Array.isArray(MeetingLists?.MeetingDetails) && MeetingLists.MeetingDetails.length > 0) {
       const groupedEvents = MeetingLists.MeetingDetails.reduce((acc, row) => {
-        const formattedDate = moment(row.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD');
+        if (Number(row.Draft) === 4) {
+          const formattedDate = moment(row?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD');
 
-        if (!acc[formattedDate]) {
-          acc[formattedDate] = [];
+          if (!acc[formattedDate]) {
+            acc[formattedDate] = [];
+          }
+
+          acc[formattedDate].push({
+            id: row.MeetingId,
+            title: row.MeetingTitle,
+            start: row.MeetingDate,
+            description: row.MeetingDescription
+          });
         }
-
-        acc[formattedDate].push({
-          id: row.MeetingId,
-          title: row.MeetingTitle,
-          start: row.MeetingDate,
-          description: row.MeetingDescription
-        });
 
         return acc;
       }, {});
 
-      // Convert grouped data to events
+      // Only convert groups that have events
       setEvents(
-        Object.keys(groupedEvents).map((date) => {
-          const eventsForDate = groupedEvents[date];
-          return {
-            id: eventsForDate[0].id, // Use date as ID
-            title: eventsForDate.length === 1 ? eventsForDate[0].title : `${eventsForDate.length} Events`, // Show title if 1, count if >1
-            start: date,
-            backgroundColor: '#098a30',
-            events: eventsForDate // Store full event details for later use
-          };
-        })
+        Object.entries(groupedEvents).map(([date, eventsForDate]) => ({
+          id: eventsForDate[0].id,
+          title: eventsForDate.length === 1 ? eventsForDate[0].title : `${eventsForDate.length} Events`,
+          start: date,
+          backgroundColor: '#098a30',
+          events: eventsForDate
+        }))
       );
     }
   }, [MeetingLists]);
@@ -152,7 +150,7 @@ const DashDefault = () => {
                 <Row>
                   <Col className="d-flex align-items-center">
                     <div>
-                      <h6 className="mb-4">Total Employee's</h6>
+                      <h6 className="mb-4">No. of Employes</h6>
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -180,7 +178,7 @@ const DashDefault = () => {
                 <Row>
                   <Col className="d-flex align-items-center">
                     <div>
-                      <h6 className="mb-4">Total meeting's</h6>
+                      <h6 className="mb-4">No. of meetings</h6>
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -208,7 +206,7 @@ const DashDefault = () => {
                 <Row>
                   <Col className="d-flex align-items-center">
                     <div>
-                      <h6 className="mb-4">Total Project's</h6>
+                      <h6 className="mb-4">No. of Projects</h6>
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -237,7 +235,7 @@ const DashDefault = () => {
                 <Row>
                   <Col className="d-flex align-items-center">
                     <div>
-                      <h6 className="mb-4">Total tasks</h6>
+                      <h6 className="mb-4">No. of tasks</h6>
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -265,7 +263,7 @@ const DashDefault = () => {
                 <Row>
                   <Col className="d-flex align-items-center">
                     <div>
-                      <h6 className="mb-4">Total completed tasks</h6>
+                      <h6 className="mb-4">No. of completed tasks</h6>
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -291,7 +289,7 @@ const DashDefault = () => {
                 <Row>
                   <Col className="d-flex align-items-center">
                     <div>
-                      <h6 className="mb-4">Total Panding tasks</h6>
+                      <h6 className="mb-4">No. of Panding tasks</h6>
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
@@ -317,7 +315,7 @@ const DashDefault = () => {
                 <Row>
                   <Col className="d-flex align-items-center">
                     <div>
-                      <h6 className="mb-4">Total tasks Inprogress</h6>
+                      <h6 className="mb-4">No. of tasks Inprogress</h6>
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
