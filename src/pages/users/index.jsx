@@ -71,17 +71,20 @@ const UserList = () => {
   }, []);
 
   useEffect(() => {
-    if (userList) {
-      const updatedData = userList?.Result.map((item) => {
+    if (userList && Array.isArray(userList.Result)) {
+      const updatedData = userList.Result.map((item) => {
         const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
         return {
           ...item,
           AssociatedOfficer: officer ? officer.UserName : ''
         };
       });
-      setData(updatedData || []);
+      setData(updatedData);
+    } else {
+      setData([]); // optional fallback
     }
   }, [userList]);
+  
 
   const handleClose = () => {
     setShowregister(false);
@@ -235,13 +238,13 @@ const UserList = () => {
       DesignationId: user.DesignationId,
       EmployementId: user.EmployementId,
       EmployeementDivisionId: user.EmployeementDivisionId,
-      OrganizationId: user.OrganizationId,
+      OrganizationId: user.OrganisationId,
       AssociatedOfficerId: user.AssociatedOfficerId,
       serviceDate: user.ServiceDate || '',
       Mobile: user.Mobile,
       Gender: user.Gender,
       Status: user.Status === '1' ? 0 : 1,
-      ImgPath: user.ImgPath || '',
+      ImgPath: user.ImgPath,
       UserId: user.UserId,
       ModifyBy: Role
     };
