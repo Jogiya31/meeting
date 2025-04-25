@@ -10,10 +10,15 @@ const TaskCalendar = ({ extra, eventsData, handleEvets, handleSelectedEvent }) =
   const navigate = useNavigate();
   const { addInStore } = useStore();
   const [events, setEvents] = useState([]);
+  const [currentMode, setCurrentMode] = useState(localStorage.getItem('mode'));
 
   useEffect(() => {
     setEvents(eventsData);
   }, [eventsData]);
+
+  useEffect(() => {
+    setCurrentMode(localStorage.getItem('mode'));
+  }, [localStorage.getItem('mode')]);
 
   // Handle date click (Add Task)
   const handleDateClick = (info) => {
@@ -25,7 +30,8 @@ const TaskCalendar = ({ extra, eventsData, handleEvets, handleSelectedEvent }) =
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Create'
+      confirmButtonText: 'Create',
+      theme: currentMode
     }).then((result) => {
       if (result.isConfirmed) {
         handleSaveOrUpdateTask();

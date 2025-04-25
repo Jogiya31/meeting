@@ -1,14 +1,15 @@
 import React from 'react';
-import { Card} from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import Breadcrumb from '../../layouts/AdminLayout/Breadcrumb';
 import AuthLogin from './JWTLogin';
-import logo from "../../assets/images/logo.png"
+import logo from '../../assets/images/logo.png';
+import { useTheme } from '../../contexts/themeContext';
 
 const Signin1 = () => {
+  const { mode } = useTheme();
   return (
     <React.Fragment>
-      <Breadcrumb />
-      <div className="auth-wrapper">
+      <div className={`auth-wrapper ${mode}`}>
         <div className="auth-content">
           <div className="auth-bg">
             <span className="r" />
@@ -19,7 +20,7 @@ const Signin1 = () => {
           <Card className="borderless text-center">
             <Card.Body>
               <div className="mb-4">
-                <img src={logo} alt='' width={70} />
+                <img src={logo} alt="" width={70} />
               </div>
               <AuthLogin />
             </Card.Body>

@@ -172,6 +172,28 @@ export const UpdateProject = (data) => {
   });
 };
 
+/////////////////// Salutation api  ///////////////////
+export const GetSalutationDetails = () => {
+  const url = `/GetSalutationDetails`;
+  return axiosClient().get(url, {
+    'Content-Type': 'application/json'
+  });
+};
+export const AddSalutationDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Save_Salutation`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const UpdateSalutation = (data) => {
+  const payload = data.payload;
+  const url = `/Update_Salutation`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+
 /////////////////// Meetings api  ///////////////////
 export const getMeetings = () => {
   const url = `/GetMeetingDiscussionAttendanceDetails`;
@@ -214,7 +236,6 @@ export const addDiscussionDetails = (data) => {
     'Content-Type': 'application/json'
   });
 };
-
 export const updateDiscussionDetails = (data) => {
   const payload = data.payload;
   const url = `/Update_DiscussionPoint`;
@@ -222,7 +243,6 @@ export const updateDiscussionDetails = (data) => {
     'Content-Type': 'application/json'
   });
 };
-
 export const deleteAttendanceDetails = (data) => {
   const payload = data.payload;
   const url = `/Delete_Attendance`;
@@ -230,7 +250,6 @@ export const deleteAttendanceDetails = (data) => {
     'Content-Type': 'application/json'
   });
 };
-
 export const deleteDiscussionDetails = (data) => {
   const payload = data.payload;
   const url = `/Delete_Discussion`;

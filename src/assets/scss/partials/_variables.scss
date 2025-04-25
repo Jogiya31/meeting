@@ -36,7 +36,7 @@ $light-brown-color: #dabfb7;
 $light-info-color: #aed3e4;
 $light-secondary-color: #555c5f;
 $default-color: #d6d6d6;
-$light-color: #f2f2f2;
+$light-color: #fafafa;
 $dark-color: #37474f;
 $inverse-color: $dark-color;
 $theme-border: #eaeaea;
@@ -57,8 +57,10 @@ $menu-light-text-color: #071525;
 $menu-active-color: #04a9f5;
 
 // dark layout colors
-$dark-layout: #212224;
+$popup-dark-layout: #19191a;
+$dark-layout: #020b1e;
 $dark-layout-font: #adb7be;
+$dark-layout-shadow: #adb7be;
 
 // Menu icon
 $menu-icon-color: $primary-color, #ff5252, #01a9ac, #9575cd, #23b7e5, $warning-color;

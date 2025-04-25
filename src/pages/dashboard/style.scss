@@ -1,114 +1,257 @@
-.dashboard-cal {
-  .fc {
-    .fc-scrollgrid {
-      width: auto;
-      .fc-scrollgrid-section-header {
-        .fc-scroller-harness {
-          background-color: #12429d;
+@import '../../assets/scss/style.scss';
+.light {
+  .dashboard-cal {
+    .fc {
+      .fc-scrollgrid {
+        width: auto;
+        .fc-scrollgrid-section-header {
+          .fc-scroller-harness {
+            background-color: #12429d;
+          }
+        }
+      }
+      .fc-toolbar {
+        margin-bottom: 0.6rem !important;
+        .fc-toolbar-title {
+          font-size: 1.3em !important;
+          margin: 0px;
+        }
+        .fc-button {
+          padding: 0.2rem 0.65em;
+        }
+      }
+      .fc-view-harness.fc-view-harness-active,
+      .fc-dayGridMonth-view.fc-view.fc-daygrid {
+        height: 383px !important;
+      }
+      .fc-col-header {
+        width: 100% !important;
+      }
+      .fc-col-header-cell {
+        background-color: #12429d;
+        .fc-col-header-cell-cushion {
+          color: #fff;
+        }
+      }
+      .fc-daygrid-day.fc-day-today .fc-daygrid-day-top .fc-daygrid-day-number {
+        color: #0c64e7 !important;
+        font-weight: 600;
+      }
+      .fc-daygrid-day-number {
+        color: #201f1f;
+      }
+      .fc-daygrid-body {
+        width: 100% !important;
+        .fc-scrollgrid-sync-table {
+          width: 100% !important;
+          height: 100% !important;
         }
       }
     }
-    .fc-toolbar {
-      margin-bottom: 0.6rem !important;
-      .fc-toolbar-title {
-        font-size: 1.3em !important;
-        margin: 0px;
-      }
-      .fc-button {
-        padding: 0.2rem 0.65em;
-      }
-    }
-    .fc-view-harness.fc-view-harness-active,
-    .fc-dayGridMonth-view.fc-view.fc-daygrid {
-      height: 383px !important;
-    }
-    .fc-col-header {
-      width: 100% !important;
-    }
-    .fc-col-header-cell {
-      background-color: #12429d;
-      .fc-col-header-cell-cushion {
-        color: #fff;
-      }
-    }
-    .fc-daygrid-day.fc-day-today .fc-daygrid-day-top .fc-daygrid-day-number {
-      color: #0c64e7 !important;
-      font-weight: 600;
-    }
-    .fc-daygrid-day-number {
-      color: #201f1f;
-    }
-    .fc-daygrid-body {
-      width: 100% !important;
-      .fc-scrollgrid-sync-table {
-        width: 100% !important;
-        height: 100% !important;
-      }
-    }
   }
-}
 
-.dashboardModalHeader {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-}
+  .dashboardModalHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
 
-.events {
-  .event-list {
-    list-style: none;
-    .item {
-      margin-bottom: 10px;
-      color: #044ebd;
-      border-radius: 25px;
-      box-shadow: 0 0 8px #ccc;
-      :hover {
-        background-color: #79a7ec;
+  .events {
+    .event-list {
+      list-style: none;
+      .item {
+        margin-bottom: 10px;
+        color: #044ebd;
         border-radius: 25px;
-        color: #2b2b2b;
-        transition: ease-out ;
+        box-shadow: 0 0 8px #ccc;
+        :hover {
+          background-color: #79a7ec;
+          border-radius: 25px;
+          color: #2b2b2b;
+          transition: ease-out;
+        }
+        span {
+          padding: 10px;
+          color: #2b2b2b;
+          margin-right: 8px;
+          margin-left: 10px;
+          font-weight: 600;
+        }
       }
-      span {
-        padding: 10px;
-        color: #2b2b2b;
-        margin-right: 8px;
-        margin-left: 10px;
-        font-weight: 600;
+    }
+  }
+
+  .swal2-modal {
+    .swal2-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  .grid-wrapper {
+    width: 100%;
+
+    .grid-inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      @media (max-width: 1440px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      @media (max-width: 992px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 576px) {
+        grid-template-columns: 1fr;
       }
     }
   }
-}
 
-.swal2-modal {
-  .swal2-title {
-    font-size: 1.5rem;
+  .f-67 {
+    font-size: 67px;
   }
 }
 
-.grid-wrapper {
-  width: 100%;
+.dark {
+  .dashboard-cards {
+    .customcard.card {
+      box-shadow: 0 0 5px #d5d5d5;
+      .card-body h6 {
+        font-size: 15px;
+        font-weight: 500;
+        color: $menu-light-text-color;
+      }
+    }
+    .calander-card {
+      box-shadow: 0 0 5px #d5d5d5;
+    }
+  }
+  .calander-card {
+    background-color: $brand-background;
+    color: $dark-layout-font;
+    .dashboard-cal {
+      .fc {
+        .fc-scrollgrid {
+          width: auto;
+          .fc-scrollgrid-section-header {
+            .fc-scroller-harness {
+              background-color: #12429d;
+            }
+          }
+        }
+        .fc-toolbar {
+          margin-bottom: 0.6rem !important;
+          .fc-toolbar-title {
+            font-size: 1.3em !important;
+            margin: 0px;
+          }
+          .fc-button {
+            padding: 0.2rem 0.65em;
+          }
+        }
+        .fc-view-harness.fc-view-harness-active,
+        .fc-dayGridMonth-view.fc-view.fc-daygrid {
+          height: 383px !important;
+        }
+        .fc-col-header {
+          width: 100% !important;
+        }
+        .fc-col-header-cell {
+          background-color: #12429d;
+          .fc-col-header-cell-cushion {
+            color: #fff;
+          }
+        }
+        .fc-daygrid-day.fc-day-today .fc-daygrid-day-top .fc-daygrid-day-number {
+          color: #0c64e7 !important;
+          font-weight: 600;
+        }
+        .fc-daygrid-day-number {
+          color: $dark-layout-font;
+        }
+        .fc-daygrid-body {
+          width: 100% !important;
+          .fc-scrollgrid-sync-table {
+            width: 100% !important;
+            height: 100% !important;
+          }
+        }
+      }
+    }
+  }
 
-  .grid-inner {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    @media (max-width: 1440px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    @media (max-width: 992px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
+  .dashboardModalHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
 
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
+  .events {
+    .event-list {
+      list-style: none;
+      .item {
+        margin-bottom: 10px;
+        color: #044ebd;
+        border-radius: 25px;
+        box-shadow: 0 0 3px #ccc;
+        :hover {
+          background-color: $brand-background;
+          border-radius: 25px;
+          color: $dark-layout-font;
+          transition: ease-out;
+        }
+        span {
+          padding: 10px;
+          color: $dark-layout-font;
+          margin-right: 8px;
+          margin-left: 10px;
+          font-weight: 600;
+        }
+      }
     }
+  }
 
-    @media (max-width: 576px) {
-      grid-template-columns: 1fr;
+  .swal2-modal {
+    .swal2-title {
+      font-size: 1.5rem;
     }
+  }
+
+  .grid-wrapper {
+    width: 100%;
+
+    .grid-inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      @media (max-width: 1440px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      @media (max-width: 992px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 576px) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  .f-67 {
+    font-size: 67px;
   }
 }
 
-.f-67 {
-  font-size: 67px;
+.dark,
+.modal-header {
+  background-color: $popup-dark-layout;
+  color: $dark-layout-font;
 }

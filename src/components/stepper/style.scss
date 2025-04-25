@@ -1,3 +1,5 @@
+@import '../../assets/scss/style.scss';
+
 .stepper-container {
   display: flex;
   align-items: center;
@@ -78,5 +80,18 @@
   .step-label {
     font-weight: 600;
     color: #333;
+  }
+}
+
+
+.dark{
+  .step.completed {
+    .step-number {
+      background: #1c8003;
+    }
+    .step-label {
+      font-weight: 600;
+      color: $dark-layout-font;
+    }
   }
 }

@@ -10,8 +10,10 @@ import NavBadge from '../NavBadge';
 import { ConfigContext } from '../../../../../contexts/ConfigContext';
 import * as actionType from '../../../../../store/actions';
 import useWindowSize from '../../../../../hooks/useWindowSize';
+import { useTheme } from '../../../../../contexts/themeContext';
 
 const NavItem = ({ item }) => {
+  const { mode } = useTheme();
   const windowSize = useWindowSize();
   const configContext = useContext(ConfigContext);
   const { dispatch } = configContext;
@@ -30,6 +32,7 @@ const NavItem = ({ item }) => {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, logout!',
+      theme: mode
     });
 
     if (result.isConfirmed) {
@@ -48,12 +51,7 @@ const NavItem = ({ item }) => {
     );
   } else {
     subContent = (
-      <NavLink
-        to={item.url}
-        className="nav-link"
-        target={itemTarget}
-        onClick={item.id === 'logout' ? handleLogoutClick : null}
-      >
+      <NavLink to={item.url} className="nav-link" target={itemTarget} onClick={item.id === 'logout' ? handleLogoutClick : null}>
         <NavIcon items={item} />
         {itemTitle}
         <NavBadge items={item} />
@@ -85,7 +83,7 @@ NavItem.propTypes = {
   target: PropTypes.string,
   external: PropTypes.bool,
   url: PropTypes.string,
-  classes: PropTypes.string,
+  classes: PropTypes.string
 };
 
 export default NavItem;

@@ -5,9 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { settingsActions } from 'store/settings/settingSlice';
 import Swal from 'sweetalert2';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { useTheme } from '../../contexts/themeContext';
 
 const Index = () => {
   const dispatch = useDispatch();
+  const {mode}=useTheme()
   const Role = localStorage.getItem('role');
   const designationDataList = useSelector((state) => state.settings.designationData);
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -15,6 +17,7 @@ const Index = () => {
   const organizationDataList = useSelector((state) => state.settings.organizationData);
   const statusDataList = useSelector((state) => state.settings.statusData);
   const projectDataList = useSelector((state) => state.settings.projectData);
+  const salutationDataList = useSelector((state) => state.settings.salutationData);
 
   const [divisionList, setDivisionList] = useState([]);
   const [employmentTypeList, setEmploymentTypeList] = useState([]);
@@ -22,6 +25,7 @@ const Index = () => {
   const [designationList, setDesignationList] = useState([]);
   const [statusList, setStatusList] = useState([]);
   const [projectList, setProjectList] = useState([]);
+  const [salutationList, setSalutationList] = useState([]);
 
   useEffect(() => {
     dispatch(settingsActions.getDesignationInfo());
@@ -30,7 +34,9 @@ const Index = () => {
     dispatch(settingsActions.getOrganizationInfo());
     dispatch(settingsActions.getStatusInfo());
     dispatch(settingsActions.getProjectInfo());
+    dispatch(settingsActions.getSalutationInfo());
   }, []);
+  
   useEffect(() => {
     if (Array.isArray(designationDataList?.Result)) {
       const list = designationDataList?.Result?.map((item) => ({
@@ -86,7 +92,16 @@ const Index = () => {
       }));
       setProjectList(list);
     }
-  }, [designationDataList, divisionDataList, employeementDataList, organizationDataList, statusDataList, projectDataList]);
+    if (Array.isArray(salutationDataList?.Result)) {
+      const list = salutationDataList.Result.map((item) => ({
+        id: item.SalutationId,
+        title: item.SalutationTitle,
+        status: Number(item.Status),
+        isEditing: false
+      }));
+      setSalutationList(list);
+    }
+  }, [designationDataList, divisionDataList, employeementDataList, organizationDataList, statusDataList, projectDataList,salutationDataList]);
 
   const handleEdit = (list, setList, id) => {
     Swal.fire({
@@ -96,7 +111,8 @@ const Index = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Proceed'
+      confirmButtonText: 'Proceed',
+      theme : mode
     }).then((result) => {
       if (result.isConfirmed) {
         setList(list.map((item) => (item.id === id ? { ...item, isEditing: true } : item)));
@@ -134,7 +150,8 @@ const Index = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, change it!'
+      confirmButtonText: 'Yes, change it!',
+      theme : mode
     }).then(async (result) => {
       if (result.isConfirmed) {
         const updatedItem = list.find((item) => item.id === id);
@@ -158,7 +175,8 @@ const Index = () => {
         Swal.fire({
           title: 'Updated!',
           text: 'Selected item status has been updated.',
-          icon: 'success'
+          icon: 'success',
+          theme : mode
         });
       }
     });
@@ -304,7 +322,6 @@ const Index = () => {
             )}
           </MainCard>
         </Col>
-
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Employment Type" cardClass="warning">
             {renderList(
@@ -317,7 +334,6 @@ const Index = () => {
             )}
           </MainCard>
         </Col>
-
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Designation List" cardClass="success">
             {renderList(
@@ -330,7 +346,6 @@ const Index = () => {
             )}
           </MainCard>
         </Col>
-
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Company List" cardClass="purple">
             {renderList(
@@ -364,6 +379,18 @@ const Index = () => {
               settingsActions.getProjectInfo,
               settingsActions.updateProjectInfo,
               'Project'
+            )}
+          </MainCard>
+        </Col>
+        <Col sm={12} md={12} xl={6} xxl={4}>
+          <MainCard title="Salutation List" cardClass="info">
+            {renderList(
+              salutationList,
+              setSalutationList,
+              settingsActions.addSalutationInfo,
+              settingsActions.getSalutationInfo,
+              settingsActions.updateSalutationInfo,
+              'Salutation'
             )}
           </MainCard>
         </Col>

@@ -12,9 +12,11 @@ import { meetingsActions } from '../../store/mom/momSlice';
 import { userActions } from '../../store/user/userSlice';
 import { settingsActions } from 'store/settings/settingSlice';
 import { useStore } from '../../contexts/DataContext';
+import { useTheme } from '../../contexts/themeContext';
 
 export default function CollapsibleTable() {
   const Role = localStorage.getItem('role');
+  const { mode } = useTheme();
   const dispatch = useDispatch();
   const { filterWith } = useStore();
   const { filterValue } = useStore();
@@ -36,6 +38,7 @@ export default function CollapsibleTable() {
   const MeetingLists = useSelector((state) => state.meetings.data);
   const userLists = useSelector((state) => state.users.data);
   const statusLists = useSelector((state) => state.settings.statusData);
+  const designationDataList = useSelector((state) => state.settings.designationData);
 
   useEffect(() => {
     dispatch(userActions.getuserInfo());
@@ -291,6 +294,11 @@ export default function CollapsibleTable() {
       };
     });
   };
+  const getDesignation = (val) => {
+    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
+    const found = data.find((item) => item.DesignationId === val);
+    return found ? found.DesignationTitle : '';
+  };
 
   return (
     <>
@@ -412,15 +420,13 @@ export default function CollapsibleTable() {
           </Col>
         </Row>
         <Pagination className="custom-pagination">
-          <InputGroup className="pagination-select">
-            <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage}>
-              {[5, 10, 25, 50].map((rowsPerPageOption) => (
-                <option key={rowsPerPageOption} value={rowsPerPageOption}>
-                  {rowsPerPageOption}
-                </option>
-              ))}
-            </Form.Control>
-          </InputGroup>
+          <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="limit">
+            {[5, 10, 25, 50].map((rowsPerPageOption) => (
+              <option key={rowsPerPageOption} value={rowsPerPageOption}>
+                {rowsPerPageOption}
+              </option>
+            ))}
+          </Form.Control>
           <div className="flex">
             <Pagination.Prev onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
             {renderPaginationItems()}
@@ -429,12 +435,15 @@ export default function CollapsibleTable() {
         </Pagination>
       </Card>
       <Modal show={show} onHide={handleClose} animation={false}>
-        <Modal.Header closeButton>
+        <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Update Details</h5>
           </Modal.Title>
+          <span className="pointer" onClick={handleClose}>
+            X
+          </span>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className={mode}>
           <div className="userModalBody">
             <div className="info">
               <div className="d-flex align-items-center mb-3">
@@ -482,16 +491,20 @@ export default function CollapsibleTable() {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <Modal size="xl" show={showAttendanceList} onHide={handleCloseAttendanceList}>
-        <Modal.Header closeButton>
+        <Modal.Header className={mode}>
           <Modal.Title className="w-100">
             <div className="d-flex justify-content-between ">
               <h5 className="m-0">Attendance List</h5>
               <img src={excelImg} className="mr-1" width={25} onClick={exportToExcel} alt="" />
             </div>
           </Modal.Title>
+          <span className="pointer" onClick={handleCloseAttendanceList}>
+            X
+          </span>
         </Modal.Header>
-        <Modal.Body className="inner-table">
+        <Modal.Body className={` inner-table ${mode}`}>
           <Table responsive hover className="">
             <thead>
               <tr className="" style={{ height: '45px' }}>
@@ -512,7 +525,11 @@ export default function CollapsibleTable() {
                     <tr key={`${item?.division}${idx}`}>
                       <td>{idx + 1}</td>
                       <td>{item?.UserName}</td>
-                      <td>{item?.DesignationTitle}</td>
+                      <td>
+                        {item?.DesignationId?.split(',')
+                          .map((id) => getDesignation(id))
+                          .join('/ ')}
+                      </td>
                       <td>{item?.DivisionTitle}</td>
                       <td>{item?.OrganisationTitle}</td>
                       <td>{item?.Mobile}</td>

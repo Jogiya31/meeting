@@ -16,7 +16,9 @@ import jsPDF from 'jspdf';
 import { motion } from 'framer-motion';
 import { settingsActions } from '../../store/settings/settingSlice';
 import { FaProjectDiagram } from 'react-icons/fa';
+import { useTheme } from '../../contexts/themeContext';
 const DashDefault = () => {
+  const { mode } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pdfContent = useRef();
@@ -31,12 +33,14 @@ const DashDefault = () => {
   const MeetingLists = useSelector((state) => state.meetings.data);
   const userList = useSelector((state) => state.users.data);
   const projectDataList = useSelector((state) => state.settings.projectData);
+  const designationDataList = useSelector((state) => state.settings.designationData);
 
   useEffect(() => {
     dispatch(dashboardActions.getdashboardInfo());
     dispatch(meetingsActions.getMeetingsInfo());
     dispatch(userActions.getuserInfo());
     dispatch(settingsActions.getProjectInfo());
+    dispatch(settingsActions.getDesignationInfo());
   }, []);
 
   useEffect(() => {
@@ -140,12 +144,19 @@ const DashDefault = () => {
     setshowInfo(false);
   };
 
+  const getDesignation = (val) => {
+    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
+    const found = data.find((item) => item.DesignationId === val);
+    return found ? found.DesignationTitle : '';
+  };
+
+
   return (
     <React.Fragment>
       <div className="dashboard-cards grid-wrapper">
         <div className="grid-inner">
           <div className="grid-item">
-            <Card className="customcard mb-1 bg-color-7 pointer" onClick={() => handleCardClick('user')}>
+            <Card className="customcard mb-1 grd-bg-color-7 pointer" onClick={() => handleCardClick('user')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -173,7 +184,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 bg-color-2 pointer" onClick={() => handleCardClick('meeting')}>
+            <Card className="customcard mb-1 grd-bg-color-2 pointer" onClick={() => handleCardClick('meeting')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -201,7 +212,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 bg-color-12 pointer" onClick={() => handleCardClick('projects')}>
+            <Card className="customcard mb-1 grd-bg-color-12 pointer" onClick={() => handleCardClick('projects')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -230,7 +241,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 bg-color-3 pointer" onClick={() => handleCardClick('meeting')}>
+            <Card className="customcard mb-1 grd-bg-color-3 pointer" onClick={() => handleCardClick('meeting')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -258,7 +269,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 bg-color-4 pointer" onClick={() => handleCardClick('completed')}>
+            <Card className="customcard mb-1 grd-bg-color-4 pointer" onClick={() => handleCardClick('completed')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -284,7 +295,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1  bg-color-5 pointer" onClick={() => handleCardClick('panding')}>
+            <Card className="customcard mb-1  grd-bg-color-5 pointer" onClick={() => handleCardClick('panding')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -310,7 +321,7 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 bg-color-6 pointer" onClick={() => handleCardClick('inprogress')}>
+            <Card className="customcard mb-1 grd-bg-color-6 pointer" onClick={() => handleCardClick('inprogress')}>
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -344,7 +355,7 @@ const DashDefault = () => {
       </div>
 
       <Modal size="xl" show={showInfoDetails} animation={false}>
-        <Modal.Header>
+        <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Meeting Details</h5>
             <img src={pdf_i} width={30} className="mr-1 pointer" alt="" onClick={exportPdf} />
@@ -354,7 +365,7 @@ const DashDefault = () => {
             X{' '}
           </span>
         </Modal.Header>
-        <Modal.Body className="p-4" ref={pdfContent}>
+        <Modal.Body ref={pdfContent} className={`p-4 ${mode}`}>
           <Row>
             <Col md={12}>
               <div className="d-flex">
@@ -399,13 +410,18 @@ const DashDefault = () => {
                       </thead>
                       <tbody>
                         {selectedMeeting?.[0]?.Attendance.map((item, idx) => {
+                          console.log('first', selectedMeeting?.[0]?.Attendance);
                           const user = userList?.Result?.find((u) => u.UserId === item.userId);
                           if (item.userId !== '') {
                             return (
                               <tr key={`${item.userId}-${idx}_${Math.random()}`}>
                                 <td>{idx + 1}</td>
                                 <td>{item.UserName}</td>
-                                <td>{item.DesignationTitle}</td>
+                                <td>
+                                  {item?.DesignationId?.split(',')
+                                    .map((id) => getDesignation(id))
+                                    .join('/ ')}
+                                </td>
                                 <td>{item.DivisionTitle}</td>
                                 <td>{item.OrganisationTitle}</td>
                                 <td>{item.Mobile}</td>
@@ -474,7 +490,7 @@ const DashDefault = () => {
       </Modal>
 
       <Modal show={showInfo} animation={false}>
-        <Modal.Header>
+        <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Events for this day </h5>
           </Modal.Title>
@@ -482,7 +498,7 @@ const DashDefault = () => {
             X
           </span>
         </Modal.Header>
-        <Modal.Body className="p-4" ref={pdfContent}>
+        <Modal.Body className={`p-4 ${mode}`} ref={pdfContent}>
           {selectedEvents.length > 0 && (
             <div className="events">
               <ul className="event-list p-0">

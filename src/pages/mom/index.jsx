@@ -17,11 +17,12 @@ import axios from 'axios';
 import { useStore } from '../../contexts/DataContext';
 import { meetingsActions } from '../../store/mom/momSlice';
 import Swal from 'sweetalert2';
-import { settingsActions } from 'store/settings/settingSlice';
+import { useTheme } from '../../contexts/themeContext';
 
 const NewPoint = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { mode } = useTheme();
   const { store, currentMeetingId } = useStore();
   const API_URL = import.meta.env.VITE_APP_API_BASE_URL;
   const Role = localStorage.getItem('role');
@@ -50,6 +51,7 @@ const NewPoint = () => {
   const userList = useSelector((state) => state.users.data);
   const projectList = useSelector((state) => state.settings.projectData);
   const MeetingLists = useSelector((state) => state.meetings.data);
+  const designationDataList = useSelector((state) => state.settings.designationData);
 
   useEffect(() => {
     dispatch(meetingsActions.getMeetingsInfo());
@@ -73,7 +75,6 @@ const NewPoint = () => {
 
   useEffect(() => {
     setDraftMeetings(MeetingLists?.MeetingDetails?.filter((item) => item.Draft < 4));
-
     if (selectedMeeting) {
       setMeetingId(selectedMeeting?.MeetingId);
     }
@@ -90,17 +91,21 @@ const NewPoint = () => {
     }
     if (selectedMeeting?.Attendance.length) {
       setAttendanceData(
-        selectedMeeting?.Attendance.map((item) => ({
-          AttendanceId: item.AttendanceId,
-          userId: item.UserId,
-          designation: item.DesignationTitle,
-          division: item.DivisionTitle,
-          organization: item.OrganisationTitle,
-          mobile: item.Mobile,
-          isOther: false,
-          associatedOfficer: item.AssociatedOfficerId,
-          Status: item.Status
-        }))
+        selectedMeeting?.Attendance.map((item) => {
+          return {
+            AttendanceId: item.AttendanceId,
+            userId: item.UserId,
+            designation: item?.DesignationId?.split(',')
+              .map((id) => getDesignation(id))
+              .join('/ '),
+            division: item.DivisionTitle,
+            organization: item.OrganisationTitle,
+            mobile: item.Mobile,
+            isOther: false,
+            associatedOfficer: item.AssociatedOfficerId,
+            Status: item.Status
+          };
+        })
       );
     }
     if (selectedMeeting?.DiscussionsPoint.length) {
@@ -156,7 +161,8 @@ const NewPoint = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Yes, delete it!',
+      theme: mode
     }).then((result) => {
       if (result.isConfirmed) {
         if (discussionId) {
@@ -169,7 +175,8 @@ const NewPoint = () => {
         Swal.fire({
           title: 'Deleted!',
           text: 'Your file has been deleted.',
-          icon: 'success'
+          icon: 'success',
+          theme: mode
         });
         setFormFields((prevFields) => prevFields.filter((_, i) => i !== index));
       }
@@ -228,7 +235,8 @@ const NewPoint = () => {
       Swal.fire({
         title: 'Meeting',
         text: 'You should fill all details.',
-        icon: 'warning'
+        icon: 'warning',
+        theme: mode
       });
       return false;
     }
@@ -271,7 +279,8 @@ const NewPoint = () => {
       Swal.fire({
         title: 'Attendance',
         text: 'You should select at least one employee.',
-        icon: 'warning'
+        icon: 'warning',
+        theme: mode
       });
       return false;
     } else {
@@ -336,7 +345,8 @@ const NewPoint = () => {
       Swal.fire({
         title: 'Discussion points',
         text: 'You should fill all the details.',
-        icon: 'warning'
+        icon: 'warning',
+        theme: mode
       });
       return false;
     } else {
@@ -473,6 +483,12 @@ const NewPoint = () => {
     }
   }, [currentStep]);
 
+  const getDesignation = (val) => {
+    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
+    const found = data.find((item) => item.DesignationId === val);
+    return found ? found.DesignationTitle : '';
+  };
+
   return (
     <Container fluid>
       <Row>
@@ -486,7 +502,7 @@ const NewPoint = () => {
               </Row>
               <Row>
                 {draftMeetings?.map((item, idx) => (
-                  <Col md={3} key={`${idx}-${idx}-${Math.random()}`}>
+                  <Col sm={12} md={6} lg={3} xl={3}  key={`${idx}-${idx}-${Math.random()}`}>
                     <div className="card project-task pointer" onClick={() => handleEditMeeting(item)}>
                       <div className="card-body">
                         <div className="row align-items-center justify-content-center">
@@ -527,7 +543,7 @@ const NewPoint = () => {
                     </div>
                   </Col>
                 ))}
-                <Col md={3} key={`${Math.random()}`}>
+                <Col sm={12} md={6} lg={3} xl={3} key={`${Math.random()}`}>
                   <div
                     className="card project-task pointer"
                     onClick={() => {
@@ -779,7 +795,7 @@ const NewPoint = () => {
                                     <tr key={`${idx}-${idx}-${Math.random()}`}>
                                       <td>{idx + 1}</td>
                                       <td>{item.task}</td>
-                                      <td>{moment(item.endDate).format('DD-MM-YYYY')}</td>
+                                      <td>{item.endDate.split(' ')?.[0]}</td>
                                       <td>
                                         {projectList?.Result?.map(
                                           (proj) => proj.ProjectId === item.projectId && <span>{proj.ProjectTitle}</span>
@@ -826,12 +842,16 @@ const NewPoint = () => {
         </Col>
       </Row>
       <Modal show={showInfo} onHide={handleClose} animation={false}>
-        <Modal.Header closeButton>
+        <Modal.Header className={mode}>
           <Modal.Title>
             <h5>User Details</h5>
           </Modal.Title>
+          <span className="pointer" onClick={handleClose}>
+            {' '}
+            X{' '}
+          </span>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className={mode}>
           <Row>
             <Col md={5}>
               <div className="userInfo-left">

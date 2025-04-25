@@ -1042,7 +1042,7 @@
 
   .pcoded-inner-navbar {
     li > a {
-      &.active{
+      &.active {
         color: #fff;
         // background-color: #0078FC;
         border-radius: 50px;
@@ -1138,6 +1138,15 @@
   margin-left: $Menu-width;
   min-height: 100vh;
   transition: all 0.3s ease-in-out;
+}
+
+@media screen and (max-width: 991px) {
+  .pcoded-main-container {
+    margin-left: 0px;
+    .pct-c-btn {
+      top: 90px;
+    }
+  }
 }
 
 /* main content end*/
@@ -1240,6 +1249,12 @@
         margin-left: 0;
       }
     }
+  }
+}
+
+@media screen and (min-width: 991px) {
+  .pcoded-header {
+    min-height: 0;
   }
 }
 

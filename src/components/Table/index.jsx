@@ -195,15 +195,13 @@ function EnhancedTable({
       </Table>
       {enablePagination && (
         <Pagination className="custom-pagination">
-          <InputGroup className="pagination-select">
-            <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="text-center">
+            <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="text-center limit">
               {[5, 10, 25, 50].map((rowsPerPageOption) => (
                 <option key={rowsPerPageOption} value={rowsPerPageOption}>
                   {rowsPerPageOption}
                 </option>
               ))}
             </Form.Control>
-          </InputGroup>
           <div className="flex">
             <Pagination.Prev title="Previous Page" onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
             {renderPaginationItems()}

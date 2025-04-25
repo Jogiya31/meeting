@@ -9,8 +9,11 @@ import useWindowSize from '../../hooks/useWindowSize';
 import useOutsideClick from '../../hooks/useOutsideClick';
 import { ConfigContext } from '../../contexts/ConfigContext';
 import * as actionType from '../../store/actions';
+import Settings from '../../components/Settings';
+import { useTheme } from '../../contexts/themeContext';
 
 const AdminLayout = ({ children }) => {
+  const { mode } = useTheme();
   const windowSize = useWindowSize();
   const ref = useRef();
   const configContext = useContext(ConfigContext);
@@ -51,7 +54,7 @@ const AdminLayout = ({ children }) => {
 
   let mainContainer = (
     <React.Fragment>
-      <div className="pcoded-main-container">
+      <div className={`pcoded-main-container ${mode}`}>
         <div className={mainClass.join(' ')}>
           <div className="pcoded-content">
             <div className="pcoded-inner-content">
@@ -59,6 +62,7 @@ const AdminLayout = ({ children }) => {
               {children}
             </div>
           </div>
+          <Settings />
         </div>
       </div>
     </React.Fragment>

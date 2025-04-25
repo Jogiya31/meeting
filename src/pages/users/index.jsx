@@ -11,14 +11,19 @@ import { FaSort, FaUserCircle, FaUserEdit } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import Swal from 'sweetalert2';
+import { MultiSelect } from 'react-multi-select-component';
+import { useTheme } from '../../contexts/themeContext';
 
 const UserList = () => {
   const dispatch = useDispatch();
+  const { mode } = useTheme();
   const Role = localStorage.getItem('role');
   const [selectedUser, setselectedUser] = useState(null);
   const [currentDate, setcurrentDate] = useState(null);
   const [errors, setErrors] = useState({});
   const [showregister, setShowregister] = useState(false);
+  const [designationListOption, setDesignationListOptions] = useState([]); // User options state
+  const [designationFilter, setDesignationFilter] = useState([]); // user filter state
   const [data, setData] = useState([]);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('');
@@ -47,6 +52,7 @@ const UserList = () => {
     Mobile: '',
     Status: 1,
     Gender: '',
+    SalutationId: 0,
     ImgPath: male_i,
     CreatedBy: Role
   });
@@ -74,17 +80,41 @@ const UserList = () => {
     if (userList && Array.isArray(userList.Result)) {
       const updatedData = userList.Result.map((item) => {
         const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+        const desc = item?.DesignationId?.split(',')
+          .map((id) => getDesignation(id))
+          .join('/ ');
         return {
           ...item,
-          AssociatedOfficer: officer ? officer.UserName : ''
+          AssociatedOfficer: officer ? officer.UserName : '',
+          DesignationTitle: desc
         };
       });
       setData(updatedData);
     } else {
       setData([]); // optional fallback
     }
-  }, [userList]);
-  
+    if (designationDataList?.Result) {
+      setDesignationListOptions(
+        designationDataList?.Result?.filter((item) => item.Status === '1').map((item) => ({
+          label: item.DesignationTitle,
+          value: item.DesignationId
+        }))
+      );
+    }
+  }, [userList, designationDataList]);
+
+  useEffect(() => {
+    if (designationFilter && designationFilter.length > 0) {
+      let designationPayload = '';
+      for (let index = 0; index < designationFilter.length; index++) {
+        const element = designationFilter[index];
+        designationPayload += `${element.value},`;
+      }
+      setFormData({ ...formData, DesignationId: designationPayload.slice(0, -1) });
+    } else {
+      setFormData({ ...formData, DesignationId: '' });
+    }
+  }, [designationFilter]);
 
   const handleClose = () => {
     setShowregister(false);
@@ -111,20 +141,14 @@ const UserList = () => {
 
   const validate = () => {
     let newErrors = {};
-
     if (!formData.UserName) newErrors.UserName = 'User name is required';
     if (!formData.DesignationId) newErrors.DesignationId = 'Designation is required';
     if (!formData.EmployementId) newErrors.EmployementId = 'Employment type is required';
     if (!formData.EmployeementDivisionId) newErrors.EmployeementDivisionId = 'Division is required';
     if (!formData.OrganizationId) newErrors.OrganizationId = 'Organization is required';
     if (!formData.Gender) newErrors.Gender = 'Gender is required';
-
-    // Mobile Number Validation
-    if (!formData.Mobile) {
-      newErrors.Mobile = 'Mobile number is required';
-    }
+    if (!formData.Mobile) newErrors.Mobile = 'Mobile number is required';
     if (!formData.Status) newErrors.Status = 'Status is required';
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -171,7 +195,8 @@ const UserList = () => {
       Mobile: formData.Mobile,
       Gender: formData.Gender,
       Status: formData.Status,
-      ImgPath: formData.ImgPath || ''
+      ImgPath: formData.ImgPath || '',
+      SalutationId: formData.SalutationId || '0'
     };
 
     if (selectedUser) {
@@ -255,7 +280,8 @@ const UserList = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, change it!'
+      confirmButtonText: 'Yes, change it!',
+      theme: mode
     }).then(async (result) => {
       if (result.isConfirmed) {
         api.post('/Update_User', updatedData).then(() => {
@@ -271,7 +297,14 @@ const UserList = () => {
       const searchLower = search.toLowerCase();
 
       // List of keys to search in
-      const searchableKeys = ['UserName', 'OrganisationTitle', 'EmployeeDivisionTitle', 'EmployementTitle', 'DesignationTitle','AssociatedOfficer'];
+      const searchableKeys = [
+        'UserName',
+        'OrganisationTitle',
+        'EmployeeDivisionTitle',
+        'EmployementTitle',
+        'DesignationTitle',
+        'AssociatedOfficer'
+      ];
 
       // Check if any of the selected fields contain the search term
       return searchableKeys.some((key) => row[key] && row[key].toLowerCase().includes(searchLower));
@@ -321,10 +354,25 @@ const UserList = () => {
     setSearch(e.target.value);
     setPage(0); // Reset page when search is modified
   };
+
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
+  };
+
+  const getDesignation = (val) => {
+    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
+    const found = data.find((item) => item.DesignationId === val);
+    return found ? found.DesignationTitle : '';
+  };
+
+  const handleDesignationFilter = (newSelected) => {
+    if (newSelected.length) {
+      setDesignationFilter(newSelected);
+    } else {
+      setDesignationFilter([]);
+    }
   };
 
   return (
@@ -416,7 +464,7 @@ const UserList = () => {
                         </td>
                         <td>
                           <span
-                            className="action-section cursor"
+                            className="action-section pointer"
                             title="Edit user"
                             onClick={() => {
                               setselectedUser(item); // Set selected user
@@ -433,15 +481,13 @@ const UserList = () => {
                 </tbody>
               </Table>
               <Pagination className="custom-pagination">
-                <InputGroup className="pagination-select">
-                  <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage}>
-                    {[5, 10, 25, 50].map((rowsPerPageOption) => (
-                      <option key={rowsPerPageOption} value={rowsPerPageOption}>
-                        {rowsPerPageOption}
-                      </option>
-                    ))}
-                  </Form.Control>
-                </InputGroup>
+                <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="limit">
+                  {[5, 10, 25, 50].map((rowsPerPageOption) => (
+                    <option key={rowsPerPageOption} value={rowsPerPageOption}>
+                      {rowsPerPageOption}
+                    </option>
+                  ))}
+                </Form.Control>
                 <div className="flex">
                   <Pagination.Prev onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
                   {renderPaginationItems()}
@@ -453,7 +499,7 @@ const UserList = () => {
         </Col>
       </Row>
       <Modal size="xl" show={showregister} onHide={handleClose} animation={false}>
-        <Modal.Header closeButton>
+        <Modal.Header className={mode}>
           <Modal.Title>
             <h5>
               {selectedUser ? (
@@ -467,11 +513,15 @@ const UserList = () => {
               )}
             </h5>
           </Modal.Title>
+          <span className="pointer" onClick={handleClose}>
+            {' '}
+            X{' '}
+          </span>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className={mode}>
           <Form noValidate onSubmit={handleSubmit}>
             <Row>
-              <Col>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Employee Name</Form.Label>
                   <Form.Control
@@ -485,37 +535,23 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.UserName}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Designation</Form.Label>
-                  <Form.Select
-                    name="DesignationId"
-                    value={formData.DesignationId}
-                    className="custom-form-select"
-                    onChange={handleChange}
-                    isInvalid={!!errors.DesignationId}
-                  >
-                    <option value="">Select designation...</option>
-                    {Array.isArray(designationDataList?.Result)
-                      ? designationDataList.Result.filter((item) => item.Status === '1').map((item) => (
-                          <option key={item.DesignationId} value={item.DesignationId}>
-                            {item.DesignationTitle}
-                          </option>
-                        ))
-                      : Object.values(designationDataList?.Result || {})
-                          .filter((item) => item.Status === '1')
-                          .map((item) => (
-                            <option key={item.DesignationId} value={item.DesignationId}>
-                              {item.DesignationTitle}
-                            </option>
-                          ))}
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">{errors.DesignationId}</Form.Control.Feedback>
+                  <MultiSelect
+                    options={designationListOption}
+                    value={designationListOption.filter((option) => formData.DesignationId.split(',').includes(option.value))}
+                    className={`custom-form-select ${errors.DesignationId ? 'isInvalid' : ''}`}
+                    onChange={handleDesignationFilter}
+                    overrideStrings={{ selectSomeItems: 'Select Designation' }}
+                    valueRenderer={(selected) => (selected.length > 0 ? selected.map((s) => s.label).join(', ') : '')}
+                  />
+                  {errors.DesignationId && <div className="invalid-feedback d-block">{errors.DesignationId}</div>}
                 </Form.Group>
               </Col>
             </Row>
             <Row>
-              <Col>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Employment Type</Form.Label>
                   <Form.Select
@@ -543,7 +579,7 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.EmployementId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Employee Division</Form.Label>
                   <Form.Select
@@ -573,10 +609,16 @@ const UserList = () => {
               </Col>
             </Row>
             <Row>
-              <Col>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Organization</Form.Label>
-                  <Form.Select name="OrganizationId" value={formData.OrganizationId} className="custom-form-select" onChange={handleChange}>
+                  <Form.Select
+                    name="OrganizationId"
+                    value={formData.OrganizationId}
+                    className="custom-form-select"
+                    onChange={handleChange}
+                    isInvalid={!!errors.OrganizationId}
+                  >
                     <option value="">Select division...</option>
                     {Array.isArray(organizationDataList?.Result)
                       ? organizationDataList.Result.filter((item) => item.Status === '1').map((item) => (
@@ -592,10 +634,10 @@ const UserList = () => {
                             </option>
                           ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{errors.OrganisationId}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{errors.OrganizationId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Mobile</Form.Label>
                   <Form.Control
@@ -612,7 +654,7 @@ const UserList = () => {
               </Col>
             </Row>
             <Row>
-              <Col>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Associated Officer</Form.Label>
                   <Form.Select
@@ -639,7 +681,7 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.AssociatedOfficerId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Service Date</Form.Label>
                   <DatePicker
@@ -659,13 +701,19 @@ const UserList = () => {
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Gender</Form.Label>
-                  <Form.Select name="Gender" value={formData.Gender} className="custom-form-select" onChange={handleChange}>
+                  <Form.Select
+                    name="Gender"
+                    value={formData.Gender}
+                    className="custom-form-select"
+                    onChange={handleChange}
+                    isInvalid={!!errors.Gender}
+                  >
                     <option value="">Select Gender...</option>
                     {genderDataList?.map((item) => (
                       <option value={item.GenderTitle}>{item.GenderTitle}</option>
                     ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{errors.GenderTitle}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{errors.Gender}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               {/* <Col>

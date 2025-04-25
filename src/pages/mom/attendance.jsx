@@ -7,10 +7,12 @@ import { MultiSelect } from 'react-multi-select-component';
 import { settingsActions } from '../../store/settings/settingSlice';
 import Swal from 'sweetalert2';
 import { meetingsActions } from '../../store/mom/momSlice';
+import { useTheme } from '../../contexts/themeContext';
 
 const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => {
   const Role = localStorage.getItem('role');
   const dispatch = useDispatch();
+  const { mode } = useTheme();
   const userList = useSelector((state) => state.users.data);
   const designationDataList = useSelector((state) => state.settings.designationData);
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -82,14 +84,17 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       } else {
         // Find the selected user from userList
         const selectedUser = userList?.Result?.find((user) => user.UserId.toString() === userId);
-
         setFormFields((prevFields) =>
           prevFields.map((field, i) =>
             i === index
               ? {
                   ...field,
                   userId,
-                  designation: selectedUser?.DesignationTitle || '',
+                  designation:
+                    selectedUser?.DesignationId?.split(',').map((id, index, array) => {
+                      const val = getDesignation(id);
+                      return index === array.length - 1 ? val : val + '/ ';
+                    }) || '',
                   division: selectedUser?.EmployeeDivisionTitle || '',
                   organization: selectedUser?.OrganisationTitle || '',
                   mobile: selectedUser?.Mobile || '',
@@ -113,6 +118,12 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
     }
   };
 
+  const getDesignation = (val) => {
+    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
+    const found = data.find((item) => item.DesignationId === val);
+    return found ? found.DesignationTitle : '';
+  };
+
   const handleDeleteField = (attendanceId, index) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -121,7 +132,8 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Yes, delete it!',
+      theme: mode
     }).then((result) => {
       if (result.isConfirmed) {
         if (attendanceId) {
@@ -134,7 +146,8 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
         Swal.fire({
           title: 'Deleted!',
           text: 'Your file has been deleted.',
-          icon: 'success'
+          icon: 'success',
+          theme: mode
         });
         setFormFields((prevFields) => prevFields.filter((_, i) => i !== index));
       }
@@ -227,7 +240,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
 
   const customHeader = (
     <div className="d-flex align-items-center">
-      <h5 className="ml-3">Meeting attendance</h5>
+      <h5 className="ml-1">Meeting attendance</h5>
       <div className="multi-user-filter">
         <MultiSelect
           options={userListOption}
@@ -384,6 +397,9 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                         ))}
                         <option value="other">Other</option>
                       </Form.Select>
+                      {
+                        console.log('field', field)
+                      }
                       <Form.Control
                         type="text"
                         name="designation"

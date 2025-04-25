@@ -6,18 +6,21 @@ import {
   AddEmployementDetails,
   AddOrganisationDetails,
   AddProjectDetails,
+  AddSalutationDetails,
   AddStatusDetails,
   GetDesignationDetails,
   GetDivisionDetails,
   GetEmployementDetails,
   GetOrganisationDetails,
   GetProjectDetails,
+  GetSalutationDetails,
   GetStatusDetails,
   UpdateDesignation,
   UpdateDivision,
   UpdateEmployement,
   UpdateOrganisation,
   UpdateProject,
+  UpdateSalutation,
   UpdateStatus
 } from '../../api/api';
 import { toast } from 'react-toastify';
@@ -389,6 +392,68 @@ function* handleUpdateProjectInfo(data) {
 }
 
 
+// Saga function to handle fetching Organization information
+function* handleSalutationInfo() {
+  try {
+    // Call the API to fetch Salutation information
+    const response = yield call(GetSalutationDetails);
+    // Check if the response Salutation is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.getSalutationInfoSuccess(data || []));
+    } else {
+      // If response Salutation is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.getSalutationInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Salutation information
+function* handleAddSalutationInfo(data) {
+  try {
+    // Call the API to fetch Salutation information
+    const response = yield call(AddSalutationDetails, data);
+    // Check if the response Salutation is 200 (OK)
+    if (response.Salutation === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.addSalutationInfoSuccess(data || []));
+    } else {
+      // If response Salutation is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.addSalutationInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Salutation information
+function* handleUpdateSalutationInfo(data) {
+  try {
+    // Call the API to fetch Salutation information
+    const response = yield call(UpdateSalutation, data);
+    // Check if the response Salutation is 200 (OK)
+    if (response.Salutation === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.updateSalutationInfoSuccess(data || []));
+    } else {
+      // If response Salutation is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.updateSalutationInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+
+
 // Watcher saga to take latest action of fetching user information
 export default function* settingsSaga() {
   yield takeLatest(settingsActions.getDesignationInfo.type, handleDesignationInfo);
@@ -414,4 +479,8 @@ export default function* settingsSaga() {
   yield takeLatest(settingsActions.getProjectInfo.type, handleProjectInfo);
   yield takeLatest(settingsActions.addProjectInfo.type, handleAddProjectInfo);
   yield takeLatest(settingsActions.updateProjectInfo.type, handleUpdateProjectInfo);
+
+  yield takeLatest(settingsActions.getSalutationInfo.type, handleSalutationInfo);
+  yield takeLatest(settingsActions.addSalutationInfo.type, handleAddSalutationInfo);
+  yield takeLatest(settingsActions.updateSalutationInfo.type, handleUpdateSalutationInfo);
 }

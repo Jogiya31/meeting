@@ -6,15 +6,17 @@ import useWindowSize from '../../../hooks/useWindowSize';
 import NavLogo from './NavLogo';
 import NavContent from './NavContent';
 import navigation from '../../../menu-items';
+import { useTheme } from '../../../contexts/themeContext';
 
 const Navigation = () => {
   const configContext = useContext(ConfigContext);
+  const { mode } = useTheme();
   const { collapseMenu } = configContext.state;
   const windowSize = useWindowSize();
 
   let navClass = ['pcoded-navbar'];
 
-  navClass = [...navClass];
+  navClass = [...navClass, mode];
 
   if (windowSize.width < 992 && collapseMenu) {
     navClass = [...navClass, 'mob-open'];

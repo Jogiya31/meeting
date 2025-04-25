@@ -9,6 +9,7 @@ const initialState = {
   organizationData: [],
   statusData: [],
   projectData: [],
+  salutationData: [],
   success: false,
   message: ''
 };
@@ -307,6 +308,54 @@ const settingsSlice = createSlice({
     },
     // Action to handle failure in fetching Project information
     updateProjectInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    //////////////////////////////////// Salutation //////////////////////////////////////
+    // Action to initiate fetching Salutation information
+    getSalutationInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Salutation information
+    getSalutationInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+      state.salutationData = action.payload; // Store received data
+    },
+    // Action to handle failure in fetching Salutation information
+    getSalutationInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+    // Action to initiate fetching Salutation information
+    addSalutationInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Salutation information
+    addSalutationInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching Salutation information
+    addSalutationInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+    // Action to initiate fetching Salutation information
+    updateSalutationInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Salutation information
+    updateSalutationInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching Salutation information
+    updateSalutationInfoFailed(state, action) {
       state.loader = false; // Set loader to false after fetching
       state.message = action.payload; // Store error message
       state.success = false; // Set success flag to false
