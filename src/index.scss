@@ -397,112 +397,108 @@ button.sortBtn.btn.btn-info,
 ///////////////// backgorund color//////////////////////
 
 .bg-color-1 {
-  background: hsla(61, 81%, 88%, 1) !important;
+  background: hsla(61, 81%, 88%, 1);
+  background: linear-gradient(180deg, hsla(61, 81%, 88%, 1) 0%, hsla(61, 81%, 88%, 1) 100%) !important;
 
-  background: linear-gradient(180deg, hsla(61, 81%, 88%, 1) 0%, hsl(7, 100%, 83%) 100%) !important;
+  background: -moz-linear-gradient(180deg, hsla(61, 81%, 88%, 1) 0%, hsla(61, 81%, 88%, 1) 100%) !important;
 
-  background: -moz-linear-gradient(180deg, hsla(61, 81%, 88%, 1) 0%, hsla(7, 100%, 83%) 100%) !important;
-
-  background: -webkit-linear-gradient(180deg, hsla(61, 81%, 88%, 1) 0%, hsla(7, 100%, 83%) 100%) !important;
+  background: -webkit-linear-gradient(180deg, hsla(61, 81%, 88%, 1) 0%, hsla(61, 81%, 88%, 1) 100%) !important;
 }
 .bg-color-2 {
-  background: hsla(208, 67%, 81%, 1) !important;
+  background: hsla(208, 67%, 81%, 1);
 
-  background: linear-gradient(180deg, hsla(208, 67%, 81%, 1) 0%, hsla(301, 65%, 83%, 1) 100%) !important;
+  background: linear-gradient(180deg, hsla(208, 67%, 81%, 1) 0%, hsla(208, 67%, 81%, 1) 100%) !important;
 
-  background: -moz-linear-gradient(180deg, hsla(208, 67%, 81%, 1) 0%, hsla(301, 65%, 83%, 1) 100%) !important;
+  background: -moz-linear-gradient(180deg, hsla(208, 67%, 81%, 1) 0%, hsla(208, 67%, 81%, 1) 100%) !important;
 
-  background: -webkit-linear-gradient(180deg, hsla(208, 67%, 81%, 1) 0%, hsla(301, 65%, 83%, 1) 100%) !important;
+  background: -webkit-linear-gradient(180deg, hsla(208, 67%, 81%, 1) 0%, hsla(208, 67%, 81%, 1) 100%) !important;
 }
 .bg-color-3 {
-  background: hsla(64, 41%, 92%, 1) !important;
+  background: rgb(189, 189, 189);
 
-  background: linear-gradient(180deg, hsla(64, 41%, 92%, 1) 0%, hsla(305, 75%, 83%, 1) 100%) !important;
+  background: linear-gradient(180deg, rgb(189, 189, 189) 0%, rgb(189, 189, 189) 100%) !important;
 
-  background: -moz-linear-gradient(180deg, hsla(64, 41%, 92%, 1) 0%, hsla(305, 75%, 83%, 1) 100%) !important;
+  background: -moz-linear-gradient(180deg, rgb(189, 189, 189) 0%, rgb(189, 189, 189) 100%) !important;
 
-  background: -webkit-linear-gradient(180deg, hsla(64, 41%, 92%, 1) 0%, hsla(305, 75%, 83%, 1) 100%) !important;
+  background: -webkit-linear-gradient(180deg, rgb(189, 189, 189) 0%, rgb(189, 189, 189) 100%) !important;
 }
 .bg-color-4 {
-  background: hsla(242, 58%, 73%, 1) !important;
+  background: rgb(176, 242, 196) !important;
 
-  background: linear-gradient(180deg, hsla(242, 58%, 73%, 1) 0%, hsla(157, 72%, 82%, 1) 100%) !important;
+  background: linear-gradient(180deg, rgb(176, 242, 196) 0%, rgb(176, 242, 196) 100%) !important;
 
-  background: -moz-linear-gradient(180deg, hsla(242, 58%, 73%, 1) 0%, hsla(157, 72%, 82%, 1) 100%) !important;
+  background: -moz-linear-gradient(180deg, rgb(176, 242, 196) 0%, rgb(176, 242, 196) 100%) !important;
 
-  background: -webkit-linear-gradient(180deg, hsla(242, 58%, 73%, 1) 0%, hsla(157, 72%, 82%, 1) 100%) !important;
+  background: -webkit-linear-gradient(180deg, rgb(176, 242, 196) 0%, rgb(176, 242, 196) 100%) !important;
 }
 .bg-color-5 {
-  background: hsla(176, 61%, 87%, 1) !important;
+  background: hsla(301, 68%, 84%, 1) !important;
 
-  background: linear-gradient(10deg, hsla(176, 61%, 87%, 1) 0%, hsla(301, 68%, 84%, 1) 100%) !important;
+  background: linear-gradient(10deg, hsla(301, 68%, 84%, 1) 0%, hsla(301, 68%, 84%, 1) 100%) !important;
 
-  background: -moz-linear-gradient(10deg, hsla(176, 61%, 87%, 1) 0%, hsla(301, 68%, 84%, 1) 100%) !important;
+  background: -moz-linear-gradient(10deg, hsla(301, 68%, 84%, 1) 0%, hsla(301, 68%, 84%, 1) 100%) !important;
 
-  background: -webkit-linear-gradient(10deg, hsla(176, 61%, 87%, 1) 0%, hsla(301, 68%, 84%, 1) 100%) !important;
+  background: -webkit-linear-gradient(10deg, hsla(301, 68%, 84%, 1) 0%, hsla(301, 68%, 84%, 1) 100%) !important;
 }
 .bg-color-6 {
-  background: hsla(298, 68%, 90%, 1) !important;
+  background: rgb(253, 225, 167) !important;
 
-  background: linear-gradient(180deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%) !important;
+  background: linear-gradient(180deg, rgb(253, 225, 167) 0%, rgb(253, 225, 167) 100%) !important;
 
-  background: -moz-linear-gradient(180deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%) !important;
+  background: -moz-linear-gradient(180deg, rgb(253, 225, 167) 0%, rgb(253, 225, 167) 100%) !important;
 
-  background: -webkit-linear-gradient(180deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%) !important;
+  background: -webkit-linear-gradient(180deg, rgb(253, 225, 167) 0%, rgb(253, 225, 167) 100%) !important;
 }
 .bg-color-7 {
-  background: hsla(4, 48%, 94%, 1) !important;
+  background: rgb(255, 221, 218) !important;
 
-  background: linear-gradient(180deg, hsla(4, 48%, 94%, 1) 0%, hsla(226, 67%, 76%, 1) 100%) !important;
+  background: linear-gradient(180deg, rgb(255, 221, 218) 0%, rgb(255, 221, 218) 100%) !important;
 
-  background: -moz-linear-gradient(180deg, hsla(4, 48%, 94%, 1) 0%, hsla(226, 67%, 76%, 1) 100%) !important;
+  background: -moz-linear-gradient(180deg, rgb(255, 221, 218) 0%, rgb(255, 221, 218) 100%) !important;
 
-  background: -webkit-linear-gradient(180deg, hsla(4, 48%, 94%, 1) 0%, hsla(226, 67%, 76%, 1) 100%) !important;
+  background: -webkit-linear-gradient(180deg, rgb(255, 221, 218) 0%, rgb(255, 221, 218) 100%) !important;
 }
 .bg-color-8 {
-  background: hsla(356, 68%, 91%, 1) !important;
+  background: rgb(198, 199, 250) ;
+  background: linear-gradient(180deg, rgb(198, 199, 250) 0%, rgb(198, 199, 250)  100%) !important;
 
-  background: linear-gradient(180deg, hsla(356, 68%, 91%, 1) 0%, hsla(316, 66%, 80%, 1) 100%) !important;
+  background: -moz-linear-gradient(180deg, rgb(198, 199, 250)  0%, rgb(198, 199, 250)  100%) !important;
 
-  background: -moz-linear-gradient(180deg, hsla(356, 68%, 91%, 1) 0%, hsla(316, 66%, 80%, 1) 100%) !important;
-
-  background: -webkit-linear-gradient(180deg, hsla(356, 68%, 91%, 1) 0%, hsla(316, 66%, 80%, 1) 100%) !important;
+  background: -webkit-linear-gradient(180deg, rgb(198, 199, 250)  0%, rgb(198, 199, 250)  100%) !important;
 }
 .bg-color-9 {
   background: hsla(211, 66%, 87%, 1) !important;
 
-  background: linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(272, 26%, 72%, 1) 100%) !important;
+  background: linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(211, 66%, 87%, 1) 100%) !important;
 
-  background: -moz-linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(272, 26%, 72%, 1) 100%) !important;
+  background: -moz-linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(211, 66%, 87%, 1) 100%) !important;
 
-  background: -webkit-linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(272, 26%, 72%, 1) 100%) !important;
+  background: -webkit-linear-gradient(45deg, hsla(211, 66%, 87%, 1) 0%, hsla(211, 66%, 87%, 1) 100%) !important;
 }
 .bg-color-10 {
   background: hsla(177, 87%, 79%, 1) !important;
 
-  background: linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(235, 89%, 70%, 1) 100%) !important;
+  background: linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(177, 87%, 79%, 1) 100%) !important;
 
-  background: -moz-linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(235, 89%, 70%, 1) 100%) !important;
+  background: -moz-linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(177, 87%, 79%, 1) 100%) !important;
 
-  background: -webkit-linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(235, 89%, 70%, 1) 100%) !important;
+  background: -webkit-linear-gradient(120deg, hsla(177, 87%, 79%, 1) 0%, hsla(177, 87%, 79%, 1) 100%) !important;
 }
 .bg-color-11 {
-  background: hsla(298, 68%, 90%, 1) !important;
+  background: hsla(298, 68%, 90%, 1);
+  background: linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(298, 68%, 90%, 1) 100%) !important;
 
-  background: linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%) !important;
+  background: -moz-linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(298, 68%, 90%, 1) 100%) !important;
 
-  background: -moz-linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%) !important;
-
-  background: -webkit-linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(30, 82%, 91%, 1) 100%) !important;
+  background: -webkit-linear-gradient(45deg, hsla(298, 68%, 90%, 1) 0%, hsla(298, 68%, 90%, 1) 100%) !important;
 }
 .bg-color-12 {
-  background: hsla(64, 41%, 92%, 1) !important;
+  background: rgb(217, 189, 253);
+  background: linear-gradient(180deg, rgb(217, 189, 253) 0%, rgb(217, 189, 253) 100%) !important;
 
-  background: linear-gradient(45deg, hsla(64, 41%, 92%, 1) 0%, hsla(305, 75%, 83%, 1) 100%) !important;
+  background: -moz-linear-gradient(180deg, rgb(217, 189, 253) 0%, rgb(217, 189, 253) 100%) !important;
 
-  background: -moz-linear-gradient(45deg, hsla(64, 41%, 92%, 1) 0%, hsla(305, 75%, 83%, 1) 100%) !important;
-
-  background: -webkit-linear-gradient(45deg, hsla(64, 41%, 92%, 1) 0%, hsla(305, 75%, 83%, 1) 100%) !important;
+  background: -webkit-linear-gradient(180deg, rgb(217, 189, 253) 0%, rgb(217, 189, 253) 100%) !important;
 }
 
 /////////////////////text color////////////////////////////////////
@@ -539,6 +535,9 @@ button.sortBtn.btn.btn-info,
 }
 .text-c-default {
   color: #062344 !important;
+}
+.text-c-grey {
+  color: #3a3a3a !important;
 }
 
 //////////////////////////Calander css/////////////////////////////////////
@@ -597,6 +596,28 @@ button.sortBtn.btn.btn-info,
 }
 
 .modal-content {
+  .light.modal-header {
+    background-color: $theme-background !important;
+    color: $theme-heading-color !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: $theme-heading-color;
+    }
+    button,
+    .btn-close {
+      color: $dark-layout-font !important;
+    }
+    .btn-close {
+      color: $dark-layout-font !important;
+    }
+  }
   .dark.modal-header {
     background-color: $popup-dark-layout !important;
     color: $dark-layout-font !important;
@@ -609,7 +630,7 @@ button.sortBtn.btn.btn-info,
     h4,
     h5,
     h6 {
-      color: $dark-layout-font;
+      color: $theme-heading-color;
     }
     button,
     .btn-close {
@@ -662,70 +683,5 @@ button.sortBtn.btn.btn-info,
   .dark.modal-footer {
     background-color: $popup-dark-layout !important;
     color: $dark-layout-font !important;
-  }
-
-  .light.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: transparent;
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      color: $theme-heading-color;
-    }
-    button,
-    .btn-close {
-      color: $theme-heading-color !important;
-    }
-    .btn-close {
-      color: $theme-heading-color !important;
-    }
-  }
-  .light.modal-body {
-    color: $theme-heading-color !important;
-    .userModalBody {
-      select,
-      h6,
-      textarea {
-        background-color: transparent;
-        color: $theme-heading-color !important;
-      }
-    }
-    .rmsc {
-      .dropdown-container {
-        .dropdown-heading {
-          background-color: transparent;
-          color: $theme-heading-color !important;
-          border-radius: 5px;
-        }
-        .panel-content {
-          background-color: transparent;
-          color: $theme-heading-color !important;
-          .panel-content {
-            background-color: transparent;
-            color: $theme-heading-color !important;
-          }
-        }
-      }
-    }
-    .table {
-      tr {
-        th {
-          background-color: $success-color;
-          color: $light-color;
-          &:hover {
-            color: $light-color !important;
-          }
-        }
-      }
-    }
-  }
-  .dark.modal-footer {
-    background-color: transparent;
-    color: $theme-heading-color !important;
   }
 }

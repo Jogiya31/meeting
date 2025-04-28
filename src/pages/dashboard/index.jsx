@@ -18,7 +18,7 @@ import { settingsActions } from '../../store/settings/settingSlice';
 import { FaProjectDiagram } from 'react-icons/fa';
 import { useTheme } from '../../contexts/themeContext';
 const DashDefault = () => {
-  const { mode } = useTheme();
+  const { mode, theme } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pdfContent = useRef();
@@ -150,13 +150,15 @@ const DashDefault = () => {
     return found ? found.DesignationTitle : '';
   };
 
-
   return (
     <React.Fragment>
       <div className="dashboard-cards grid-wrapper">
         <div className="grid-inner">
           <div className="grid-item">
-            <Card className="customcard mb-1 grd-bg-color-7 pointer" onClick={() => handleCardClick('user')}>
+            <Card
+              className={`customcard mb-1 ${theme === 'static' ? 'bg-color-7' : 'grd-bg-color-7'} pointer`}
+              onClick={() => handleCardClick('user')}
+            >
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -184,7 +186,10 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 grd-bg-color-2 pointer" onClick={() => handleCardClick('meeting')}>
+            <Card
+              className={`customcard mb-1 ${theme === 'static' ? 'bg-color-2' : 'grd-bg-color-2'} pointer`}
+              onClick={() => handleCardClick('meeting')}
+            >
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -212,7 +217,10 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 grd-bg-color-12 pointer" onClick={() => handleCardClick('projects')}>
+            <Card
+              className={`customcard mb-1 ${theme === 'static' ? 'bg-color-12' : 'grd-bg-color-12'} pointer`}
+              onClick={() => handleCardClick('projects')}
+            >
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -221,7 +229,7 @@ const DashDefault = () => {
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                            <i className={`text-c-voilet2 f-40 m-r-5`}>{projectDataList?.Result?.length}</i>
+                            <i className={`text-c-purple f-40 m-r-5`}>{projectDataList?.Result?.length}</i>
                           </h3>
                         </div>
                       </div>
@@ -229,7 +237,7 @@ const DashDefault = () => {
                   </Col>
                   <Col className="d-flex  justify-content-end align-items-center">
                     <motion.i
-                      className="text-c-voilet2 icons f-67 m-r-5"
+                      className="text-c-purple icons f-67 m-r-5"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -241,7 +249,10 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 grd-bg-color-3 pointer" onClick={() => handleCardClick('meeting')}>
+            <Card
+              className={`customcard mb-1 ${theme === 'static' ? 'bg-color-3' : 'grd-bg-color-3'} pointer`}
+              onClick={() => handleCardClick('meeting')}
+            >
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -250,7 +261,7 @@ const DashDefault = () => {
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
-                            <i className={`text-c-purple f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalTask}</i>
+                            <i className={`text-c-grey f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalTask}</i>
                           </h3>
                         </div>
                       </div>
@@ -258,7 +269,7 @@ const DashDefault = () => {
                   </Col>
                   <Col className="d-flex justify-content-end align-items-center">
                     <motion.i
-                      className="fas fa-list text-c-purple icons f-80 m-r-5"
+                      className="fas fa-list text-c-grey icons f-80 m-r-5"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -269,7 +280,10 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 grd-bg-color-4 pointer" onClick={() => handleCardClick('completed')}>
+            <Card
+              className={`customcard mb-1 ${theme === 'static' ? 'bg-color-4' : 'grd-bg-color-4'}  pointer`}
+              onClick={() => handleCardClick('completed')}
+            >
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -295,7 +309,10 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1  grd-bg-color-5 pointer" onClick={() => handleCardClick('panding')}>
+            <Card
+              className={`customcard mb-1  ${theme === 'static' ? 'bg-color-5' : 'grd-bg-color-5'}  pointer`}
+              onClick={() => handleCardClick('panding')}
+            >
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -321,7 +338,10 @@ const DashDefault = () => {
             </Card>
           </div>
           <div className="grid-item">
-            <Card className="customcard mb-1 grd-bg-color-6 pointer" onClick={() => handleCardClick('inprogress')}>
+            <Card
+              className={`customcard mb-1 ${theme === 'static' ? 'bg-color-6' : 'grd-bg-color-6'}  pointer`}
+              onClick={() => handleCardClick('inprogress')}
+            >
               <Card.Body>
                 <Row>
                   <Col className="d-flex align-items-center">
@@ -410,7 +430,6 @@ const DashDefault = () => {
                       </thead>
                       <tbody>
                         {selectedMeeting?.[0]?.Attendance.map((item, idx) => {
-                          console.log('first', selectedMeeting?.[0]?.Attendance);
                           const user = userList?.Result?.find((u) => u.UserId === item.userId);
                           if (item.userId !== '') {
                             return (

@@ -267,7 +267,6 @@ const NewPoint = () => {
         return true;
       }
     } catch (error) {
-      console.error('Error saving meeting:', error);
       return false;
     }
   };
@@ -319,7 +318,6 @@ const NewPoint = () => {
 
         return true;
       } catch (error) {
-        console.error('Error saving attendance:', error);
         return false;
       }
     }
@@ -391,7 +389,6 @@ const NewPoint = () => {
           );
           return true;
         } catch (error) {
-          console.error('Error saving discussion points:', error);
           return; // Stop execution on API failure
         }
       }

@@ -42,6 +42,7 @@ const UserList = () => {
     }
   ]);
   const [formData, setFormData] = useState({
+    SalutationId: '',
     UserName: '',
     EmployementId: '',
     DesignationId: '',
@@ -62,6 +63,7 @@ const UserList = () => {
   const divisionDataList = useSelector((state) => state.settings.divisionData);
   const employeementDataList = useSelector((state) => state.settings.employeementData);
   const organizationDataList = useSelector((state) => state.settings.organizationData);
+  const salutationDataList = useSelector((state) => state.settings.salutationData);
 
   const getUserList = () => {
     // Call the GET API to fetch users
@@ -74,6 +76,7 @@ const UserList = () => {
     dispatch(settingsActions.getDivisionInfo());
     dispatch(settingsActions.getEmployeementInfo());
     dispatch(settingsActions.getOrganizationInfo());
+    dispatch(settingsActions.getSalutationInfo());
   }, []);
 
   useEffect(() => {
@@ -123,6 +126,7 @@ const UserList = () => {
   const handleShowRegister = () => {
     setselectedUser(null); // Reset selected user
     setFormData({
+      SalutationId: '',
       UserName: '',
       EmployementId: '',
       DesignationId: '',
@@ -141,6 +145,7 @@ const UserList = () => {
 
   const validate = () => {
     let newErrors = {};
+    if (!formData.SalutationId) newErrors.SalutationId = 'SalutationId is required';
     if (!formData.UserName) newErrors.UserName = 'User name is required';
     if (!formData.DesignationId) newErrors.DesignationId = 'Designation is required';
     if (!formData.EmployementId) newErrors.EmployementId = 'Employment type is required';
@@ -185,6 +190,7 @@ const UserList = () => {
     if (!validate()) return;
 
     const updatedData = {
+      SalutationId: formData.SalutationId,
       UserName: formData.UserName,
       DesignationId: formData.DesignationId,
       EmployementId: formData.EmployementId,
@@ -223,6 +229,7 @@ const UserList = () => {
   useEffect(() => {
     if (selectedUser) {
       setFormData({
+        SalutationId: selectedUser.SalutationId,
         UserName: selectedUser.UserName,
         EmployementId: selectedUser.EmployementId,
         DesignationId: selectedUser.DesignationId,
@@ -259,6 +266,7 @@ const UserList = () => {
 
   const handleToggleStatus = (user) => {
     const updatedData = {
+      SalutationId: user.SalutationId,
       UserName: user.UserName,
       DesignationId: user.DesignationId,
       EmployementId: user.EmployementId,
@@ -522,18 +530,43 @@ const UserList = () => {
           <Form noValidate onSubmit={handleSubmit}>
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Employee Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter name..."
-                    name="UserName"
-                    value={formData.UserName}
-                    onChange={handleChange}
-                    isInvalid={!!errors.UserName}
-                  />
-                  <Form.Control.Feedback type="invalid">{errors.UserName}</Form.Control.Feedback>
-                </Form.Group>
+                <Form.Label>Employee Name</Form.Label>
+                <Row className="align-items-center mb-3">
+                  <Col xs="auto">
+                    <Form.Select
+                      value={formData.SalutationId}
+                      name="SalutationId"
+                      onChange={handleChange}
+                      isInvalid={!!errors.SalutationId}
+                    >
+                      <option value="">Select</option>
+                      {Array.isArray(salutationDataList?.Result)
+                        ? salutationDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                            <option key={item.SalutationId} value={item.SalutationId}>
+                              {item.SalutationTitle}
+                            </option>
+                          ))
+                        : Object.values(salutationDataList?.Result || {})
+                            .filter((item) => item.Status === '1')
+                            .map((item) => (
+                              <option key={item.SalutationId} value={item.SalutationId}>
+                                {item.SalutationTitle}
+                              </option>
+                            ))}
+                    </Form.Select>
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      type="text"
+                      name="UserName"
+                      placeholder="Enter name..."
+                      value={formData.UserName}
+                      onChange={handleChange}
+                      isInvalid={!!errors.UserName}
+                    />
+                  </Col>
+                </Row>
+                <Form.Control.Feedback type="invalid">{errors.UserName}</Form.Control.Feedback>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">

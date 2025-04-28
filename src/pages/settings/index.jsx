@@ -138,7 +138,6 @@ const Index = () => {
       await dispatch(updateAction(payload));
       setList(list.map((item) => (item.id === id ? { ...item, isEditing: false } : item)));
     } catch (error) {
-      console.error('Failed to update item:', error);
     }
   };
 
@@ -170,7 +169,6 @@ const Index = () => {
           // Create a new array reference to trigger re-render
           setList((prevList) => prevList.map((item) => (item.id === id ? { ...item, status: updatedItem.status === 1 ? 0 : 1 } : item)));
         } catch (error) {
-          console.error('Failed to update item:', error);
         }
         Swal.fire({
           title: 'Updated!',
@@ -197,7 +195,6 @@ const Index = () => {
     //     // Create a new array reference to trigger re-render
     //     setList((prevList) => prevList.map((item) => (item.id === id ? { ...item, status: updatedItem.status === 1 ? 0 : 1 } : item)));
     //   } catch (error) {
-    //     console.error('Failed to update item:', error);
     //   }
     // }
   };
@@ -224,7 +221,6 @@ const Index = () => {
       // Reset input field
       setNewItem('');
     } catch (error) {
-      console.error('Failed to add item:', error);
     }
   };
 
