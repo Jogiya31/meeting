@@ -4,8 +4,10 @@ import { ListGroup } from 'react-bootstrap';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import NavGroup from './NavGroup';
+import { useTheme } from '../../../../contexts/themeContext';
 
 const NavContent = ({ navigation }) => {
+  const { navColor } = useTheme();
   const navItems = navigation.map((item) => {
     switch (item.type) {
       case 'group':
@@ -18,7 +20,7 @@ const NavContent = ({ navigation }) => {
   let mainContent = '';
 
   mainContent = (
-    <div className="navbar-content daid-scroll">
+    <div className={`navbar-content daid-scroll ${navColor}`}>
       <PerfectScrollbar>
         <ListGroup variant="flush" as="ul" bsPrefix=" " className="nav pcoded-inner-navbar" id="nav-ps-next">
           {navItems}

@@ -1,19 +1,17 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-import NavLeft from './NavLeft';
-import NavRight from './NavRight';
-
 import { ConfigContext } from '../../../contexts/ConfigContext';
 import * as actionType from '../../../store/actions';
+import { useTheme } from 'contexts/themeContext';
 
 const NavBar = () => {
+  const { mode, logoColor } = useTheme();
   const [moreToggle, setMoreToggle] = useState(false);
   const configContext = useContext(ConfigContext);
   const { collapseMenu, headerFixedLayout, layout } = configContext.state;
   const { dispatch } = configContext;
 
-  let headerClass = ['navbar', 'pcoded-header', 'navbar-expand-lg'];
+  let headerClass = ['navbar', 'pcoded-header', 'navbar-expand-lg', mode];
   if (headerFixedLayout && layout === 'vertical') {
     headerClass = [...headerClass, 'headerpos-fixed'];
   }
@@ -37,7 +35,7 @@ const NavBar = () => {
 
   let navBar = (
     <React.Fragment>
-      <div className="m-header">
+      <div className={`m-header ${logoColor}`}>
         <Link to="#" className={toggleClass.join(' ')} id="mobile-collapse" onClick={navToggleHandler}>
           <span />
         </Link>
@@ -51,10 +49,6 @@ const NavBar = () => {
           <i className="feather icon-more-vertical" />
         </Link>
       </div>
-      {/* <div style={{ justifyContent: 'space-between' }} className={collapseClass.join(' ')}>
-        <NavLeft />
-        <NavRight />
-      </div> */}
     </React.Fragment>
   );
 

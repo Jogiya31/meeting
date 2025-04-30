@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import logo from '../../../../assets/images/logo.png';
 import { ConfigContext } from '../../../../contexts/ConfigContext';
 import * as actionType from '../../../../store/actions';
+import { useTheme } from 'contexts/themeContext';
 
 const NavLogo = () => {
+  const { logoColor } = useTheme();
   const configContext = useContext(ConfigContext);
   const { collapseMenu } = configContext.state;
   const { dispatch } = configContext;
@@ -16,7 +18,7 @@ const NavLogo = () => {
 
   return (
     <React.Fragment>
-      <div className="navbar-brand header-logo">
+      <div className={`navbar-brand header-logo ${logoColor}`}>
         <Link to="#" className="b-brand">
           <img src={logo} className="logo" alt="" />
           <span className="b-title">DAID</span>

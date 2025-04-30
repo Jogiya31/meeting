@@ -1085,19 +1085,19 @@
     }
   }
 }
-.pcoded-navbar.dark {
-  background-color: $brand-background;
-  .pcoded-inner-navbar {
-    li {
-      a.active {
-        box-shadow: 0px 0px 10px rgba(37, 138, 245, 0.7529411765);
-      }
-      a {
-        &:hover {
-          box-shadow: 0px 0px 10px rgba(37, 138, 245, 0.7529411765);
-        }
-      }
-    }
-  }
-}
+// .pcoded-navbar.dark {
+//   background-color: $brand-background;
+//   .pcoded-inner-navbar {
+//     li {
+//       a.active {
+//         box-shadow: 0px 0px 10px rgba(37, 138, 245, 0.7529411765);
+//       }
+//       a {
+//         &:hover {
+//           box-shadow: 0px 0px 10px rgba(37, 138, 245, 0.7529411765);
+//         }
+//       }
+//     }
+//   }
+// }
 

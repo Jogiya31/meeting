@@ -4,7 +4,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import './style.scss';
 
 const Settings = () => {
-  const { mode, theme, changeMode, changeThemeMode } = useTheme();
+  const { mode, theme, navColor, logoColor, changeMode, changeThemeMode, changeNavColor, changeLogoColor } = useTheme();
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -29,6 +29,7 @@ const Settings = () => {
   const handleReset = () => {
     ModeChange('light');
     ThemeChange('static');
+    changeNavColor('');
   };
 
   return (
@@ -83,7 +84,7 @@ const Settings = () => {
               </div>
               <div className="d-flex">
                 <div
-                  className={`preset-btn bg-color-9 pointer ${theme === 'static' ? 'active' : ''}  bg-transparent`}
+                  className={`preset-btn bg-default pointer ${theme === 'static' ? 'active' : ''}  bg-transparent`}
                   title="Static"
                   onClick={() => ThemeChange('static')}
                 ></div>
@@ -92,6 +93,68 @@ const Settings = () => {
                   title="Gradient"
                   onClick={() => ThemeChange('gradient')}
                 ></div>
+              </div>
+            </div>
+            <div className="align-items-center mt-4  ">
+              <div className="flex-shrink-0 mb-2">
+                <h6 className="mb-1">Logo Theme</h6>
+                <p className="text-muted text-sm mb-0">Choose your Logo theme color</p>
+              </div>
+              <div className="d-flex">
+                <div className="theme-color navbar-color">
+                  <a href="#!" className={`blue ${logoColor === 'blue' ? 'active' : ''}`} onClick={() => changeLogoColor('blue')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`primary  ${logoColor === 'primary' ? 'active' : ''}`} onClick={() => changeLogoColor('primary')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`warning  ${logoColor === 'warning' ? 'active' : ''}`} onClick={() => changeLogoColor('warning')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`success  ${logoColor === 'success' ? 'active' : ''}`} onClick={() => changeLogoColor('success')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`purple  ${logoColor === 'purple' ? 'active' : ''}`} onClick={() => changeLogoColor('purple')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`danger  ${logoColor === 'danger' ? 'active' : ''}`} onClick={() => changeLogoColor('danger')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`brown  ${logoColor === 'brown' ? 'active' : ''}`} onClick={() => changeLogoColor('brown')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                </div>
+              </div>
+            </div>
+            <div className="align-items-center mt-4  ">
+              <div className="flex-shrink-0 mb-2">
+                <h6 className="mb-1">Navbar Theme</h6>
+                <p className="text-muted text-sm mb-0">Choose your Navbar theme color</p>
+              </div>
+              <div className="d-flex">
+                <div className="theme-color navbar-color">
+                  <a href="#!" className={`blue ${navColor === 'blue' ? 'active' : ''}`} onClick={() => changeNavColor('blue')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`primary  ${navColor === 'primary' ? 'active' : ''}`} onClick={() => changeNavColor('primary')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`warning  ${navColor === 'warning' ? 'active' : ''}`} onClick={() => changeNavColor('warning')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`success  ${navColor === 'success' ? 'active' : ''}`} onClick={() => changeNavColor('success')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`purple  ${navColor === 'purple' ? 'active' : ''}`} onClick={() => changeNavColor('purple')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`danger  ${navColor === 'danger' ? 'active' : ''}`} onClick={() => changeNavColor('danger')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                  <a href="#!" className={`brown  ${navColor === 'brown' ? 'active' : ''}`} onClick={() => changeNavColor('brown')}>
+                    <i className="fas fa-check-double"></i>
+                  </a>{' '}
+                </div>
               </div>
             </div>
           </div>

@@ -128,6 +128,27 @@
     header.navbar.pcoded-header.navbar-expand-lg.header-default .mobile-menu.on span {
       background-color: transparent;
     }
+    .m-header.blue {
+      background-color: $blue-color;
+    }
+    .m-header.primary {
+      background-color: $primary-color;
+    }
+    .m-header.warning {
+      background-color: $warning-color;
+    }
+    .m-header.success {
+      background-color: $success-color;
+    }
+    .m-header.purple {
+      background-color: $purple-color;
+    }
+    .m-header.brown {
+      background-color: $brown-color;
+    }
+    .m-header.danger {
+      background-color: $danger-color;
+    }
   }
 
   .user-activity .tab-content {
@@ -953,5 +974,277 @@
     border-color: 1px solid #86b7fe !important;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
   }
-  
+
+  .navbar-wrapper {
+    .blue {
+      background: $blue-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+          color: $light-color;
+        }
+
+        &.active {
+          .pcoded-submenu {
+            background: #001630;
+          }
+        }
+      }
+
+      .pcoded-submenu {
+        background: #001630;
+      }
+    }
+
+    .primary {
+      background: $primary-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+          color: $light-color;
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #06648f;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #06648f;
+
+          .nav-link {
+            background: #06648f;
+          }
+        }
+
+        &.active {
+          background: #044969;
+        }
+      }
+    }
+
+    .warning {
+      background: $warning-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+          color: $light-color;
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #b38703;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #b38703;
+
+          .nav-link {
+            background: #b38703;
+          }
+        }
+
+        &.active {
+          background: #856300;
+        }
+      }
+    }
+
+    .success {
+      background: $success-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+          color: $light-color;
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #08743e;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #08743e;
+
+          .nav-link {
+            background: #08743e;
+          }
+        }
+
+        &.active {
+          background: #05582f;
+        }
+      }
+    }
+
+    .purple {
+      background: $purple-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+          color: $light-color;
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #634A92;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #533c80;
+
+          .nav-link {
+            background: #533c80;
+          }
+        }
+
+        &.active {
+          background: #372852;
+        }
+      }
+    }
+
+    .brown {
+      background: $brown-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+          color: $light-color;
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #6d301c;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #69301c;
+
+          .nav-link {
+            background: #69301c;
+
+          }
+        }
+
+        &.active {
+          background: #522516;
+        }
+      }
+    }
+    .danger {
+      background: $danger-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+          color: $light-color;
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #6d301c;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #69301c;
+
+          .nav-link {
+            background: #69301c;
+
+          }
+        }
+
+        &.active {
+          background: #522516;
+        }
+      }
+    }
+    .nav-link.active {
+      box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+    }
+  }
 }
