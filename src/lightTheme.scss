@@ -511,7 +511,8 @@
       button {
         border: none;
         background-color: $primary-color;
-        color: #fff;
+        color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -557,7 +558,8 @@
       button {
         border: none;
         background-color: $warning-color;
-        color: #fff;
+        color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -603,7 +605,8 @@
       button {
         border: none;
         background-color: $success-color;
-        color: #fff;
+        color: $white-color !important;
+
         &:hover {
         }
       }
@@ -648,7 +651,8 @@
       button {
         border: none;
         background-color: $secondary-color;
-        color: #fff;
+        color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -694,7 +698,8 @@
       button {
         border: none;
         background-color: $danger-color;
-        color: #fff;
+        color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -740,7 +745,8 @@
       button {
         border: none;
         background-color: $purple-color;
-        color: #fff;
+        color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -786,7 +792,8 @@
       button {
         border: none;
         background-color: $brown-color;
-        color: #fff;
+        color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -982,7 +989,7 @@
       .nav-item {
         .nav-link,
         a {
-          color: $light-color;
+           color: $white-color !important;
         }
 
         &.active {
@@ -1003,7 +1010,7 @@
       .nav-item {
         .nav-link,
         a {
-          color: $light-color;
+           color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1044,7 +1051,7 @@
       .nav-item {
         .nav-link,
         a {
-          color: $light-color;
+           color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1085,7 +1092,7 @@
       .nav-item {
         .nav-link,
         a {
-          color: $light-color;
+           color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1126,7 +1133,7 @@
       .nav-item {
         .nav-link,
         a {
-          color: $light-color;
+           color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1167,7 +1174,7 @@
       .nav-item {
         .nav-link,
         a {
-          color: $light-color;
+           color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1208,7 +1215,7 @@
       .nav-item {
         .nav-link,
         a {
-          color: $light-color;
+           color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;

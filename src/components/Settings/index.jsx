@@ -30,6 +30,7 @@ const Settings = () => {
     ModeChange('light');
     ThemeChange('static');
     changeNavColor('');
+    changeLogoColor('');
   };
 
   return (

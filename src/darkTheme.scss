@@ -552,7 +552,8 @@
       button {
         border: none;
         background-color: $primary-color;
-        color: #fff;
+         color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -598,7 +599,8 @@
       button {
         border: none;
         background-color: $warning-color;
-        color: #fff;
+         color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -644,7 +646,8 @@
       button {
         border: none;
         background-color: $success-color;
-        color: #fff;
+         color: $white-color !important;
+
         &:hover {
         }
       }
@@ -689,7 +692,8 @@
       button {
         border: none;
         background-color: $secondary-color;
-        color: #fff;
+         color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -735,7 +739,8 @@
       button {
         border: none;
         background-color: $danger-color;
-        color: #fff;
+         color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -781,7 +786,8 @@
       button {
         border: none;
         background-color: $purple-color;
-        color: #fff;
+         color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -827,7 +833,8 @@
       button {
         border: none;
         background-color: $brown-color;
-        color: #fff;
+         color: $white-color !important;
+
         &:hover {
           opacity: 1;
         }
@@ -1084,20 +1091,288 @@
       color: $dark-layout-font;
     }
   }
+
+  .navbar-wrapper {
+    .blue {
+      background: $blue-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+           color: $white-color !important;
+
+        }
+
+        &.active {
+          .pcoded-submenu {
+            background: #001630;
+          }
+        }
+      }
+
+      .pcoded-submenu {
+        background: #001630;
+      }
+    }
+
+    .primary {
+      background: $primary-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+           color: $white-color !important;
+
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #06648f;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #06648f;
+
+          .nav-link {
+            background: #06648f;
+          }
+        }
+
+        &.active {
+          background: #044969;
+        }
+      }
+    }
+
+    .warning {
+      background: $warning-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+          color: $white-color !important;
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+        label{
+          color: $white-color !important;
+
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #b38703;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #b38703;
+
+          .nav-link {
+            background: #b38703;
+          }
+        }
+
+        &.active {
+          background: #856300;
+        }
+      }
+    }
+
+    .success {
+      background: $success-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+           color: $white-color !important;
+
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #08743e;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #08743e;
+
+          .nav-link {
+            background: #08743e;
+          }
+        }
+
+        &.active {
+          background: #05582f;
+        }
+      }
+    }
+
+    .purple {
+      background: $purple-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+           color: $white-color !important;
+
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #634A92;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #533c80;
+
+          .nav-link {
+            background: #533c80;
+          }
+        }
+
+        &.active {
+          background: #372852;
+        }
+      }
+    }
+
+    .brown {
+      background: $brown-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+           color: $white-color !important;
+
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #6d301c;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #69301c;
+
+          .nav-link {
+            background: #69301c;
+
+          }
+        }
+
+        &.active {
+          background: #522516;
+        }
+      }
+    }
+    .danger {
+      background: $danger-color;
+
+      .nav-item {
+        .nav-link,
+        a {
+           color: $white-color !important;
+
+
+          &:hover {
+            box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+          }
+        }
+
+        &.active {
+          box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+
+          .pcoded-submenu {
+            background: #6d301c;
+          }
+        }
+      }
+
+      .nav-item.pcoded-hasmenu {
+        .nav-link {
+          background: transparent;
+        }
+
+        .pcoded-submenu {
+          background: #69301c;
+
+          .nav-link {
+            background: #69301c;
+
+          }
+        }
+
+        &.active {
+          background: #522516;
+        }
+      }
+    }
+    .nav-link.active {
+      box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+    }
+  }
 }
-// .pcoded-navbar.dark {
-//   background-color: $brand-background;
-//   .pcoded-inner-navbar {
-//     li {
-//       a.active {
-//         box-shadow: 0px 0px 10px rgba(37, 138, 245, 0.7529411765);
-//       }
-//       a {
-//         &:hover {
-//           box-shadow: 0px 0px 10px rgba(37, 138, 245, 0.7529411765);
-//         }
-//       }
-//     }
-//   }
-// }
 
