@@ -1100,7 +1100,9 @@
         .nav-link,
         a {
            color: $white-color !important;
-
+           &:hover {
+            box-shadow: 0 0 21px rgba(31, 69, 112, 0.75) !important;
+          }
         }
 
         &.active {
@@ -1371,7 +1373,7 @@
       }
     }
     .nav-link.active {
-      box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+      box-shadow: 0 0 21px rgba(77, 123, 177, 0.75) !important;
     }
   }
 }

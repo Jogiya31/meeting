@@ -985,11 +985,13 @@
   .navbar-wrapper {
     .blue {
       background: $blue-color;
-
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
+          color: $white-color !important;
+          &:hover {
+            box-shadow: 0 0 21px rgba(31, 69, 112, 0.75) !important;
+          }
         }
 
         &.active {
@@ -998,7 +1000,6 @@
           }
         }
       }
-
       .pcoded-submenu {
         background: #001630;
       }
@@ -1010,7 +1011,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1051,7 +1052,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1092,7 +1093,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1133,7 +1134,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1144,7 +1145,7 @@
           box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
 
           .pcoded-submenu {
-            background: #634A92;
+            background: #634a92;
           }
         }
       }
@@ -1174,7 +1175,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1200,7 +1201,6 @@
 
           .nav-link {
             background: #69301c;
-
           }
         }
 
@@ -1215,7 +1215,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1241,7 +1241,6 @@
 
           .nav-link {
             background: #69301c;
-
           }
         }
 
@@ -1251,7 +1250,7 @@
       }
     }
     .nav-link.active {
-      box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
+      box-shadow: 0 0 21px rgba(77, 123, 177, 0.75) !important;
     }
   }
 }
