@@ -1,6 +1,7 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { authActions } from './authrSlice';
 import { authInfo } from '../../api/api';
+import { toast } from 'react-toastify';
 
 // Saga function to handle fetching auth information
 function* handleauthInfo(data) {

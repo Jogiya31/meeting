@@ -838,7 +838,7 @@ const NewPoint = () => {
           )}
         </Col>
       </Row>
-      <Modal show={showInfo} onHide={handleClose} animation={false}>
+      <Modal show={showInfo} onHide={handleClose} animation={true}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>User Details</h5>

@@ -79,8 +79,8 @@ const UserList = () => {
     dispatch(settingsActions.getSalutationInfo());
   }, []);
 
+  // sorting order for user list
   const customEmployementOrder = ['NIC Officer', 'Out-Sourced'];
-
   const designationPriority = ['HOG', 'HOD', 'Scientist-G', 'Scientist-F', 'Scientist-E', 'Scientist-D', 'Scientist-C'];
 
   // Get the priority index of a DesignationTitle
@@ -535,7 +535,7 @@ const UserList = () => {
           </Card>
         </Col>
       </Row>
-      <Modal size="xl" show={showregister} onHide={handleClose} animation={false}>
+      <Modal size="xl" show={showregister} onHide={handleClose} animation={true}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>

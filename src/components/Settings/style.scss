@@ -732,6 +732,10 @@
   transform: scale(1);
 }
 
+.default-bg{
+ background-color: var(--blue-color);
+}
+
 .theme-color {
   a {
     position: relative;

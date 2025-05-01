@@ -552,7 +552,7 @@
       button {
         border: none;
         background-color: $primary-color;
-         color: $white-color !important;
+        color: $white-color !important;
 
         &:hover {
           opacity: 1;
@@ -599,7 +599,7 @@
       button {
         border: none;
         background-color: $warning-color;
-         color: $white-color !important;
+        color: $white-color !important;
 
         &:hover {
           opacity: 1;
@@ -646,7 +646,7 @@
       button {
         border: none;
         background-color: $success-color;
-         color: $white-color !important;
+        color: $white-color !important;
 
         &:hover {
         }
@@ -692,7 +692,7 @@
       button {
         border: none;
         background-color: $secondary-color;
-         color: $white-color !important;
+        color: $white-color !important;
 
         &:hover {
           opacity: 1;
@@ -739,7 +739,7 @@
       button {
         border: none;
         background-color: $danger-color;
-         color: $white-color !important;
+        color: $white-color !important;
 
         &:hover {
           opacity: 1;
@@ -786,7 +786,7 @@
       button {
         border: none;
         background-color: $purple-color;
-         color: $white-color !important;
+        color: $white-color !important;
 
         &:hover {
           opacity: 1;
@@ -833,7 +833,7 @@
       button {
         border: none;
         background-color: $brown-color;
-         color: $white-color !important;
+        color: $white-color !important;
 
         &:hover {
           opacity: 1;
@@ -1093,14 +1093,17 @@
   }
 
   .navbar-wrapper {
+    .navbar-content {
+      background: $brand-background;
+    }
     .blue {
       background: $blue-color;
 
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
-           &:hover {
+          color: $white-color !important;
+          &:hover {
             box-shadow: 0 0 21px rgba(31, 69, 112, 0.75) !important;
           }
         }
@@ -1123,8 +1126,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
-
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1171,9 +1173,8 @@
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
           }
         }
-        label{
+        label {
           color: $white-color !important;
-
         }
 
         &.active {
@@ -1210,8 +1211,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
-
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1252,8 +1252,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
-
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1264,7 +1263,7 @@
           box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
 
           .pcoded-submenu {
-            background: #634A92;
+            background: #634a92;
           }
         }
       }
@@ -1294,8 +1293,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
-
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1321,7 +1319,6 @@
 
           .nav-link {
             background: #69301c;
-
           }
         }
 
@@ -1336,8 +1333,7 @@
       .nav-item {
         .nav-link,
         a {
-           color: $white-color !important;
-
+          color: $white-color !important;
 
           &:hover {
             box-shadow: 0 0 21px rgba(18, 32, 48, 0.75) !important;
@@ -1363,7 +1359,6 @@
 
           .nav-link {
             background: #69301c;
-
           }
         }
 
@@ -1377,4 +1372,3 @@
     }
   }
 }
-

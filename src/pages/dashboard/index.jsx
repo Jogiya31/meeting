@@ -19,12 +19,15 @@ import { FaProjectDiagram } from 'react-icons/fa';
 import { useTheme } from '../../contexts/themeContext';
 const DashDefault = () => {
   const { mode, theme } = useTheme();
+  console.log('theme', theme);
+  console.log('mode', mode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pdfContent = useRef();
   const { filterWith } = useStore();
   const [events, setEvents] = useState([]);
   const [showInfo, setshowInfo] = useState(false);
+  const [showProjects, setShowProjects] = useState(false);
   const [showInfoDetails, setshowInfoDetails] = useState(false);
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState(null);
@@ -124,6 +127,7 @@ const DashDefault = () => {
   const handleClose = () => {
     setshowInfo(false);
     setshowInfoDetails(false);
+    setShowProjects(false);
     setSelectedEventId(null);
     setSelectedMeeting(null);
     setSelectedEvents([]);
@@ -219,7 +223,7 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-12' : 'grd-bg-color-12'} pointer`}
-              onClick={() => handleCardClick('projects')}
+              onClick={() => setShowProjects(!showProjects)}
             >
               <Card.Body>
                 <Row>
@@ -374,7 +378,7 @@ const DashDefault = () => {
         </div>
       </div>
 
-      <Modal size="xl" show={showInfoDetails} animation={false}>
+      <Modal size="xl" show={showInfoDetails} animation={true}>
         <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Meeting Details</h5>
@@ -508,7 +512,7 @@ const DashDefault = () => {
         </Modal.Body>
       </Modal>
 
-      <Modal show={showInfo} animation={false}>
+      <Modal show={showInfo} animation={true}>
         <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Events for this day </h5>
@@ -526,6 +530,32 @@ const DashDefault = () => {
                     <div className="d-flex align-items-center">
                       <span>{index + 1}.</span>
                       <p className="m-0 p-1">{event.title}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Modal.Body>
+      </Modal>
+      <Modal show={showProjects} animation={true}>
+        <Modal.Header className={mode}>
+          <Modal.Title className="dashboardModalHeader">
+            <h5>Total no. of projects</h5>
+          </Modal.Title>
+          <span className="pointer" onClick={handleClose}>
+            X
+          </span>
+        </Modal.Header>
+        <Modal.Body className={`p-4 ${mode}`}>
+          {projectDataList?.Result?.length > 0 && (
+            <div className="events">
+              <ul className="event-list p-0">
+                {projectDataList?.Result?.filter((proj) => String(proj.Status) === String(1)).map((item, index) => (
+                  <li key={item.id + '__'} className="item">
+                    <div className="d-flex align-items-center">
+                      <span>{index + 1}.</span>
+                      <p className="m-0 p-1">{item.ProjectTitle}</p>
                     </div>
                   </li>
                 ))}

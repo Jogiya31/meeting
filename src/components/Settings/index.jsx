@@ -30,7 +30,9 @@ const Settings = () => {
     ModeChange('light');
     ThemeChange('static');
     changeNavColor('');
+    localStorage.removeItem('navColor');
     changeLogoColor('');
+    localStorage.removeItem('logoColor');
   };
 
   return (
@@ -85,12 +87,12 @@ const Settings = () => {
               </div>
               <div className="d-flex">
                 <div
-                  className={`preset-btn bg-default pointer ${theme === 'static' ? 'active' : ''}  bg-transparent`}
+                  className={`preset-btn default-bg  pointer ${theme === 'static' ? 'active' : ''}`}
                   title="Static"
                   onClick={() => ThemeChange('static')}
                 ></div>
                 <div
-                  className={`preset-btn grd-bg-color-8 pointer ${theme === 'gradient' ? 'active' : ''} bg-transparent`}
+                  className={`preset-btn grd-bg-color-8 pointer ${theme === 'gradient' ? 'active' : ''}`}
                   title="Gradient"
                   onClick={() => ThemeChange('gradient')}
                 ></div>

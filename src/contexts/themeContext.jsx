@@ -4,7 +4,7 @@ export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }) => {
   const [mode, setMode] = useState('light');
-  const [theme, setTheme] = useState('gradient');
+  const [theme, setTheme] = useState('static');
   const [navColor, setNavColor] = useState('');
   const [logoColor, setLogoColor] = useState('');
 

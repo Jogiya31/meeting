@@ -1,26 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Alert, Button } from 'react-bootstrap';
-import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { Row, Col, Alert, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { authActions } from '../../store/auth/authrSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { authActions } from '../../store/auth/authrSlice';
 import { useAuth } from '../../contexts/AuthContext';
+
 const JWTLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loggedIn, login } = useAuth();
 
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [saveCredentials, setSaveCredentials] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
+
   const loginDetails = useSelector((state) => state.auth.data);
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    setError('');
-    dispatch(authActions.getauthInfo(values));
-    setSubmitting(false);
+  const validate = () => {
+    const newErrors = {};
+    if (!username.trim()) newErrors.username = 'User ID is required';
+    if (!password) newErrors.password = 'Password is required';
+    return newErrors;
   };
-  // Redirect logged-in users to dashboard
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+    setSubmitError('');
+    dispatch(authActions.getauthInfo({ UsernameMobile: username, Password: password }));
+  };
+
   useEffect(() => {
     if (loggedIn || localStorage.getItem('loggedIn')) {
       navigate('/meetings/dashboard');
@@ -37,77 +53,58 @@ const JWTLogin = () => {
   }, [loginDetails]);
 
   return (
-    <Formik
-      initialValues={{
-        UsernameMobile: '',
-        Password: ''
-      }}
-      validationSchema={Yup.object().shape({
-        UsernameMobile: Yup.string().max(255).required('User ID is required'),
-        Password: Yup.string().required('Password is required')
-      })}
-      onSubmit={handleSubmit}
-    >
-      {({ errors, handleBlur, handleChange, isSubmitting, touched, values, handleSubmit }) => (
-        <form noValidate onSubmit={handleSubmit}>
-          <div className="form-group mb-3">
-            <label htmlFor="username">User ID</label>
-            <input
-              id="username"
-              className="form-control"
-              name="UsernameMobile"
-              placeholder="Enter your User Name/Mobile"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              type="text"
-              value={values.UsernameMobile}
-            />
-            {touched.UsernameMobile && errors.UsernameMobile && <small className="text-danger form-text">{errors.UsernameMobile}</small>}
-          </div>
-          <div className="form-group mb-4">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              className="form-control"
-              name="Password"
-              placeholder="Enter your Password"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              type="password"
-              value={values.Password}
-            />
-            {touched.Password && errors.Password && <small className="text-danger form-text">{errors.Password}</small>}
-          </div>
+    <Form noValidate onSubmit={handleSubmit}>
+      <Form.Group className="mb-3" controlId="username">
+        <Form.Label>User ID</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter your User Name/Mobile"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          isInvalid={!!errors.username}
+        />
+        <Form.Control.Feedback type="invalid">
+          {errors.username}
+        </Form.Control.Feedback>
+      </Form.Group>
 
-          <div className="custom-control custom-checkbox text-start mb-4 mt-2">
-            <input
-              type="checkbox"
-              className="custom-control-input mx-2"
-              id="customCheck1"
-              checked={saveCredentials}
-              onChange={() => setSaveCredentials(!saveCredentials)}
-            />
-            <label className="custom-control-label" htmlFor="customCheck1">
-              Save credentials
-            </label>
-          </div>
+      <Form.Group className="mb-4" controlId="password">
+        <Form.Label>Password</Form.Label>
+        <Form.Control
+          type="password"
+          placeholder="Enter your Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          isInvalid={!!errors.password}
+        />
+        <Form.Control.Feedback type="invalid">
+          {errors.password}
+        </Form.Control.Feedback>
+      </Form.Group>
 
-          {error && (
-            <Col sm={12}>
-              <Alert variant="danger">{error}</Alert>
-            </Col>
-          )}
+      <Form.Group className="mb-4 mt-2" controlId="saveCredentials">
+        <Form.Check
+          type="checkbox"
+          label="Save credentials"
+          checked={saveCredentials}
+          onChange={() => setSaveCredentials(!saveCredentials)}
+        />
+      </Form.Group>
 
-          <Row>
-            <Col mt={2}>
-              <Button className="btn-block mb-4" color="primary" disabled={isSubmitting} size="large" type="submit" variant="primary">
-                Sign In
-              </Button>
-            </Col>
-          </Row>
-        </form>
+      {submitError && (
+        <Col sm={12}>
+          <Alert variant="danger">{submitError}</Alert>
+        </Col>
       )}
-    </Formik>
+
+      <Row>
+        <Col>
+          <Button type="submit" variant="primary" className="w-100">
+            Sign In
+          </Button>
+        </Col>
+      </Row>
+    </Form>
   );
 };
 

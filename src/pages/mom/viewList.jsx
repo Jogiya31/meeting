@@ -434,7 +434,7 @@ export default function CollapsibleTable() {
           </div>
         </Pagination>
       </Card>
-      <Modal show={show} onHide={handleClose} animation={false}>
+      <Modal show={show} onHide={handleClose} animation={true}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Update Details</h5>
