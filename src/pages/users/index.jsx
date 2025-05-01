@@ -79,6 +79,20 @@ const UserList = () => {
     dispatch(settingsActions.getSalutationInfo());
   }, []);
 
+  const customEmployementOrder = ['NIC Officer', 'Out-Sourced'];
+
+  const designationPriority = ['HOG', 'HOD', 'Scientist-G', 'Scientist-F', 'Scientist-E', 'Scientist-D', 'Scientist-C'];
+
+  // Get the priority index of a DesignationTitle
+  const getDesignationPriorityIndex = (title) => {
+    for (let i = 0; i < designationPriority.length; i++) {
+      if (title.includes(designationPriority[i])) {
+        return i; // lower index = higher priority
+      }
+    }
+    return designationPriority.length; // for "others"
+  };
+
   useEffect(() => {
     if (userList && Array.isArray(userList.Result)) {
       const updatedData = userList.Result.map((item) => {
@@ -92,7 +106,22 @@ const UserList = () => {
           DesignationTitle: desc
         };
       });
-      setData(updatedData);
+
+      const sorted = [...updatedData].sort((a, b) => {
+        const empCompare = customEmployementOrder.indexOf(a.EmployementTitle) - customEmployementOrder.indexOf(b.EmployementTitle);
+        if (empCompare !== 0) return empCompare;
+
+        const desigCompare = getDesignationPriorityIndex(a.DesignationTitle) - getDesignationPriorityIndex(b.DesignationTitle);
+        if (desigCompare !== 0) return desigCompare;
+
+        // ✅ Fallback to alphabetical sort by UserName
+        const nameA = a.UserName.trim().toLowerCase();
+        const nameB = b.UserName.trim().toLowerCase();
+
+        return nameA.localeCompare(nameB);
+      });
+
+      setData(sorted);
     } else {
       setData([]); // optional fallback
     }
