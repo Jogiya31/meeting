@@ -19,8 +19,6 @@ import { FaProjectDiagram } from 'react-icons/fa';
 import { useTheme } from '../../contexts/themeContext';
 const DashDefault = () => {
   const { mode, theme } = useTheme();
-  console.log('theme', theme);
-  console.log('mode', mode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pdfContent = useRef();
@@ -552,7 +550,7 @@ const DashDefault = () => {
             <div className="events">
               <ul className="event-list p-0">
                 {projectDataList?.Result?.filter((proj) => String(proj.Status) === String(1)).map((item, index) => (
-                  <li key={item.id + '__'} className="item">
+                  <li key={index.id + '__'} className="item">
                     <div className="d-flex align-items-center">
                       <span>{index + 1}.</span>
                       <p className="m-0 p-1">{item.ProjectTitle}</p>
