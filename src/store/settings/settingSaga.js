@@ -5,6 +5,7 @@ import {
   AddDivisionDetails,
   AddEmployementDetails,
   AddOrganisationDetails,
+  AddPriorityDetails,
   AddProjectDetails,
   AddSalutationDetails,
   AddStatusDetails,
@@ -12,6 +13,7 @@ import {
   GetDivisionDetails,
   GetEmployementDetails,
   GetOrganisationDetails,
+  GetPriorityDetails,
   GetProjectDetails,
   GetSalutationDetails,
   GetStatusDetails,
@@ -19,6 +21,7 @@ import {
   UpdateDivision,
   UpdateEmployement,
   UpdateOrganisation,
+  UpdatePriority,
   UpdateProject,
   UpdateSalutation,
   UpdateStatus
@@ -454,6 +457,68 @@ function* handleUpdateSalutationInfo(data) {
 }
 
 
+// Saga function to handle fetching Organization information
+function* handlePriorityInfo() {
+  try {
+    // Call the API to fetch Priority information
+    const response = yield call(GetPriorityDetails);
+    // Check if the response Priority is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.getPriorityInfoSuccess(data || []));
+    } else {
+      // If response Priority is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.getPriorityInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Priority information
+function* handleAddPriorityInfo(data) {
+  try {
+    // Call the API to fetch Priority information
+    const response = yield call(AddPriorityDetails, data);
+    // Check if the response Priority is 200 (OK)
+    if (response.Priority === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.addPriorityInfoSuccess(data || []));
+    } else {
+      // If response Priority is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.addPriorityInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Priority information
+function* handleUpdatePriorityInfo(data) {
+  try {
+    // Call the API to fetch Priority information
+    const response = yield call(UpdatePriority, data);
+    // Check if the response Priority is 200 (OK)
+    if (response.Priority === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.updatePriorityInfoSuccess(data || []));
+    } else {
+      // If response Priority is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.updatePriorityInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+
+
 // Watcher saga to take latest action of fetching user information
 export default function* settingsSaga() {
   yield takeLatest(settingsActions.getDesignationInfo.type, handleDesignationInfo);
@@ -483,4 +548,8 @@ export default function* settingsSaga() {
   yield takeLatest(settingsActions.getSalutationInfo.type, handleSalutationInfo);
   yield takeLatest(settingsActions.addSalutationInfo.type, handleAddSalutationInfo);
   yield takeLatest(settingsActions.updateSalutationInfo.type, handleUpdateSalutationInfo);
+
+  yield takeLatest(settingsActions.getPriorityInfo.type, handlePriorityInfo);
+  yield takeLatest(settingsActions.addPriorityInfo.type, handleAddPriorityInfo);
+  yield takeLatest(settingsActions.updatePriorityInfo.type, handleUpdatePriorityInfo);
 }

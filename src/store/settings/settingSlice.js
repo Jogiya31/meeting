@@ -10,6 +10,7 @@ const initialState = {
   statusData: [],
   projectData: [],
   salutationData: [],
+  priorityData: [],
   success: false,
   message: ''
 };
@@ -356,6 +357,54 @@ const settingsSlice = createSlice({
     },
     // Action to handle failure in fetching Salutation information
     updateSalutationInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    //////////////////////////////////// Priority //////////////////////////////////////
+    // Action to initiate fetching Priority information
+    getPriorityInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Priority information
+    getPriorityInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+      state.priorityData = action.payload; // Store received data
+    },
+    // Action to handle failure in fetching Priority information
+    getPriorityInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+    // Action to initiate fetching Priority information
+    addPriorityInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Priority information
+    addPriorityInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching Priority information
+    addPriorityInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+    // Action to initiate fetching Priority information
+    updatePriorityInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Priority information
+    updatePriorityInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+    },
+    // Action to handle failure in fetching Priority information
+    updatePriorityInfoFailed(state, action) {
       state.loader = false; // Set loader to false after fetching
       state.message = action.payload; // Store error message
       state.success = false; // Set success flag to false

@@ -71,7 +71,7 @@ const DashDefault = () => {
           id: eventsForDate[0].id,
           title: eventsForDate.length === 1 ? eventsForDate[0].title : `${eventsForDate.length} Events`,
           start: date,
-          backgroundColor: '#098a30',
+          backgroundColor: '#5EB562',
           events: eventsForDate
         }))
       );

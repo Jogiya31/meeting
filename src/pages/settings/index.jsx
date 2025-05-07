@@ -9,7 +9,7 @@ import { useTheme } from '../../contexts/themeContext';
 
 const Index = () => {
   const dispatch = useDispatch();
-  const {mode}=useTheme()
+  const { mode } = useTheme();
   const Role = localStorage.getItem('role');
   const designationDataList = useSelector((state) => state.settings.designationData);
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -18,6 +18,7 @@ const Index = () => {
   const statusDataList = useSelector((state) => state.settings.statusData);
   const projectDataList = useSelector((state) => state.settings.projectData);
   const salutationDataList = useSelector((state) => state.settings.salutationData);
+  const priorityDataList = useSelector((state) => state.settings.priorityData);
 
   const [divisionList, setDivisionList] = useState([]);
   const [employmentTypeList, setEmploymentTypeList] = useState([]);
@@ -26,6 +27,7 @@ const Index = () => {
   const [statusList, setStatusList] = useState([]);
   const [projectList, setProjectList] = useState([]);
   const [salutationList, setSalutationList] = useState([]);
+  const [priorityList, setPriorityList] = useState([]);
 
   useEffect(() => {
     dispatch(settingsActions.getDesignationInfo());
@@ -35,8 +37,9 @@ const Index = () => {
     dispatch(settingsActions.getStatusInfo());
     dispatch(settingsActions.getProjectInfo());
     dispatch(settingsActions.getSalutationInfo());
+    dispatch(settingsActions.getPriorityInfo());
   }, []);
-  
+
   useEffect(() => {
     if (Array.isArray(designationDataList?.Result)) {
       const list = designationDataList?.Result?.map((item) => ({
@@ -101,7 +104,25 @@ const Index = () => {
       }));
       setSalutationList(list);
     }
-  }, [designationDataList, divisionDataList, employeementDataList, organizationDataList, statusDataList, projectDataList,salutationDataList]);
+    if (Array.isArray(priorityDataList?.Result)) {
+      const list = priorityDataList.Result.map((item) => ({
+        id: item.PriorityOrderId,
+        title: item.PriorityOrderTitle,
+        status: Number(item.Status),
+        isEditing: false
+      }));
+      setPriorityList(list);
+    }
+  }, [
+    designationDataList,
+    divisionDataList,
+    employeementDataList,
+    organizationDataList,
+    statusDataList,
+    projectDataList,
+    salutationDataList,
+    priorityDataList
+  ]);
 
   const handleEdit = (list, setList, id) => {
     Swal.fire({
@@ -112,7 +133,7 @@ const Index = () => {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Proceed',
-      theme : mode
+      theme: mode
     }).then((result) => {
       if (result.isConfirmed) {
         setList(list.map((item) => (item.id === id ? { ...item, isEditing: true } : item)));
@@ -137,8 +158,7 @@ const Index = () => {
     try {
       await dispatch(updateAction(payload));
       setList(list.map((item) => (item.id === id ? { ...item, isEditing: false } : item)));
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleDelete = async (list, setList, updateAction, id, fieldName) => {
@@ -150,7 +170,7 @@ const Index = () => {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, change it!',
-      theme : mode
+      theme: mode
     }).then(async (result) => {
       if (result.isConfirmed) {
         const updatedItem = list.find((item) => item.id === id);
@@ -168,13 +188,12 @@ const Index = () => {
 
           // Create a new array reference to trigger re-render
           setList((prevList) => prevList.map((item) => (item.id === id ? { ...item, status: updatedItem.status === 1 ? 0 : 1 } : item)));
-        } catch (error) {
-        }
+        } catch (error) {}
         Swal.fire({
           title: 'Updated!',
           text: 'Selected item status has been updated.',
           icon: 'success',
-          theme : mode
+          theme: mode
         });
       }
     });
@@ -220,8 +239,7 @@ const Index = () => {
 
       // Reset input field
       setNewItem('');
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const renderList = (list, setList, apiAction, fetchAction, updateAction, fieldName) => {
@@ -279,7 +297,9 @@ const Index = () => {
                       title="Not Visible"
                       className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
                       onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
-                    ><FaTimesCircle /></span>
+                    >
+                      <FaTimesCircle />
+                    </span>
                   )}
                 </div>
               </Col>
@@ -387,6 +407,18 @@ const Index = () => {
               settingsActions.getSalutationInfo,
               settingsActions.updateSalutationInfo,
               'Salutation'
+            )}
+          </MainCard>
+        </Col>
+        <Col sm={12} md={12} xl={6} xxl={4}>
+          <MainCard title="Priority Order List" cardClass="warning">
+            {renderList(
+              priorityList,
+              setPriorityList,
+              settingsActions.addPriorityInfo,
+              settingsActions.getPriorityInfo,
+              settingsActions.updatePriorityInfo,
+              'PriorityOrder'
             )}
           </MainCard>
         </Col>

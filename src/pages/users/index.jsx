@@ -30,6 +30,7 @@ const UserList = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
+  const [designationPriority, setdesignationPriority] = useState([]);
 
   const [genderDataList, setGenderDataList] = useState([
     {
@@ -53,9 +54,10 @@ const UserList = () => {
     Mobile: '',
     Status: 1,
     Gender: '',
-    SalutationId: 0,
     ImgPath: male_i,
-    CreatedBy: Role
+    CreatedBy: Role,
+    PriorityOrderId: '',
+    DisplayOrderId: ''
   });
 
   const userList = useSelector((state) => state.users.data);
@@ -64,6 +66,7 @@ const UserList = () => {
   const employeementDataList = useSelector((state) => state.settings.employeementData);
   const organizationDataList = useSelector((state) => state.settings.organizationData);
   const salutationDataList = useSelector((state) => state.settings.salutationData);
+  const PriorityDataList = useSelector((state) => state.settings.priorityData);
 
   const getUserList = () => {
     // Call the GET API to fetch users
@@ -77,21 +80,25 @@ const UserList = () => {
     dispatch(settingsActions.getEmployeementInfo());
     dispatch(settingsActions.getOrganizationInfo());
     dispatch(settingsActions.getSalutationInfo());
+    dispatch(settingsActions.getPriorityInfo());
   }, []);
 
+  useEffect(() => {
+    PriorityDataList?.Result?.map((item) => setdesignationPriority((prev) => [...prev, item.PriorityOrderTitle]));
+  }, [PriorityDataList]);
+
   // sorting order for user list
-  const customEmployementOrder = ['NIC Officer', 'Out-Sourced'];
-  const designationPriority = ['HOG', 'HOD', 'Scientist-G', 'Scientist-F', 'Scientist-E', 'Scientist-D', 'Scientist-C'];
+  //const customEmployementOrder = ['NIC Officer', 'Out-Sourced'];
 
   // Get the priority index of a DesignationTitle
-  const getDesignationPriorityIndex = (title) => {
-    for (let i = 0; i < designationPriority.length; i++) {
-      if (title.includes(designationPriority[i])) {
-        return i; // lower index = higher priority
-      }
-    }
-    return designationPriority.length; // for "others"
-  };
+  // const getDesignationPriorityIndex = (title) => {
+  //   for (let i = 0; i < designationPriority.length; i++) {
+  //     if (title.includes(designationPriority[i])) {
+  //       return i; // lower index = higher priority
+  //     }
+  //   }
+  //   return designationPriority.length; // for "others"
+  // };
 
   useEffect(() => {
     if (userList && Array.isArray(userList.Result)) {
@@ -107,21 +114,21 @@ const UserList = () => {
         };
       });
 
-      const sorted = [...updatedData].sort((a, b) => {
-        const empCompare = customEmployementOrder.indexOf(a.EmployementTitle) - customEmployementOrder.indexOf(b.EmployementTitle);
-        if (empCompare !== 0) return empCompare;
+      // const sorted = [...updatedData].sort((a, b) => {
+      //   const empCompare = customEmployementOrder.indexOf(a.EmployementTitle) - customEmployementOrder.indexOf(b.EmployementTitle);
+      //   if (empCompare !== 0) return empCompare;
 
-        const desigCompare = getDesignationPriorityIndex(a.DesignationTitle) - getDesignationPriorityIndex(b.DesignationTitle);
-        if (desigCompare !== 0) return desigCompare;
+      //   const desigCompare = getDesignationPriorityIndex(a.DesignationTitle) - getDesignationPriorityIndex(b.DesignationTitle);
+      //   if (desigCompare !== 0) return desigCompare;
 
-        // ✅ Fallback to alphabetical sort by UserName
-        const nameA = a.UserName.trim().toLowerCase();
-        const nameB = b.UserName.trim().toLowerCase();
+      //   // ✅ Fallback to alphabetical sort by UserName
+      //   const nameA = a.UserName.trim().toLowerCase();
+      //   const nameB = b.UserName.trim().toLowerCase();
 
-        return nameA.localeCompare(nameB);
-      });
+      // return nameA.localeCompare(nameB);
+      // });
 
-      setData(sorted);
+      setData(updatedData);
     } else {
       setData([]); // optional fallback
     }
@@ -167,14 +174,16 @@ const UserList = () => {
       Status: '',
       Gender: '',
       ImgPath: '',
-      CreatedBy: ''
+      CreatedBy: '',
+      PriorityOrderId: '',
+      DisplayOrderId: ''
     });
     setShowregister(true);
   };
 
   const validate = () => {
     let newErrors = {};
-    if (!formData.SalutationId) newErrors.SalutationId = 'SalutationId is required';
+    if (!formData.SalutationId) newErrors.SalutationId = 'Salutation is required';
     if (!formData.UserName) newErrors.UserName = 'User name is required';
     if (!formData.DesignationId) newErrors.DesignationId = 'Designation is required';
     if (!formData.EmployementId) newErrors.EmployementId = 'Employment type is required';
@@ -183,6 +192,7 @@ const UserList = () => {
     if (!formData.Gender) newErrors.Gender = 'Gender is required';
     if (!formData.Mobile) newErrors.Mobile = 'Mobile number is required';
     if (!formData.Status) newErrors.Status = 'Status is required';
+    if (!formData.PriorityOrderId) newErrors.Status = 'Priority level is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -219,7 +229,6 @@ const UserList = () => {
     if (!validate()) return;
 
     const updatedData = {
-      SalutationId: formData.SalutationId,
       UserName: formData.UserName,
       DesignationId: formData.DesignationId,
       EmployementId: formData.EmployementId,
@@ -231,7 +240,9 @@ const UserList = () => {
       Gender: formData.Gender,
       Status: formData.Status,
       ImgPath: formData.ImgPath || '',
-      SalutationId: formData.SalutationId || '0'
+      SalutationId: formData.SalutationId || '0',
+      PriorityOrderId: formData.PriorityOrderId || '',
+      DisplayOrderId: formData.DisplayOrderId || ''
     };
 
     if (selectedUser) {
@@ -270,7 +281,9 @@ const UserList = () => {
         Status: selectedUser.Status,
         Gender: selectedUser.Gender,
         ImgPath: selectedUser.ImgPath || '',
-        CreatedBy: Role
+        CreatedBy: Role,
+        PriorityOrderId: selectedUser.PriorityOrderId,
+        DisplayOrderId: selectedUser.DisplayOrderId
       });
       if (selectedUser?.ServiceDate) {
         if (selectedUser.ServiceDate === '01-01-1900 00:00:00') {
@@ -308,7 +321,9 @@ const UserList = () => {
       Status: user.Status === '1' ? 0 : 1,
       ImgPath: user.ImgPath,
       UserId: user.UserId,
-      ModifyBy: Role
+      ModifyBy: Role,
+      PriorityOrderId: user.PriorityOrderId || '',
+      DisplayOrderId: user.DisplayOrderId || ''
     };
     Swal.fire({
       title: 'Are you sure?',
@@ -760,6 +775,34 @@ const UserList = () => {
               </Col>
             </Row>
             <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Priority Level</Form.Label>
+                  <Form.Select
+                    name="PriorityOrderId"
+                    value={formData.PriorityOrderId}
+                    className="custom-form-select"
+                    onChange={handleChange}
+                    isInvalid={!!errors.PriorityOrderId}
+                  >
+                    <option value="">Select Priority Level...</option>
+                    {Array.isArray(PriorityDataList?.Result)
+                      ? PriorityDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.PriorityOrderId} value={item.PriorityOrderId}>
+                            {item.PriorityOrderTitle}
+                          </option>
+                        ))
+                      : Object.values(PriorityDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.PriorityOrderId} value={item.PriorityOrderId}>
+                              {item.PriorityOrderTitle}
+                            </option>
+                          ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.PriorityOrderId}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Gender</Form.Label>
@@ -778,6 +821,8 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.Gender}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
+            </Row>
+            <Row>
               {/* <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Status</Form.Label>

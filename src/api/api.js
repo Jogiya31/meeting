@@ -194,6 +194,29 @@ export const UpdateSalutation = (data) => {
   });
 };
 
+
+/////////////////// Priority api  ///////////////////
+export const GetPriorityDetails = () => {
+  const url = `/GetPriorityOrderDetails`;
+  return axiosClient().get(url, {
+    'Content-Type': 'application/json'
+  });
+};
+export const AddPriorityDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Save_PriorityOrder`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const UpdatePriority = (data) => {
+  const payload = data.payload;
+  const url = `/Update_PriorityOrder`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+
 /////////////////// Meetings api  ///////////////////
 export const getMeetings = () => {
   const url = `/GetMeetingDiscussionAttendanceDetails`;
