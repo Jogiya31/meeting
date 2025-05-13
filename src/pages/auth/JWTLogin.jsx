@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Alert, Button, Form } from 'react-bootstrap';
+import { Row, Col, Alert, Button, Form, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { authActions } from '../../store/auth/authrSlice';
@@ -17,6 +17,7 @@ const JWTLogin = () => {
   const [submitError, setSubmitError] = useState('');
 
   const loginDetails = useSelector((state) => state.auth.data);
+  const loader = useSelector((state) => state.auth.loader);
 
   const validate = () => {
     const newErrors = {};
@@ -34,6 +35,7 @@ const JWTLogin = () => {
     }
     setErrors({});
     setSubmitError('');
+
     dispatch(authActions.getauthInfo({ UsernameMobile: username, Password: password }));
   };
 
@@ -63,9 +65,7 @@ const JWTLogin = () => {
           onChange={(e) => setUsername(e.target.value)}
           isInvalid={!!errors.username}
         />
-        <Form.Control.Feedback type="invalid">
-          {errors.username}
-        </Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
       </Form.Group>
 
       <Form.Group className="mb-4" controlId="password">
@@ -77,9 +77,7 @@ const JWTLogin = () => {
           onChange={(e) => setPassword(e.target.value)}
           isInvalid={!!errors.password}
         />
-        <Form.Control.Feedback type="invalid">
-          {errors.password}
-        </Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
       </Form.Group>
 
       <Form.Group className="mb-4 mt-2" controlId="saveCredentials">
@@ -100,7 +98,14 @@ const JWTLogin = () => {
       <Row>
         <Col>
           <Button type="submit" variant="primary" className="w-100">
-            Sign In
+            {loader ? (
+              <>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                Logging in...
+              </>
+            ) : (
+              'Sign In'
+            )}
           </Button>
         </Col>
       </Row>

@@ -160,7 +160,7 @@ function EnhancedTable({
             )}
             {enableSno && <th className={`${headerCss || 'grey-bg'}`}>Sno</th>}
             {headers.map((headCell) => (
-              <th key={headCell.id} className={`${headerCss || 'grey-bg'}`}>
+              <th key={headCell.id} className={`${headerCss || 'grey-bg'} ${headCell.class}`}>
                 <Button variant="link" onClick={() => handleRequestSort(headCell.id)} className="pl-0 pr-0">
                   {headCell.label}
                   {orderBy === headCell.id ? <FaSort className={order === 'desc' ? 'rotate-180' : ''} /> : null}
@@ -184,7 +184,9 @@ function EnhancedTable({
                 )}
                 {enableSno && <td>{count}</td>}
                 {headers.map((header) => (
-                  <td key={header.id} className='row-data'>{row[header.id]}</td>
+                  <td key={header.id} className={`row-data ${header.class}`}>
+                    {row[header.id]}
+                  </td>
                 ))}
                 {/* Add action button to each row and float it to the right */}
                 {rowactions && <td className="text-end action">{rowactions(row)}</td>}
@@ -195,13 +197,13 @@ function EnhancedTable({
       </Table>
       {enablePagination && (
         <Pagination className="custom-pagination">
-            <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="text-center limit">
-              {[5, 10, 25, 50].map((rowsPerPageOption) => (
-                <option key={rowsPerPageOption} value={rowsPerPageOption}>
-                  {rowsPerPageOption}
-                </option>
-              ))}
-            </Form.Control>
+          <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="text-center limit">
+            {[5, 10, 25, 50].map((rowsPerPageOption) => (
+              <option key={rowsPerPageOption} value={rowsPerPageOption}>
+                {rowsPerPageOption}
+              </option>
+            ))}
+          </Form.Control>
           <div className="flex">
             <Pagination.Prev title="Previous Page" onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
             {renderPaginationItems()}

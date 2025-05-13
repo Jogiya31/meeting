@@ -351,11 +351,10 @@ const NewPoint = () => {
       const isValid = validateAllRows(); // Assuming validateAllRows() is your form validation function
       if (isValid) {
         try {
-          const discussionRequests = formFields.map((item) => {
+          const discussionRequests = formFields.map((item) => {            
             const requestPayload = {
               MeetingId: meetingId,
               Description: item.task,
-              DiscussionId: item.discussionId,
               StartDate: currentDate,
               EndDate: item.endDate,
               UserId: item.officer,
@@ -499,7 +498,7 @@ const NewPoint = () => {
               </Row>
               <Row>
                 {draftMeetings?.map((item, idx) => (
-                  <Col sm={12} md={6} lg={3} xl={3}  key={`${idx}-${idx}-${Math.random()}`}>
+                  <Col sm={12} md={6} lg={3} xl={3} key={`${idx}-${idx}-${Math.random()}`}>
                     <div className="card project-task pointer" onClick={() => handleEditMeeting(item)}>
                       <div className="card-body">
                         <div className="row align-items-center justify-content-center">
@@ -589,7 +588,7 @@ const NewPoint = () => {
                               <Form.Label>Date</Form.Label>
                               <DatePicker
                                 className={`form-control cfs-14 ${startDateError ? 'is-invalid' : ''}`}
-                                selected={currentDate}
+                                selected={discussionDate}
                                 onChange={handleDiscussionDate}
                                 placeholderText="Start Date"
                                 dateFormat="dd-MM-yyyy"
@@ -773,7 +772,7 @@ const NewPoint = () => {
                             <label className="fs-6 m-0 report-label pointer">Discussion Points</label>
                           </Accordion.Header>
                           <Accordion.Body className="p-0 inner-table">
-                            <Table responsive hover>
+                            <Table hover >
                               <thead>
                                 <tr>
                                   <th className="" style={{ width: '50px' }}>
@@ -791,8 +790,8 @@ const NewPoint = () => {
                                   return (
                                     <tr key={`${idx}-${idx}-${Math.random()}`}>
                                       <td>{idx + 1}</td>
-                                      <td>{item.task}</td>
-                                      <td>{item.endDate.split(' ')?.[0]}</td>
+                                      <td style={{ wordBreak: 'break-word', whiteSpace: 'normal', maxWidth: '300px' }}>{item.task}</td>
+                                      <td>{String(item.endDate).split(' ')?.[0]}</td>
                                       <td>
                                         {projectList?.Result?.map(
                                           (proj) => proj.ProjectId === item.projectId && <span>{proj.ProjectTitle}</span>

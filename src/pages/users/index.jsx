@@ -87,18 +87,6 @@ const UserList = () => {
     PriorityDataList?.Result?.map((item) => setdesignationPriority((prev) => [...prev, item.PriorityOrderTitle]));
   }, [PriorityDataList]);
 
-  // sorting order for user list
-  //const customEmployementOrder = ['NIC Officer', 'Out-Sourced'];
-
-  // Get the priority index of a DesignationTitle
-  // const getDesignationPriorityIndex = (title) => {
-  //   for (let i = 0; i < designationPriority.length; i++) {
-  //     if (title.includes(designationPriority[i])) {
-  //       return i; // lower index = higher priority
-  //     }
-  //   }
-  //   return designationPriority.length; // for "others"
-  // };
 
   useEffect(() => {
     if (userList && Array.isArray(userList.Result)) {
@@ -113,20 +101,6 @@ const UserList = () => {
           DesignationTitle: desc
         };
       });
-
-      // const sorted = [...updatedData].sort((a, b) => {
-      //   const empCompare = customEmployementOrder.indexOf(a.EmployementTitle) - customEmployementOrder.indexOf(b.EmployementTitle);
-      //   if (empCompare !== 0) return empCompare;
-
-      //   const desigCompare = getDesignationPriorityIndex(a.DesignationTitle) - getDesignationPriorityIndex(b.DesignationTitle);
-      //   if (desigCompare !== 0) return desigCompare;
-
-      //   // ✅ Fallback to alphabetical sort by UserName
-      //   const nameA = a.UserName.trim().toLowerCase();
-      //   const nameB = b.UserName.trim().toLowerCase();
-
-      // return nameA.localeCompare(nameB);
-      // });
 
       setData(updatedData);
     } else {
@@ -192,14 +166,13 @@ const UserList = () => {
     if (!formData.Gender) newErrors.Gender = 'Gender is required';
     if (!formData.Mobile) newErrors.Mobile = 'Mobile number is required';
     if (!formData.Status) newErrors.Status = 'Status is required';
-    if (!formData.PriorityOrderId) newErrors.Status = 'Priority level is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'Mobile') {
+    if (name === 'Mobile' || name==='DisplayOrderId') {
       if (/^\d{0,10}$/.test(value)) {
         setFormData({ ...formData, [name]: value });
       }
@@ -242,7 +215,7 @@ const UserList = () => {
       ImgPath: formData.ImgPath || '',
       SalutationId: formData.SalutationId || '0',
       PriorityOrderId: formData.PriorityOrderId || '',
-      DisplayOrderId: formData.DisplayOrderId || ''
+      DisplayOrderId: formData.DisplayOrderId || '999'
     };
 
     if (selectedUser) {
@@ -776,31 +749,18 @@ const UserList = () => {
             </Row>
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Priority Level</Form.Label>
-                  <Form.Select
-                    name="PriorityOrderId"
-                    value={formData.PriorityOrderId}
-                    className="custom-form-select"
+              <Form.Group className="mb-3">
+                  <Form.Label>Display Order</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="DisplayOrderId"
+                    placeholder="Enter display order (1 to 99) "
+                    value={formData.DisplayOrderId}
                     onChange={handleChange}
-                    isInvalid={!!errors.PriorityOrderId}
-                  >
-                    <option value="">Select Priority Level...</option>
-                    {Array.isArray(PriorityDataList?.Result)
-                      ? PriorityDataList.Result.filter((item) => item.Status === '1').map((item) => (
-                          <option key={item.PriorityOrderId} value={item.PriorityOrderId}>
-                            {item.PriorityOrderTitle}
-                          </option>
-                        ))
-                      : Object.values(PriorityDataList?.Result || {})
-                          .filter((item) => item.Status === '1')
-                          .map((item) => (
-                            <option key={item.PriorityOrderId} value={item.PriorityOrderId}>
-                              {item.PriorityOrderTitle}
-                            </option>
-                          ))}
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">{errors.PriorityOrderId}</Form.Control.Feedback>
+                    isInvalid={!!errors.DisplayOrderId}
+                    maxLength={3}
+                  />
+                  <Form.Control.Feedback type="invalid">{errors.DisplayOrderId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col>

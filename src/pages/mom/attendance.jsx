@@ -189,10 +189,6 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
     setShowregister(false);
   };
 
-  useEffect(() => {
-    handleAttendanceFormData(formFields);
-  }, [formFields]);
-
   const handleUserFilter = (newSelected) => {
     const removedUsers = userFilter.filter((prev) => !newSelected.some((curr) => curr.value === prev.value));
     removedUsers.forEach((removed) => {
@@ -219,10 +215,11 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
 
       // Find user details from userList.Result
       const selectedUser = userList?.Result?.find((user) => user.UserId.toString() === userId);
-
       return {
         userId: userId,
-        designation: selectedUser?.DesignationTitle || '',
+        designation: selectedUser?.DesignationId?.split(',')
+        .map((id) => getDesignation(id))
+        .join('/ ') || '',
         division: selectedUser?.EmployeeDivisionTitle || '',
         organization: selectedUser?.OrganisationTitle || '',
         mobile: selectedUser?.Mobile || '',
@@ -284,6 +281,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -397,9 +395,6 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                         ))}
                         <option value="other">Other</option>
                       </Form.Select>
-                      {
-                        console.log('field', field)
-                      }
                       <Form.Control
                         type="text"
                         name="designation"

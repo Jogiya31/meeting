@@ -71,20 +71,21 @@ export default function CollapsibleTable() {
   };
 
   const parentHeaders = [
-    { id: 'MeetingTitle', label: 'Meeting Title' },
-    { id: 'MeetingDate', label: 'Date' },
-    { id: 'MeetingStatus', label: 'Total Tasks' },
-    { id: 'MeetingStatus', label: 'Pending Tasks' },
-    { id: 'MeetingStatus', label: 'Completed Tasks' }
+    { id: 'MeetingTitle', label: 'Meeting Title', class: 'meetingW' },
+    { id: 'MeetingDate', label: 'Date', class: '' },
+    { id: 'MeetingStatus', label: 'Total Tasks', class: '' },
+    { id: 'MeetingStatus', label: 'Pending Tasks', class: '' },
+    { id: 'MeetingStatus', label: 'In Progress Tasks', class: '' },
+    { id: 'MeetingStatus', label: 'Completed Tasks', class: '' }
   ];
 
   const headers = [
-    { id: 'Description', label: 'Description' },
-    { id: 'StartDate', label: 'Start Date' },
-    { id: 'EndDate', label: 'End Date' },
-    { id: 'Status', label: 'Status' },
-    { id: 'Reason', label: 'Remark' },
-    { id: 'UserName', label: 'Assigned To' }
+    { id: 'Description', label: 'Description', class: 'descriptionW' },
+    { id: 'StartDate', label: 'Start Date', class: '' },
+    { id: 'EndDate', label: 'End Date', class: '' },
+    { id: 'Status', label: 'Status', class: '' },
+    { id: 'Reason', label: 'Remark', class: '' },
+    { id: 'UserName', label: 'Assigned To', class: '' }
   ];
 
   // Action handler for each row (for example, Edit)
@@ -330,7 +331,7 @@ export default function CollapsibleTable() {
                 <tr className="bg-light ">
                   <th className="" style={{ width: '50px' }}></th>
                   {parentHeaders.map((headCell, idx) => (
-                    <th className="" key={`${headCell}_${idx}`}>
+                    <th className={headCell.class} key={`${headCell}_${idx}`}>
                       <Button variant="link" onClick={() => handleRequestSort(headCell.id)} className="pl-0 pr-0">
                         {headCell.label}
                         {orderBy === headCell.id ? <FaSort className={order === 'desc' ? 'rotate-180' : ''} /> : null}
@@ -357,7 +358,7 @@ export default function CollapsibleTable() {
                             )}
                           </span>
                         </td>
-                        <td>
+                        <td style={{ wordBreak: 'break-word', whiteSpace: 'normal', maxWidth: '250px' }}>
                           <span className="pointer" onClick={() => toggleRow(row.MeetingId)}>
                             {row.MeetingTitle}
                           </span>
@@ -371,6 +372,11 @@ export default function CollapsibleTable() {
                         <td>
                           <label to="#" className="label pending-bg text-white f-12 fw-bolder">
                             {statusCounts.Pending}
+                          </label>
+                        </td>
+                        <td>
+                          <label to="#" className="label pending-bg text-white f-12 fw-bolder">
+                            {statusCounts.Inprogress}
                           </label>
                         </td>
                         <td>
@@ -390,7 +396,7 @@ export default function CollapsibleTable() {
                         </td>
                       </tr>
                       <tr>
-                        <td colSpan={7} className="p-0">
+                        <td colSpan={parentHeaders.length + 2} className="p-0">
                           <Collapse in={expandedRows[row.MeetingId]}>
                             <div className="p-3 bg-light border transition-all duration-300 ease-in-out inner-table view-Meetings">
                               {userLists?.Result ? (
