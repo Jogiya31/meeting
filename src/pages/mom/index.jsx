@@ -30,6 +30,7 @@ const NewPoint = () => {
   const [currentTime, setcurrentTime] = useState(null);
   const [meetingTitle, setmeetingTitle] = useState('');
   const [discussionDate, setdiscussionDate] = useState(null);
+  const [discussionTime, setdiscussionTime] = useState(null);
   const [formFields, setFormFields] = useState([
     { task: '', endDate: null, officer: '', projectId: '', id: '', reason: '', status: '', discussionId: '' }
   ]);
@@ -214,6 +215,7 @@ const NewPoint = () => {
     setcurrentTime(date);
     if (date instanceof Date && !isNaN(date)) {
       setTimeError(false);
+      setdiscussionTime(moment(date).format('hh:mm A'))
     }
   };
 
@@ -248,8 +250,8 @@ const NewPoint = () => {
           meetingsActions.updateMeetingsInfo({
             MeetingId: selectedMeeting.MeetingId, // Use existing meeting ID
             MeetingTitle: meetingTitle,
-            MeetingDate: currentDate,
-            MeetingTime: currentTime,
+            MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
+            MeetingTime: moment(currentTime).format('hh:mm A'),
             Draft: 1,
             ModifyBy: Role
           })
@@ -259,8 +261,8 @@ const NewPoint = () => {
         dispatch(
           meetingsActions.addMeetingsInfo({
             MeetingTitle: meetingTitle,
-            MeetingDate: currentDate,
-            MeetingTime: currentTime,
+            MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
+            MeetingTime: moment(currentTime).format('hh:mm A'),
             CreatedBy: Role
           })
         );
@@ -309,8 +311,8 @@ const NewPoint = () => {
           meetingsActions.updateMeetingsInfo({
             MeetingId: meetingId,
             MeetingTitle: meetingTitle,
-            MeetingDate: currentDate,
-            MeetingTime: currentTime,
+            MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
+            MeetingTime: moment(currentTime).format('hh:mm A'),
             Draft: 2,
             ModifyBy: Role
           })
@@ -351,7 +353,7 @@ const NewPoint = () => {
       const isValid = validateAllRows(); // Assuming validateAllRows() is your form validation function
       if (isValid) {
         try {
-          const discussionRequests = formFields.map((item) => {            
+          const discussionRequests = formFields.map((item) => {
             const requestPayload = {
               MeetingId: meetingId,
               Description: item.task,
@@ -380,8 +382,8 @@ const NewPoint = () => {
             meetingsActions.updateMeetingsInfo({
               MeetingId: meetingId,
               MeetingTitle: meetingTitle,
-              MeetingDate: currentDate,
-              MeetingTime: currentTime,
+              MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
+            MeetingTime: moment(currentTime).format('hh:mm A'),
               Draft: 3,
               ModifyBy: Role
             })
@@ -462,8 +464,8 @@ const NewPoint = () => {
           meetingsActions.updateMeetingsInfo({
             MeetingId: currentMeetingId || '', // Use existing meeting ID
             MeetingTitle: meetingTitle,
-            MeetingDate: currentDate,
-            MeetingTime: currentTime,
+            MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
+            MeetingTime: moment(currentTime).format('hh:mm A'),
             Draft: 1,
             ModifyBy: Role
           })
@@ -588,7 +590,7 @@ const NewPoint = () => {
                               <Form.Label>Date</Form.Label>
                               <DatePicker
                                 className={`form-control cfs-14 ${startDateError ? 'is-invalid' : ''}`}
-                                selected={discussionDate}
+                                selected={currentDate}
                                 onChange={handleDiscussionDate}
                                 placeholderText="Start Date"
                                 dateFormat="dd-MM-yyyy"
@@ -716,7 +718,7 @@ const NewPoint = () => {
                         <span className="report-label mr-1" style={{ width: '50px' }}>
                           Time :{' '}
                         </span>
-                        <span>{moment(currentTime).format('h:mm a')}</span>
+                        <span>{discussionTime}</span>
                       </div>
                     </Col>
 
@@ -772,7 +774,7 @@ const NewPoint = () => {
                             <label className="fs-6 m-0 report-label pointer">Discussion Points</label>
                           </Accordion.Header>
                           <Accordion.Body className="p-0 inner-table">
-                            <Table hover >
+                            <Table hover>
                               <thead>
                                 <tr>
                                   <th className="" style={{ width: '50px' }}>
@@ -791,7 +793,7 @@ const NewPoint = () => {
                                     <tr key={`${idx}-${idx}-${Math.random()}`}>
                                       <td>{idx + 1}</td>
                                       <td style={{ wordBreak: 'break-word', whiteSpace: 'normal', maxWidth: '300px' }}>{item.task}</td>
-                                      <td>{String(item.endDate).split(' ')?.[0]}</td>
+                                      <td>{moment(item.endDate).format('DD-MM-YYYY')}</td>
                                       <td>
                                         {projectList?.Result?.map(
                                           (proj) => proj.ProjectId === item.projectId && <span>{proj.ProjectTitle}</span>
