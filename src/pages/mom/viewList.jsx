@@ -30,6 +30,7 @@ export default function CollapsibleTable() {
   const [show, setShow] = useState(false);
   const [showAttendanceList, setShowAttendanceList] = useState(false);
   const [attendanceData, setattendanceData] = useState([]);
+  const [selectedParentRow, setSelectedParentRow] = useState({});
   const [selectedRow, setselectedRow] = useState({});
   const [formData, setFormData] = useState({
     Status: '',
@@ -89,8 +90,9 @@ export default function CollapsibleTable() {
   ];
 
   // Action handler for each row (for example, Edit)
-  const handleActionClick = (row) => {
+  const handleActionClick = (parent_row, row) => {
     setselectedRow(row);
+    setSelectedParentRow(parent_row);
     setShow(true);
   };
 
@@ -259,10 +261,16 @@ export default function CollapsibleTable() {
 
   const handleSaveClick = () => {
     const payload = {
-      DiscussionId: selectedRow.DiscussionId,
+      MeetingId: selectedParentRow.MeetingId,
+      Description: selectedRow.Description,
+      StartDate: selectedParentRow.MeetingDate,
+      EndDate: selectedParentRow.MeetingTime,
+      UserId: selectedRow.UserId,
       Reason: formData.Reason,
-      ModifyBy: Role,
-      Status: formData.Status
+      Status: formData.Status,
+      ProjectId: selectedRow.ProjectId,
+      DiscussionId: selectedRow.DiscussionId,
+      ModifyBy: Role
     };
     dispatch(meetingsActions.updateDiscussionInfo(payload));
     setTimeout(() => {
@@ -344,14 +352,14 @@ export default function CollapsibleTable() {
                 </tr>
               </thead>
               <tbody>
-                {visibleRows.map((row, idx) => {
-                  const statusCounts = countStatuses(row);
+                {visibleRows.map((parent_row, idx) => {
+                  const statusCounts = countStatuses(parent_row);
                   return (
-                    <Fragment key={`${row}__${row.id}_${Math.random()}`}>
-                      <tr key={`${row}__${row.id}_${Math.random()}`}>
+                    <Fragment key={`${parent_row}__${parent_row.id}_${Math.random()}`}>
+                      <tr key={`${parent_row}__${parent_row.id}_${Math.random()}`}>
                         <td className="text-center">
-                          <span variant="link" onClick={() => toggleRow(row.MeetingId)}>
-                            {expandedRows[row.MeetingId] ? (
+                          <span variant="link" onClick={() => toggleRow(parent_row.MeetingId)}>
+                            {expandedRows[parent_row.MeetingId] ? (
                               <i className="feather icon-chevron-down list-toggle-direction" />
                             ) : (
                               <i className="feather icon-chevron-right list-toggle-direction" />
@@ -359,11 +367,11 @@ export default function CollapsibleTable() {
                           </span>
                         </td>
                         <td style={{ wordBreak: 'break-word', whiteSpace: 'normal', maxWidth: '250px' }}>
-                          <span className="pointer" onClick={() => toggleRow(row.MeetingId)}>
-                            {row.MeetingTitle}
+                          <span className="pointer" onClick={() => toggleRow(parent_row.MeetingId)}>
+                            {parent_row.MeetingTitle}
                           </span>
                         </td>
-                        <td>{moment(row.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</td>
+                        <td>{moment(parent_row.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</td>
                         <td>
                           <label to="#" className="label total-bg text-white f-12 fw-bolder">
                             {statusCounts.TotalTasks}
@@ -390,23 +398,27 @@ export default function CollapsibleTable() {
                             title="Attendance"
                             src={attendanceImg}
                             className="attendance pointer"
-                            onClick={() => handleSeletedAttendance(row.Attendance)}
+                            onClick={() => handleSeletedAttendance(parent_row.Attendance)}
                             alt=""
                           />
                         </td>
                       </tr>
                       <tr>
                         <td colSpan={parentHeaders.length + 2} className="p-0">
-                          <Collapse in={expandedRows[row.MeetingId]}>
+                          <Collapse in={expandedRows[parent_row.MeetingId]}>
                             <div className="p-3 bg-light border transition-all duration-300 ease-in-out inner-table view-Meetings">
                               {userLists?.Result ? (
                                 <EnhancedTable
-                                  data={transformData(row.DiscussionsPoint, userLists) || []}
+                                  data={transformData(parent_row.DiscussionsPoint, userLists) || []}
                                   headers={headers}
                                   headerCss="cinnerTable"
                                   enableSno
                                   rowactions={(row) => (
-                                    <Button variant="primary" onClick={() => handleActionClick(row)} className="float-end btn-sm">
+                                    <Button
+                                      variant="primary"
+                                      onClick={() => handleActionClick(parent_row, row)}
+                                      className="float-end btn-sm"
+                                    >
                                       Action
                                     </Button>
                                   )}
