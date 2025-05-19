@@ -15,6 +15,12 @@
   transition: all 0.3s ease; /* Smooth transition */
 }
 
+.react-datepicker__input-container {
+  input.is-invalid {
+    border: 1px solid #dc3545 !important;
+  }
+}
+
 .react-datepicker__input-container input:focus {
   background-color: #fff; /* White background on focus */
 }
@@ -33,12 +39,12 @@
 
 .react-datepicker__day--selected,
 .react-datepicker__day:hover {
-  background-color: #17A2B8 !important; 
+  background-color: #17a2b8 !important;
   color: white;
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: #17A2B8;
+  background-color: #17a2b8;
   color: #fff;
 }
 
@@ -50,7 +56,6 @@
   color: #fff;
   font-size: 20px;
 }
-
 
 .react-datepicker__day--outside-month {
   color: #bbb; /* Gray color */

@@ -7,10 +7,12 @@ import NavLogo from './NavLogo';
 import NavContent from './NavContent';
 import navigation from '../../../menu-items';
 import { useTheme } from '../../../contexts/themeContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const Navigation = () => {
   const configContext = useContext(ConfigContext);
   const { mode } = useTheme();
+  const { role } = useAuth();
   const { collapseMenu } = configContext.state;
   const windowSize = useWindowSize();
 
@@ -29,14 +31,14 @@ const Navigation = () => {
   let navContent = (
     <div className={navBarClass.join(' ')}>
       <NavLogo />
-      <NavContent navigation={navigation.items} />
+      {role === 'user' ? <NavContent navigation={navigation.user} /> : <NavContent navigation={navigation.items} />}
     </div>
   );
   if (windowSize.width < 992) {
     navContent = (
       <div className="navbar-wrapper">
         <NavLogo />
-        <NavContent navigation={navigation.items} />
+        {role === 'user' ? <NavContent navigation={navigation.user} /> : <NavContent navigation={navigation.items} />}
       </div>
     );
   }

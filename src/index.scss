@@ -697,3 +697,77 @@ button.sortBtn.btn.btn-info,
   white-space: 'normal';
   max-width: 200px !important;
 }
+
+.light .borderless .nav-tabs .nav-link.active {
+  background-color: #fff !important;
+  color: $theme-heading-color !important;
+  border-bottom: 1px solid #d6d6d6 !important;
+}
+
+.dark .borderless .nav-tabs .nav-link.active {
+  background-color: $popup-dark-layout !important;
+  color: $dark-layout-font !important;
+  border-bottom: 1px solid #d6d6d6 !important;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.table {
+  thead {
+    tr {
+      th {
+        &.default {
+          background-color: $secondary-color !important;
+          color: $light-color !important;
+
+          button.btn.btn-link {
+            color: $light-color !important;
+          }
+          &:hover {
+            color: $light-color !important;
+          }
+        }
+
+        &.info {
+          background-color: $primary-color !important;
+          color: $light-color !important;
+
+          button.btn.btn-link {
+            color: $light-color !important;
+          }
+          &:hover {
+            color: $light-color !important;
+          }
+        }
+
+        &.warning {
+          background-color: $warning-color !important;
+          color: $dark-color !important;
+
+          button.btn.btn-link {
+            color: $dark-color !important;
+          }
+          &:hover {
+            color: $dark-color !important;
+          }
+        }
+
+        &.success {
+          background-color: $success-color !important;
+          color: $light-color !important;
+
+          button.btn.btn-link {
+            color: $light-color !important;
+          }
+          &:hover {
+            color: $light-color !important;
+          }
+        }
+      }
+    }
+  }
+}

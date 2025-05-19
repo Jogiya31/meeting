@@ -6,7 +6,7 @@ import { useAuth } from './contexts/AuthContext';
 
 const AuthGuard = ({ children }) => {
   const { loggedIn } = useAuth();
-  return loggedIn ? children : <Navigate to="/meetings/login" />;
+  return loggedIn ? children : <Navigate to="/login" />;
 };
 
 export const renderRoutes = (routes = []) => (
@@ -34,30 +34,44 @@ export const renderRoutes = (routes = []) => (
   </Suspense>
 );
 
-const Dashboard = lazy(() => import('./pages/dashboard'));
-const Users = lazy(() => import('./pages/users'));
-const Settings = lazy(() => import('./pages/settings'));
-const NewPoints = lazy(() => import('./pages/mom'));
-const ViewList = lazy(() => import('./pages/mom/viewList'));
-const Attendance = lazy(() => import('./pages/mom/attendance'));
+// MoM
+const Dashboard = lazy(() => import('./pages/MoMPages/dashboard'));
+const Users = lazy(() => import('./pages/MoMPages/users'));
+const NewPoints = lazy(() => import('./pages/MoMPages/mom'));
+const ViewList = lazy(() => import('./pages/MoMPages/mom/viewList'));
+const Attendance = lazy(() => import('./pages/MoMPages/mom/attendance'));
+const Settings = lazy(() => import('./pages/MoMPages/settings'));
+
+// Tracker
+const userDashboard = lazy(() => import('./pages/TaskTracker/dashboard'));
+const createDependencies = lazy(() => import('./pages/TaskTracker/createDependencies'));
+const CreateTask = lazy(() => import('./pages/TaskTracker/createTask'));
+const TaskAssignment = lazy(() => import('./pages/TaskTracker/taskAssignment'));
+const TaskReport = lazy(() => import('./pages/TaskTracker/taskReport'));
+const Tasksetting = lazy(() => import('./pages/TaskTracker/settings'));
+
+//Auth
+
 const Login = lazy(() => import('./pages/auth/SignIn'));
 const SignOut = lazy(() => import('./pages/auth/SignOut'));
+
+//Common
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const routes = [
   {
     exact: true,
     path: '/',
-    element: () => <Navigate to="/meetings/login" />
+    element: () => <Navigate to="/login" />
   },
   {
     exact: true,
-    path: '/meetings/login',
+    path: '/login',
     element: Login
   },
   {
     exact: true,
-    path: '/meetings/logout',
+    path: '/logout',
     element: SignOut
   },
   {
@@ -100,6 +114,44 @@ const routes = [
         path: '/meetings/masterSettings',
         element: Settings
       },
+
+      /// task tracker urls
+      {
+        exact: true,
+        path: '/tasktracker/dashboard',
+        element: userDashboard
+      },
+      {
+        exact: true,
+        path: '/tasktracker/users',
+        element: Users
+      },
+      {
+        exact: true,
+        path: '/tasktracker/Create-Dependancies',
+        element: createDependencies
+      },
+      {
+        exact: true,
+        path: '/tasktracker/Create-Task',
+        element: CreateTask
+      },
+      {
+        exact: true,
+        path: '/tasktracker/Task-Assignment',
+        element: TaskAssignment
+      },
+      {
+        exact: true,
+        path: '/tasktracker/Task-Report',
+        element: TaskReport
+      },
+      {
+        exact: true,
+        path: '/tasktracker/masterSettings',
+        element: Tasksetting
+      },
+
       {
         path: '*',
         element: NotFound // <-- Set NotFound page for unknown routes

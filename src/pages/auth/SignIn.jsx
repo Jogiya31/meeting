@@ -1,9 +1,9 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
-import Breadcrumb from '../../layouts/AdminLayout/Breadcrumb';
+import { Card, Tab, Tabs } from 'react-bootstrap';
 import AuthLogin from './JWTLogin';
 import logo from '../../assets/images/logo.png';
 import { useTheme } from '../../contexts/themeContext';
+import AdminLogin from './AdminLogin';
 
 const Signin1 = () => {
   const { mode } = useTheme();
@@ -22,7 +22,14 @@ const Signin1 = () => {
               <div className="mb-4">
                 <img src={logo} alt="" width={70} />
               </div>
-              <AuthLogin />
+              <Tabs defaultActiveKey="user"  id="fill-tab-example" fill>
+                <Tab eventKey="user" title="User">
+                  <AuthLogin />
+                </Tab>
+                <Tab eventKey="admin" title="Admin">
+                   <AdminLogin />
+                </Tab>
+              </Tabs>
             </Card.Body>
           </Card>
         </div>

@@ -110,6 +110,10 @@
     }
   }
 
+  .default-shadow {
+    box-shadow: 0 0 15px #524f4f;
+  }
+
   .card {
     background-color: $brand-background;
     color: $dark-layout-font;
@@ -1369,5 +1373,14 @@
     .nav-link.active {
       box-shadow: 0 0 21px rgba(77, 123, 177, 0.75) !important;
     }
+  }
+
+  .nav-pills {
+    background-color: $brand-background;
+    color: $dark-layout-font;
+  }
+  .tab-content {
+    background-color: $brand-background;
+    color: $dark-layout-font;
   }
 }

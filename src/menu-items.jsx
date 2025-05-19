@@ -102,13 +102,112 @@ const menuItems = {
           url: '/meetings/masterSettings',
           classes: 'nav-item',
           icon: 'fas fa-cogs',
-          display: true,
+          display: true
         },
         {
           id: 'logout',
           title: 'Logout',
           type: 'item',
-          url: '/meetings/logout',
+          url: '/logout',
+          classes: 'nav-item',
+          icon: 'feather icon-log-out',
+          display: true
+        }
+      ]
+    }
+  ],
+  user: [
+    {
+      id: 'menu',
+      title: '',
+      type: 'group',
+      icon: 'icon-pages',
+      children: [
+        {
+          id: 'dashboard',
+          title: 'Dashboard',
+          type: 'item',
+          url: '/tasktracker/dashboard',
+          classes: 'nav-item',
+          icon: 'feather icon-grid',
+          display: true
+        },
+        {
+          id: 'users',
+          title: 'ManPower',
+          type: 'item',
+          url: '/tasktracker/users',
+          classes: 'nav-item',
+          icon: 'feather icon-users',
+          display: true
+        }
+      ]
+    },
+    {
+      id: 'Tasks',
+      title: 'Task Menu',
+      type: 'group',
+      icon: 'icon-ui',
+      children: [
+        {
+          id: 'task',
+          title: 'Task',
+          type: 'collapse',
+          icon: 'fas fa-handshake',
+          display: true,
+          children: [
+            {
+              id: 'create_taskDependencies',
+              title: 'Create Dependancies',
+              type: 'item',
+              url: '/tasktracker/create-Dependancies',
+              display: true
+            },
+            {
+              id: 'Create_tasks',
+              title: 'Create Task',
+              type: 'item',
+              url: '/tasktracker/create-Task',
+              display: true
+            },
+            {
+              id: 'tasks_Assginment',
+              title: 'Task Assignment',
+              type: 'item',
+              url: '/tasktracker/Task-Assignment',
+              display: true
+            },
+            {
+              id: 'create_report',
+              title: 'Report',
+              type: 'item',
+              url: '/tasktracker/Task-Report',
+              display: true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'setting',
+      title: 'Settings',
+      type: 'group',
+      icon: 'icon-ui',
+      children: [
+        {
+          id: 'settings',
+          title: 'Master Data',
+          type: 'item',
+          url: '/tasktracker/masterSettings',
+          classes: 'nav-item',
+          icon: 'fas fa-cogs',
+          display: true
+        },
+        {
+          id: 'logout',
+          title: 'Logout',
+          type: 'item',
+          url: '/logout',
           classes: 'nav-item',
           icon: 'feather icon-log-out',
           display: true

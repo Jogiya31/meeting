@@ -1,23 +1,23 @@
-import Box from '../../components/Box';
+import Box from '../../../components/Box';
 import { useEffect, useRef, useState } from 'react';
 import { Accordion, Button, Col, Container, Form, Modal, Row, Table } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { userActions } from '../../store/user/userSlice';
+import { userActions } from '../../../store/user/userSlice';
 import moment from 'moment';
-import Stepper from '../../components/stepper';
+import Stepper from '../../../components/stepper';
 import Attendance from './attendance';
-import meetingImage from '../../assets/images/meeting.png';
+import meetingImage from '../../../assets/images/meeting.png';
 import { MultiSelect } from 'react-multi-select-component';
-import Textloading from '../../components/Loader/loading';
-import male_i from '../../assets/images/user/male.jpg';
-import female_i from '../../assets/images/user/female.jpg';
+import Textloading from '../../../components/Loader/loading';
+import male_i from '../../../assets/images/user/male.jpg';
+import female_i from '../../../assets/images/user/female.jpg';
 import axios from 'axios';
-import { useStore } from '../../contexts/DataContext';
-import { meetingsActions } from '../../store/mom/momSlice';
+import { useStore } from '../../../contexts/DataContext';
+import { meetingsActions } from '../../../store/mom/momSlice';
 import Swal from 'sweetalert2';
-import { useTheme } from '../../contexts/themeContext';
+import { useTheme } from '../../../contexts/themeContext';
 
 const NewPoint = () => {
   const navigate = useNavigate();

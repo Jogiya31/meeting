@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import MainCard from '../../components/Card/MainCard';
+import MainCard from '../../../components/Card/MainCard';
 import { Button, Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { settingsActions } from 'store/settings/settingSlice';
 import Swal from 'sweetalert2';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import { useTheme } from '../../contexts/themeContext';
+import { useTheme } from '../../../contexts/themeContext';
 
 const Index = () => {
   const dispatch = useDispatch();
@@ -197,25 +197,6 @@ const Index = () => {
         });
       }
     });
-    // if (window.confirm('Do you want to change status for this item?')) {
-    //   const updatedItem = list.find((item) => item.id === id);
-    //   if (!updatedItem) return;
-
-    //   const payload = {
-    //     [fieldName + 'Id']: updatedItem.id,
-    //     [fieldName + 'Title']: updatedItem.title,
-    //     ModifyBy: Role,
-    //     Status: updatedItem.status === 1 ? '0' : '1' // Ensure it's a string
-    //   };
-
-    //   try {
-    //     await dispatch(updateAction(payload));
-
-    //     // Create a new array reference to trigger re-render
-    //     setList((prevList) => prevList.map((item) => (item.id === id ? { ...item, status: updatedItem.status === 1 ? 0 : 1 } : item)));
-    //   } catch (error) {
-    //   }
-    // }
   };
 
   const handleAddItem = async (newItem, setNewItem, apiAction, fetchAction, fieldName) => {

@@ -2,17 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { Table, Button, Collapse, Card, Modal, Form, Row, Col, Pagination, InputGroup } from 'react-bootstrap';
 import { Fragment } from 'react';
 import { FaSort } from 'react-icons/fa';
-import attendanceImg from '../../assets/images/attendance.png';
-import excelImg from '../../assets/images/excel_i.svg';
+import attendanceImg from '../../../assets/images/attendance.png';
+import excelImg from '../../../assets/images/excel_i.svg';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
-import EnhancedTable from '../../components/Table';
+import EnhancedTable from '../../../components/Table';
 import { useDispatch, useSelector } from 'react-redux';
-import { meetingsActions } from '../../store/mom/momSlice';
-import { userActions } from '../../store/user/userSlice';
+import { meetingsActions } from '../../../store/mom/momSlice';
+import { userActions } from '../../../store/user/userSlice';
 import { settingsActions } from 'store/settings/settingSlice';
-import { useStore } from '../../contexts/DataContext';
-import { useTheme } from '../../contexts/themeContext';
+import { useStore } from '../../../contexts/DataContext';
+import { useTheme } from '../../../contexts/themeContext';
 
 export default function CollapsibleTable() {
   const Role = localStorage.getItem('role');
@@ -260,16 +260,18 @@ export default function CollapsibleTable() {
   };
 
   const handleSaveClick = () => {
+   console.log('selectedParentRow', selectedParentRow)
+   console.log('selectedRow', selectedRow)
     const payload = {
-      MeetingId: selectedParentRow.MeetingId,
+      MeetingId: Number(selectedParentRow.MeetingId),
       Description: selectedRow.Description,
-      StartDate: selectedParentRow.MeetingDate,
-      EndDate: selectedParentRow.MeetingTime,
+      StartDate: selectedRow.StartDate,
+      EndDate: selectedRow.EndDate,
       UserId: selectedRow.UserId,
       Reason: formData.Reason,
-      Status: formData.Status,
-      ProjectId: selectedRow.ProjectId,
-      DiscussionId: selectedRow.DiscussionId,
+      Status: Number(formData.Status),
+      ProjectId: Number(selectedRow.ProjectId),
+      DiscussionId: Number(selectedRow.DiscussionId),
       ModifyBy: Role
     };
     dispatch(meetingsActions.updateDiscussionInfo(payload));

@@ -4,20 +4,28 @@ import { Link, useLocation } from 'react-router-dom';
 
 import navigation from '../../../menu-items';
 import { BASE_TITLE } from '../../../config/constant';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const Breadcrumb = () => {
   const location = useLocation();
-
+  const { role } = useAuth();
   const [main, setMain] = useState([]);
   const [item, setItem] = useState([]);
 
   useEffect(() => {
-    navigation.items.map((item, index) => {
-      if (item.type && item.type === 'group') {
-        getCollapse(item, index);
-      }
-      return false;
-    });
+    role === 'user'
+      ? navigation.user.map((item, index) => {
+          if (item.type && item.type === 'group') {
+            getCollapse(item, index);
+          }
+          return false;
+        })
+      : navigation.items.map((item, index) => {
+          if (item.type && item.type === 'group') {
+            getCollapse(item, index);
+          }
+          return false;
+        });
   });
 
   const getCollapse = (item, index) => {

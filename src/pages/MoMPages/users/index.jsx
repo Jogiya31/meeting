@@ -1,18 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form, Pagination, InputGroup } from 'react-bootstrap';
-import female_i from '../../assets/images/user/female.jpg';
-import male_i from '../../assets/images/user/male.jpg';
-import api from '../../api';
-import edit from '../../assets/images/edit.png';
+import female_i from '../../../assets/images/user/female.jpg';
+import male_i from '../../../assets/images/user/male.jpg';
+import api from '../../../api';
+import edit from '../../../assets/images/edit.png';
 import { useDispatch, useSelector } from 'react-redux';
-import { userActions } from '../../store/user/userSlice';
-import { settingsActions } from '../../store/settings/settingSlice';
+import { userActions } from '../../../store/user/userSlice';
+import { settingsActions } from '../../../store/settings/settingSlice';
 import { FaSort, FaUserCircle, FaUserEdit } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { MultiSelect } from 'react-multi-select-component';
-import { useTheme } from '../../contexts/themeContext';
+import { useTheme } from '../../../contexts/themeContext';
 
 const UserList = () => {
   const dispatch = useDispatch();

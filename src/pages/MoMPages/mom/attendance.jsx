@@ -1,13 +1,13 @@
-import Box from '../../components/Box';
+import Box from '../../../components/Box';
 import React, { useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { userActions } from '../../store/user/userSlice';
+import { userActions } from '../../../store/user/userSlice';
 import { MultiSelect } from 'react-multi-select-component';
-import { settingsActions } from '../../store/settings/settingSlice';
+import { settingsActions } from '../../../store/settings/settingSlice';
 import Swal from 'sweetalert2';
-import { meetingsActions } from '../../store/mom/momSlice';
-import { useTheme } from '../../contexts/themeContext';
+import { meetingsActions } from '../../../store/mom/momSlice';
+import { useTheme } from '../../../contexts/themeContext';
 
 const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => {
   const Role = localStorage.getItem('role');

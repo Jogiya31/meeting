@@ -12,7 +12,7 @@ const Signout = () => {
   useEffect(() => {
     logout();
     dispatch(authActions.clearData());
-    navigate('/meetings/login');
+    navigate('/login');
   }, []);
 
   return <div></div>;

@@ -55,12 +55,12 @@ const JWTLogin = () => {
   }, [loginDetails]);
 
   return (
-    <Form noValidate onSubmit={handleSubmit}>
+    <Form noValidate onSubmit={handleSubmit} className='login-form'>
       <Form.Group className="mb-3" controlId="username">
         <Form.Label>User ID</Form.Label>
         <Form.Control
           type="text"
-          placeholder="Enter your User Name/Mobile"
+          placeholder="Enter Name/Mobile"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           isInvalid={!!errors.username}
