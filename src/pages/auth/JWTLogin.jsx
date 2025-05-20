@@ -41,21 +41,21 @@ const JWTLogin = () => {
 
   useEffect(() => {
     if (loggedIn || localStorage.getItem('loggedIn')) {
-      navigate('/meetings/dashboard');
+      navigate('/tasktracker/dashboard');
     }
   }, [loggedIn, navigate]);
 
-  useEffect(() => {
+  useEffect(() => {    
     if (loginDetails?.Result && loginDetails.Result.length > 0) {
       localStorage.setItem('loggedIn', true);
-      localStorage.setItem('role', loginDetails?.Result[0]?.Role);
-      login(loginDetails?.Result[0]);
-      navigate('/meetings/dashboard');
+      localStorage.setItem('role', 'user');
+      login({ Role: 'user' });
+      navigate('/tasktracker/dashboard');
     }
   }, [loginDetails]);
 
   return (
-    <Form noValidate onSubmit={handleSubmit} className='login-form'>
+    <Form noValidate onSubmit={handleSubmit} className="login-form">
       <Form.Group className="mb-3" controlId="username">
         <Form.Label>User ID</Form.Label>
         <Form.Control

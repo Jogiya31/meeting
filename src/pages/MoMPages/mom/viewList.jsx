@@ -454,7 +454,7 @@ export default function CollapsibleTable() {
           </div>
         </Pagination>
       </Card>
-      <Modal show={show} onHide={handleClose} animation={true}>
+      <Modal show={show} onHide={handleClose} animation={true}  backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Update Details</h5>
@@ -512,7 +512,7 @@ export default function CollapsibleTable() {
         </Modal.Footer>
       </Modal>
 
-      <Modal size="xl" show={showAttendanceList} onHide={handleCloseAttendanceList}>
+      <Modal size="xl" show={showAttendanceList} onHide={handleCloseAttendanceList}  backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title className="w-100">
             <div className="d-flex justify-content-between ">

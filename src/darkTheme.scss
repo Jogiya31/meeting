@@ -112,12 +112,14 @@
 
   .default-shadow {
     box-shadow: 0 0 15px #524f4f;
+    border-radius: 8px;
   }
 
   .card {
     background-color: $brand-background;
     color: $dark-layout-font;
-    box-shadow: 0 0 4px $theme-border;
+    box-shadow: 0 0 15px #524f4f;
+    border-radius: 8px;
   }
 
   .card-header .card-header-right {
@@ -1379,8 +1381,25 @@
     background-color: $brand-background;
     color: $dark-layout-font;
   }
+
+  .nav-tabs {
+    .nav-item {
+      .active {
+        background-color: $brand-background !important;
+        color: $dark-layout-font !important;
+      }
+    }
+  }
+
   .tab-content {
     background-color: $brand-background;
     color: $dark-layout-font;
+  }
+
+  .login-container {
+    background-color: $brand-background;
+    .tab-content {
+      border-top: 1px solid $dark-layout-font;
+    }
   }
 }

@@ -258,6 +258,81 @@ button.sortBtn.btn.btn-info,
 .header-dark {
   border-top: 3px solid $dark-color !important;
 }
+
+.table-header-primary {
+  color: $light-color !important;
+  background-color: $primary-color !important;
+}
+.table-header-warning {
+  color: $dark-color !important;
+  background-color: $warning-color !important;
+}
+.table-header-danger {
+  color: $light-color !important;
+  background-color: $danger-color !important;
+}
+.table-header-success {
+  color: $light-color !important;
+  background-color: $success-color !important;
+}
+.table-header-purple {
+  color: $light-color !important;
+  background-color: $purple-color !important;
+}
+.table-header-secondary {
+  color: $light-color !important;
+  background-color: $secondary-color !important;
+}
+.table-header-info {
+  color: $light-color !important;
+  background-color: $info-color !important;
+}
+.table-header-dark {
+  color: $light-color !important;
+  background-color: $dark-color !important;
+}
+
+.c-btn-primary {
+  color: $light-color !important;
+  background-color: $primary-color !important;
+  border: $primary-color !important;
+}
+.c-btn-warning {
+  color: $dark-color !important;
+  background-color: $warning-color !important;
+  border: $warning-color !important;
+}
+.c-btn-danger {
+  color: $light-color !important;
+  background-color: $danger-color !important;
+  border: $danger-color !important;
+}
+.c-btn-success {
+  color: $light-color !important;
+  background-color: $success-color !important;
+  border: $success-color !important;
+}
+.c-btn-purple {
+  color: $light-color !important;
+  background-color: $purple-color !important;
+  border: $purple-color !important;
+}
+.c-btn-secondary {
+  color: $light-color !important;
+  background-color: $secondary-color !important;
+  border: $secondary-color !important;
+}
+.c-btn-info {
+  color: $light-color !important;
+  background-color: $info-color !important;
+  border: $info-color !important;
+}
+.c-btn-dark {
+  color: $light-color !important;
+  background-color: $dark-color !important;
+  border: $dark-color !important;
+}
+
 .attendance {
   width: 45px !important;
   height: 45px !important;
@@ -705,7 +780,7 @@ button.sortBtn.btn.btn-info,
 }
 
 .dark .borderless .nav-tabs .nav-link.active {
-  background-color: $popup-dark-layout !important;
+  background-color: $brand-background !important;
   color: $dark-layout-font !important;
   border-bottom: 1px solid #d6d6d6 !important;
 }

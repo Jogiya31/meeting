@@ -23,13 +23,12 @@ const TaskAssigment = () => {
   return (
     <Row>
       <Col md={12} className="">
-        <Tabs defaultActiveKey="assignedTask">
+        <Tabs defaultActiveKey="assignedTask" className="default-shadow">
           <Tab eventKey="assignedTask" title="Assigned Tasks">
             <EnhancedTable
               data={[]}
               headers={GroupHeaders}
               headerCss="success"
-              enableSno
               enablePagination
               rowactions={(row) => (
                 <Button variant="primary" className="float-end btn-sm">
@@ -43,7 +42,6 @@ const TaskAssigment = () => {
               data={[]}
               headers={GroupHeaders}
               headerCss="info"
-              enableSno
               enablePagination
               rowactions={(row) => (
                 <Button variant="primary" className="float-end btn-sm">
@@ -57,7 +55,6 @@ const TaskAssigment = () => {
               data={[]}
               headers={progressHeaders}
               headerCss="warning"
-              enableSno
               enablePagination
               rowactions={(row) => (
                 <Button variant="primary" className="float-end btn-sm">

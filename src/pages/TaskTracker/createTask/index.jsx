@@ -1,7 +1,7 @@
 import EnhancedTable from 'components/Table';
 import { useTheme } from '../../../contexts/themeContext';
 import React, { useState } from 'react';
-import { Button, Card, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Card, CardSubtitle, Col, Form, Modal, Row } from 'react-bootstrap';
 
 const CreateTask = () => {
   const { mode } = useTheme();
@@ -16,6 +16,7 @@ const CreateTask = () => {
 
   const [showNewTask, setShowNewTask] = useState(false);
   const [taskErrors, setTaskErrors] = useState({});
+  const [search, setSearch] = useState('');
   const [TaskformData, setTaskFormData] = useState({
     projectName: '',
     moduleName: '',
@@ -26,11 +27,16 @@ const CreateTask = () => {
   const handleClose = () => {
     setShowNewTask(false);
     setTaskErrors({});
+    setTaskFormData({
+      projectName: '',
+      moduleName: '',
+      task: '',
+      taskDescription: ''
+    });
   };
 
   const handleTaskChange = (e) => {
     const { name, value } = e.target;
-    console.log('first', name, value);
     setTaskFormData({ ...TaskformData, [name]: value });
   };
   const validateTasks = () => {
@@ -47,35 +53,45 @@ const CreateTask = () => {
     if (!validateTasks()) return;
     console.log('TaskformData', TaskformData);
   };
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setPage(0); // Reset page when search is modified
+  };
 
   return (
     <>
-      <Card className="py-3 px-4 w-full">
-        <Row>
-          <Col md={12} className="d-flex justify-content-between  align-items-center">
-            <h5>Task List</h5>
-            <Button className="" onClick={() => setShowNewTask(true)}>
-              {' '}
-              Add
-            </Button>
-          </Col>
-          <Col md={12} className="dark-table">
-            <EnhancedTable
-              data={[]}
-              headers={GroupHeaders}
-              headerCss="info"
-              enableSno
-              enablePagination
-              rowactions={(row) => (
-                <Button variant="primary" className="float-end btn-sm">
-                  Action
-                </Button>
-              )}
+      <Card className="py-1 w-full default-shadow header-info">
+        <Card.Header className="d-flex justify-content-between align-items-center py-2">
+          <Card.Title as="h5">Task List</Card.Title>
+          <CardSubtitle className="user-table-right">
+            <input
+              type="text"
+              placeholder="Search.."
+              value={search}
+              onChange={handleSearchChange}
+              className="form-control mr-2 userSearch"
             />
-          </Col>
-        </Row>
+            <Button onClick={() => setShowNewTask(true)} className="m-0 fw-bolder">
+              <i className="feather icon-plus"> Add </i>
+            </Button>
+          </CardSubtitle>
+        </Card.Header>
+        <Card.Body className="p-3 pt-0 dark-table">
+          <EnhancedTable
+            data={[]}
+            headers={GroupHeaders}
+            headerCss="info"
+            enableSno
+            enablePagination
+            rowactions={(row) => (
+              <Button variant="primary" className="float-end btn-sm">
+                Action
+              </Button>
+            )}
+          />
+        </Card.Body>
       </Card>
-      <Modal size="md" show={showNewTask} onHide={handleClose} animation={true}>
+      <Modal size="md" show={showNewTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Add New Task</h5>
@@ -99,6 +115,7 @@ const CreateTask = () => {
                     isInvalid={!!taskErrors.projectName}
                   >
                     <option value="">Select project...</option>
+                    <option value="1">1</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{taskErrors.projectName}</Form.Control.Feedback>
                 </Form.Group>
@@ -114,6 +131,7 @@ const CreateTask = () => {
                     isInvalid={!!taskErrors.moduleName}
                   >
                     <option value="">Select Module...</option>
+                    <option value="1">1</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{taskErrors.moduleName}</Form.Control.Feedback>
                 </Form.Group>
@@ -139,7 +157,7 @@ const CreateTask = () => {
                     as="textarea"
                     value={TaskformData.taskDescription}
                     rows={1}
-                    name="groupDescription"
+                    name="taskDescription"
                     placeholder="Enter text here.."
                     onChange={handleTaskChange}
                     isInvalid={!!taskErrors.taskDescription}

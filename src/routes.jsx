@@ -47,6 +47,7 @@ const userDashboard = lazy(() => import('./pages/TaskTracker/dashboard'));
 const createDependencies = lazy(() => import('./pages/TaskTracker/createDependencies'));
 const CreateTask = lazy(() => import('./pages/TaskTracker/createTask'));
 const TaskAssignment = lazy(() => import('./pages/TaskTracker/taskAssignment'));
+const TaskApproval = lazy(() => import('./pages/TaskTracker/taskApproval'));
 const TaskReport = lazy(() => import('./pages/TaskTracker/taskReport'));
 const Tasksetting = lazy(() => import('./pages/TaskTracker/settings'));
 
@@ -137,6 +138,11 @@ const routes = [
         element: CreateTask
       },
       {
+        exact: true,
+        path: '/tasktracker/Task-Approval',
+        element: TaskApproval
+      },
+       {
         exact: true,
         path: '/tasktracker/Task-Assignment',
         element: TaskAssignment

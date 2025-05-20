@@ -523,7 +523,7 @@ const UserList = () => {
           </Card>
         </Col>
       </Row>
-      <Modal size="xl" show={showregister} onHide={handleClose} animation={true}>
+      <Modal size="xl" show={showregister} onHide={handleClose} animation={true}  backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>

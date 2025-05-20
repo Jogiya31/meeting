@@ -376,7 +376,7 @@ const DashDefault = () => {
         </div>
       </div>
 
-      <Modal size="xl" show={showInfoDetails} animation={true}>
+      <Modal size="xl" show={showInfoDetails} animation={true}  backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Meeting Details</h5>
@@ -510,7 +510,7 @@ const DashDefault = () => {
         </Modal.Body>
       </Modal>
 
-      <Modal show={showInfo} animation={true}>
+      <Modal show={showInfo} animation={true}  backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Events for this day </h5>
@@ -536,7 +536,7 @@ const DashDefault = () => {
           )}
         </Modal.Body>
       </Modal>
-      <Modal show={showProjects} animation={true}>
+      <Modal show={showProjects} animation={true}  backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Total no. of projects</h5>

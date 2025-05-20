@@ -21,7 +21,7 @@ const AdminLogin = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!username.trim()) newErrors.username = 'User ID is required';
+    if (!username.trim()) newErrors.username = 'Admin ID is required';
     if (!password) newErrors.password = 'Password is required';
     return newErrors;
   };

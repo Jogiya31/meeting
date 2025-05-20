@@ -4,6 +4,7 @@ import { Button, Col, Form, Modal, Nav, Row, Tab } from 'react-bootstrap';
 import { useTheme } from '../../../contexts/themeContext';
 import EnhancedTable from '../../../components/Table';
 import DatePicker from 'react-datepicker';
+import moment from 'moment';
 
 const CreateDependencies = () => {
   const dispatch = useDispatch();
@@ -74,10 +75,19 @@ const CreateDependencies = () => {
       HOGName: '',
       HODName: '',
       technologyStack: '',
-      projectStartDate: '',
-      completionDate: ''
+      projectStartDate: null,
+      completionDate: null
     });
-    setModuleFormData({ projectName: '', moduleName: '', moduleDescription: '' });
+    setGroupFormData({
+      groupName: '',
+      groupStartDate: null,
+      groupDescription: ''
+    });
+    setModuleFormData({
+      projectName: '',
+      moduleName: '',
+      moduleDescription: ''
+    });
     setGroupErrors({});
     setProjectErrors({});
     setModuleErrors({});
@@ -106,8 +116,9 @@ const CreateDependencies = () => {
   };
   const handleGroupDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
+      const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
       setGroupStartDateError(false);
-      setGroupFormData({ ...GroupformData, groupStartDate: date || '' });
+      setGroupFormData({ ...GroupformData, groupStartDate: formattedDate });
     } else {
       setGroupFormData({ ...GroupformData, groupStartDate: '' });
     }
@@ -144,7 +155,8 @@ const CreateDependencies = () => {
   const handleProjectStartDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectStartDateError(false);
-      setProjectFormData({ ...ProjectformData, projectStartDate: date || '' });
+      const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+      setProjectFormData({ ...ProjectformData, projectStartDate: formattedDate || '' });
     } else {
       setProjectFormData({ ...ProjectformData, projectStartDate: '' });
     }
@@ -152,7 +164,8 @@ const CreateDependencies = () => {
   const handleProjectEndDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectCompletionDateError(false);
-      setProjectFormData({ ...ProjectformData, completionDate: date || '' });
+      const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+      setProjectFormData({ ...ProjectformData, completionDate: formattedDate || '' });
     } else {
       setProjectFormData({ ...ProjectformData, completionDate: '' });
     }
@@ -210,7 +223,7 @@ const CreateDependencies = () => {
                         </Button>
                       </div>
                       <div className="dark-table">
-                        <EnhancedTable data={[]} headers={GroupHeaders} headerCss="info" enableSno enablePagination />
+                        <EnhancedTable data={[]} headers={GroupHeaders} headerCss="info" enablePagination />
                       </div>
                     </div>
                   </Tab.Pane>
@@ -222,7 +235,7 @@ const CreateDependencies = () => {
                         </Button>
                       </div>
                       <div className="dark-table">
-                        <EnhancedTable data={[]} headers={ProjectHeaders} headerCss="info" enableSno enablePagination />
+                        <EnhancedTable data={[]} headers={ProjectHeaders} headerCss="info" enablePagination />
                       </div>
                     </div>
                   </Tab.Pane>
@@ -234,7 +247,7 @@ const CreateDependencies = () => {
                         </Button>
                       </div>
                       <div className="dark-table">
-                        <EnhancedTable data={[]} headers={ModuleHeaders} headerCss="info" enableSno enablePagination />
+                        <EnhancedTable data={[]} headers={ModuleHeaders} headerCss="info" enablePagination />
                       </div>
                     </div>
                   </Tab.Pane>
@@ -244,7 +257,7 @@ const CreateDependencies = () => {
           </Tab.Container>
         </Col>
       </Row>
-      <Modal size="md" show={showGroup} onHide={handleClose} animation={true}>
+      <Modal size="md" show={showGroup} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Add Group</h5>
@@ -275,7 +288,7 @@ const CreateDependencies = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Group Start Date</Form.Label>
                   <DatePicker
-                    selected={GroupformData.groupStartDate}
+                    selected={GroupformData.groupStartDate || null}
                     className={`form-control cfs-14 ${groupstartDateError ? 'is-invalid' : ''}`}
                     onChange={handleGroupDate}
                     placeholderText="Start Date"
@@ -314,7 +327,7 @@ const CreateDependencies = () => {
           </Form>
         </Modal.Body>
       </Modal>
-      <Modal size="lg" show={showProject} onHide={handleClose} animation={true}>
+      <Modal size="lg" show={showProject} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Add Project</h5>
@@ -367,6 +380,7 @@ const CreateDependencies = () => {
                     isInvalid={!!projectErrors.groupName}
                   >
                     <option value="">Select officer...</option>
+                    <option value="1">1</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{projectErrors.groupName}</Form.Control.Feedback>
                 </Form.Group>
@@ -382,6 +396,7 @@ const CreateDependencies = () => {
                     isInvalid={!!projectErrors.HOGName}
                   >
                     <option value="">Select officer...</option>
+                    <option value="1">1</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{projectErrors.HOGName}</Form.Control.Feedback>
                 </Form.Group>
@@ -397,6 +412,7 @@ const CreateDependencies = () => {
                     isInvalid={!!projectErrors.HODName}
                   >
                     <option value="">Select officer...</option>
+                    <option value="1">1</option>
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{projectErrors.HODName}</Form.Control.Feedback>
                 </Form.Group>
@@ -419,7 +435,7 @@ const CreateDependencies = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Project Start Date</Form.Label>
                   <DatePicker
-                    selected={ProjectformData.projectStartDate}
+                    selected={ProjectformData.projectStartDate || null}
                     className={`form-control cfs-14 ${projectstartDateError ? 'is-invalid' : ''}`}
                     onChange={handleProjectStartDate}
                     placeholderText="Start Date"
@@ -433,7 +449,7 @@ const CreateDependencies = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Completion Date</Form.Label>
                   <DatePicker
-                    selected={ProjectformData.completionDate}
+                    selected={ProjectformData.completionDate || null}
                     className={`form-control cfs-14 ${projectCompletionDateError ? 'is-invalid' : ''}`}
                     onChange={handleProjectEndDate}
                     placeholderText="End Date"
@@ -456,7 +472,7 @@ const CreateDependencies = () => {
           </Form>
         </Modal.Body>
       </Modal>
-      <Modal size="md" show={showModule} onHide={handleClose} animation={true}>
+      <Modal size="md" show={showModule} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Add Module</h5>

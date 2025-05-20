@@ -335,14 +335,9 @@ const DashDefault = () => {
             </Card>
           </div>
         </div>
-        {/* <div className="grid-item">
-          <Card className="calander-card p-3 mt-3 mb-1">
-            <TaskCalendar extra="dashboard-cal" eventsData={events} handleEvets={handleEvents} handleSelectedEvent={setSelectedEvents} />
-          </Card>
-        </div> */}
       </div>
 
-      <Modal show={showProjects} animation={true}>
+      <Modal show={showProjects} animation={true}  backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Total no. of projects</h5>

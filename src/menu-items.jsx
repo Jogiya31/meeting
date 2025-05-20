@@ -171,6 +171,13 @@ const menuItems = {
               display: true
             },
             {
+              id: 'tasks_Approval',
+              title: 'Task Approval',
+              type: 'item',
+              url: '/tasktracker/Task-Approval',
+              display: true
+            },
+            {
               id: 'tasks_Assginment',
               title: 'Task Assignment',
               type: 'item',
@@ -189,20 +196,11 @@ const menuItems = {
       ]
     },
     {
-      id: 'setting',
-      title: 'Settings',
+      id: 'Others',
+      title: 'Others',
       type: 'group',
       icon: 'icon-ui',
       children: [
-        {
-          id: 'settings',
-          title: 'Master Data',
-          type: 'item',
-          url: '/tasktracker/masterSettings',
-          classes: 'nav-item',
-          icon: 'fas fa-cogs',
-          display: true
-        },
         {
           id: 'logout',
           title: 'Logout',

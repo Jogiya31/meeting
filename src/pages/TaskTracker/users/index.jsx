@@ -87,7 +87,6 @@ const UserList = () => {
     PriorityDataList?.Result?.map((item) => setdesignationPriority((prev) => [...prev, item.PriorityOrderTitle]));
   }, [PriorityDataList]);
 
-
   useEffect(() => {
     if (userList && Array.isArray(userList.Result)) {
       const updatedData = userList.Result.map((item) => {
@@ -172,7 +171,7 @@ const UserList = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'Mobile' || name==='DisplayOrderId') {
+    if (name === 'Mobile' || name === 'DisplayOrderId') {
       if (/^\d{0,10}$/.test(value)) {
         setFormData({ ...formData, [name]: value });
       }
@@ -420,7 +419,7 @@ const UserList = () => {
                 </Button>
               </CardSubtitle>
             </Card.Header>
-            <Card.Body className="p-3 pt-0 dark-table">
+            <Card.Body className="p-3 pt-2 dark-table">
               <Table responsive hover className="recent-users">
                 <thead className="header-bg">
                   <tr>
@@ -523,7 +522,8 @@ const UserList = () => {
           </Card>
         </Col>
       </Row>
-      <Modal size="xl" show={showregister} onHide={handleClose} animation={true}>
+
+      <Modal size="xl" show={showregister} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>
@@ -749,7 +749,7 @@ const UserList = () => {
             </Row>
             <Row>
               <Col md={6}>
-              <Form.Group className="mb-3">
+                <Form.Group className="mb-3">
                   <Form.Label>Display Order</Form.Label>
                   <Form.Control
                     type="text"
@@ -783,32 +783,6 @@ const UserList = () => {
               </Col>
             </Row>
             <Row>
-              {/* <Col>
-                <Form.Group className="mb-3">
-                  <Form.Label>Status</Form.Label>
-                  <div>
-                    <Form.Check
-                      inline
-                      type="radio"
-                      label="In service"
-                      name="Status"
-                      value="1"
-                      checked={formData.Status === '1'}
-                      onChange={handleChange}
-                    />
-                    <Form.Check
-                      inline
-                      type="radio"
-                      label="Not in service"
-                      name="Status"
-                      value="0"
-                      checked={formData.Status === '0'}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </Form.Group>
-              </Col> */}
-
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Upload Image</Form.Label>

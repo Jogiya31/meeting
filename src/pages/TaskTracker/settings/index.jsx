@@ -266,6 +266,7 @@ const Index = () => {
           </MainCard>
         </Col>
       </Row>
+      
     </div>
   );
 };

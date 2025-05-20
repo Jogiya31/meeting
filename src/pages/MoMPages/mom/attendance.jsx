@@ -428,7 +428,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
         </Col>
       </Row>
 
-      <Modal show={showregister} onHide={handleClose} animation={true}>
+      <Modal show={showregister} onHide={handleClose} animation={true}  backdrop="static" keyboard={false}>
         <Modal.Header closeButton>
           <Modal.Title>
             <h4>Add Employee</h4>
