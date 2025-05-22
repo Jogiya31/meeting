@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Row, Col, Card, Modal, Accordion, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { dashboardActions } from '../../../store/dashboard/dashboardSlice';
-import DonutChart from '../../../components/chart/DonutChart';
+import DonutChart from '../../../components/charts/DonutChart';
 import TaskCalendar from 'components/TaskCalander';
 import moment from 'moment';
 import pdf_i from '../../../assets/images/pdf_i.svg';

@@ -10,6 +10,9 @@ import { motion } from 'framer-motion';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { FaProjectDiagram } from 'react-icons/fa';
 import { useTheme } from '../../../contexts/themeContext';
+import DonutChart from '../../../components/charts/DonutChart';
+import DonutChart2 from '../../../components/charts/DonutChat2';
+import GroupedColumnChart from '../../../components/charts/GroupedColumnChart';
 
 const DashDefault = () => {
   const { mode, theme } = useTheme();
@@ -42,42 +45,61 @@ const DashDefault = () => {
   const handleClose = () => {
     setShowProjects(false);
   };
+  const labels = ['CCBS', 'DAID', 'PRAYAS', 'TEJAS'];
 
-  const groupData = [
-    { name: 'CCBS', total: 41, pending: 13 },
-    { name: 'DAID', total: 10, pending: 4 },
-    { name: 'PRAYAS', total: 30, pending: 94 },
-    { name: 'TEJAS', total: 44, pending: 2 }
-  ];
-  const columns = [
-    [
-      { label: 'CCBS - Total Tasks', color: '#00C9A7' },
-      { label: 'CCBS - Pending Task', color: '#333' }
-    ],
-    [
-      { label: 'DAID - Total Tasks', color: '#ff5b5b' },
-      { label: 'DAID - Pending Task', color: '#f5c518' }
-    ],
-    [
-      { label: 'PRAYAS - Total Tasks', color: '#444' },
-      { label: 'PRAYAS - Pending Task', color: '#8ed6fb' }
-    ],
-    [
-      { label: 'TEJAS - Total Tasks', color: '#ff9c6e' },
-      { label: 'TEJAS - Pending Task', color: '#b478c2' }
-    ]
+  const groupsData = [
+    {
+      label: 'CCBS - Total Tasks',
+      data: [40, 0, 0, 0],
+      backgroundColor: '#00C9A7'
+    },
+    {
+      label: 'CCBS - Pending Task',
+      data: [12, 0, 0, 0],
+      backgroundColor: '#333'
+    },
+    {
+      label: 'DAID - Total Tasks',
+      data: [0, 10, 0, 0],
+      backgroundColor: '#ff5b5b'
+    },
+    {
+      label: 'DAID - Pending Task',
+      data: [0, 5, 0, 0],
+      backgroundColor: '#f5c518'
+    },
+    {
+      label: 'PRAYAS - Total Tasks',
+      data: [0, 0, 25, 0],
+      backgroundColor: '#444'
+    },
+    {
+      label: 'PRAYAS - Pending Task',
+      data: [0, 0, 90, 0],
+      backgroundColor: '#8ed6fb'
+    },
+    {
+      label: 'TEJAS - Total Tasks',
+      data: [0, 0, 0, 45],
+      backgroundColor: '#ff9c6e'
+    },
+    {
+      label: 'TEJAS - Pending Task',
+      data: [0, 0, 0, 3],
+      backgroundColor: '#b478c2'
+    }
   ];
 
-  const legendItems = [
-    { label: 'CCBS - Total Tasks', color: '#00C9A7' },
-    { label: 'CCBS - Pending Task', color: '#333' },
-    { label: 'DAID - Total Tasks', color: '#ff5b5b' },
-    { label: 'DAID - Pending Task', color: '#f5c518' },
-    { label: 'PRAYAS - Total Tasks', color: '#444' },
-    { label: 'PRAYAS - Pending Task', color: '#8ed6fb' },
-    { label: 'TEJAS - Total Tasks', color: '#ff9c6e' },
-    { label: 'TEJAS - Pending Task', color: '#b478c2' }
+  const pendingTasksData = [
+    { name: 'Rohit Gusain', tasks: 1 },
+    { name: 'Ankit Pandey', tasks: 2 },
+    { name: 'Arpit Singh', tasks: 2 },
+    { name: 'Sanjay Shukla', tasks: 2 },
+    { name: 'Sanjeev kumar', tasks: 2 },
+    { name: 'Manish kumar', tasks: 3 },
+    { name: 'Arun Siwach', tasks: 4 }
   ];
+
   return (
     <React.Fragment>
       <div className="dashboard-cards grid-wrapper">
@@ -266,46 +288,23 @@ const DashDefault = () => {
         </div>
         <Row>
           <Col md={6}>
-            <Card>
-              <Card.Header>
-                <Card.Title as="h5">Grouped Multi-Bar Chart</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <div>
-                  <h3 style={{ textAlign: 'center', marginBottom: 20 }}>Total Tasks/Pending Tasks By group</h3>
-
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      marginBottom: '10px',
-                      gap: '40px' // spacing between columns
-                    }}
-                  >
-                    {columns.map((col, colIndex) => (
-                      <div key={colIndex} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        {col.map((item) => (
-                          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <div
-                              style={{
-                                width: 12,
-                                height: 12,
-                                backgroundColor: item.color,
-                                borderRadius: 2
-                              }}
-                            ></div>
-                            <span style={{ fontSize: 13 }}>{item.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
+            <Card className="mt-3">
+               <Card.Body className='p-0'>
+                <div className="dashboard-barchart">
+                  <GroupedColumnChart data={groupsData} labels={labels} title="Total Tasks/Pending Tasks By group" />
                 </div>
               </Card.Body>
             </Card>
           </Col>
-
-         
+          <Col md={6}>
+            <Card className="mt-3">
+              <Card.Body className='p-0'>
+                <div className="dashboard-donut">
+                  <DonutChart2 title="Pending Tasks By Team Members" data={pendingTasksData} />;
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
       </div>
 
