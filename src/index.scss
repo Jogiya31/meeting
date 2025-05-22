@@ -152,6 +152,9 @@
 .react-datepicker-wrapper {
   width: 100% !important ;
 }
+.w-auto {
+  width: auto !important;
+}
 .w-full {
   width: 100% !important;
 }
@@ -257,6 +260,9 @@ button.sortBtn.btn.btn-info,
 }
 .header-dark {
   border-top: 3px solid $dark-color !important;
+}
+.header-default {
+  border-top: 3px solid #20417c !important;
 }
 
 .table-header-primary {
@@ -773,16 +779,37 @@ button.sortBtn.btn.btn-info,
   max-width: 200px !important;
 }
 
-.light .borderless .nav-tabs .nav-link.active {
-  background-color: #fff !important;
-  color: $theme-heading-color !important;
-  border-bottom: 1px solid #d6d6d6 !important;
+.light {
+  .borderless .nav-tabs .nav-link.active {
+    background-color: #fff !important;
+    color: $theme-heading-color !important;
+    border-bottom: 1px solid #d6d6d6 !important;
+  }
+  .nav-tabs {
+    .nav-item {
+      .active {
+        font-weight: 600;
+        box-shadow: 2px 0px 10px 0px rgb(0 0 0 / 40%);
+      }
+    }
+  }
 }
-
-.dark .borderless .nav-tabs .nav-link.active {
-  background-color: $brand-background !important;
-  color: $dark-layout-font !important;
-  border-bottom: 1px solid #d6d6d6 !important;
+.dark {
+  .borderless .nav-tabs .nav-link.active {
+    background-color: $brand-background !important;
+    color: $dark-layout-font !important;
+    border-bottom: 1px solid #d6d6d6 !important;
+  }
+  .nav-tabs {
+    .nav-item {
+      .active {
+        background-color: $brand-background !important;
+        color: $dark-layout-font !important;
+        font-weight: 600;
+        box-shadow: 0px 2px 12px 0px rgb(255 255 255 / 40%);
+      }
+    }
+  }
 }
 
 .login-form {
@@ -842,6 +869,32 @@ button.sortBtn.btn.btn-info,
             color: $light-color !important;
           }
         }
+      }
+    }
+  }
+}
+
+.table-column-setting {
+  background: transparent !important;
+  .setting-btn {
+    background: transparent !important;
+    background-color: rgb(225 225 225 / 0%) !important;
+    &::after {
+      display: none !important;
+    }
+  }
+  .dropdown-menu {
+    padding: 10px 10px !important;
+    width: max-content !important;
+    &::before {
+      display: none;
+    }
+    .form-switch {
+      .form-check-input {
+        cursor: pointer;
+      }
+      .form-check-label {
+        color: $secondary-color !important;
       }
     }
   }

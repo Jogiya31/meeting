@@ -44,15 +44,15 @@ const Settings = lazy(() => import('./pages/MoMPages/settings'));
 
 // Tracker
 const userDashboard = lazy(() => import('./pages/TaskTracker/dashboard'));
+const TaskList = lazy(() => import('./pages/TaskTracker/taskList'));
+const userList = lazy(() => import('./pages/TaskTracker/users'));
 const createDependencies = lazy(() => import('./pages/TaskTracker/createDependencies'));
 const CreateTask = lazy(() => import('./pages/TaskTracker/createTask'));
 const TaskAssignment = lazy(() => import('./pages/TaskTracker/taskAssignment'));
 const TaskApproval = lazy(() => import('./pages/TaskTracker/taskApproval'));
 const TaskReport = lazy(() => import('./pages/TaskTracker/taskReport'));
-const Tasksetting = lazy(() => import('./pages/TaskTracker/settings'));
 
 //Auth
-
 const Login = lazy(() => import('./pages/auth/SignIn'));
 const SignOut = lazy(() => import('./pages/auth/SignOut'));
 
@@ -125,7 +125,12 @@ const routes = [
       {
         exact: true,
         path: '/tasktracker/users',
-        element: Users
+        element: userList
+      },
+      {
+        exact: true,
+        path: '/tasktracker/Task-List',
+        element: TaskList
       },
       {
         exact: true,
@@ -152,12 +157,6 @@ const routes = [
         path: '/tasktracker/Task-Report',
         element: TaskReport
       },
-      {
-        exact: true,
-        path: '/tasktracker/masterSettings',
-        element: Tasksetting
-      },
-
       {
         path: '*',
         element: NotFound // <-- Set NotFound page for unknown routes

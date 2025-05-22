@@ -62,7 +62,7 @@ const CreateTask = () => {
     <>
       <Card className="py-1 w-full default-shadow header-info">
         <Card.Header className="d-flex justify-content-between align-items-center py-2">
-          <Card.Title as="h5">Task List</Card.Title>
+          <Card.Title as="h5">Unassigned Task</Card.Title>
           <CardSubtitle className="user-table-right">
             <input
               type="text"

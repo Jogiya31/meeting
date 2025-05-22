@@ -1382,24 +1382,30 @@
     color: $dark-layout-font;
   }
 
-  .nav-tabs {
-    .nav-item {
-      .active {
-        background-color: $brand-background !important;
-        color: $dark-layout-font !important;
-      }
-    }
-  }
-
   .tab-content {
     background-color: $brand-background;
     color: $dark-layout-font;
+    padding: 10px 18px;
   }
 
   .login-container {
     background-color: $brand-background;
     .tab-content {
       border-top: 1px solid $dark-layout-font;
+    }
+  }
+
+  .table-column-setting {
+    .dropdown-menu {
+      background-color: $brand-background;
+      .form-switch {
+        .form-check-input {
+          cursor: pointer;
+        }
+        .form-check-label {
+          color: $dark-layout-font !important;
+        }
+      }
     }
   }
 }

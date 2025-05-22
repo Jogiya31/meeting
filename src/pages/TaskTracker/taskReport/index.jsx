@@ -31,7 +31,7 @@ const TaskReport = () => {
   };
   return (
     <div>
-      <Card className="Recent-Users widget-focus-lg header-info">
+      <Card className="Recent-Users widget-focus-lg header-info default-shadow">
         <Card.Header className=" py-2">
           <Form noValidate onSubmit={handleSubmit}>
             <Row className="d-flex align-items-center">

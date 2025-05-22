@@ -21,9 +21,9 @@ const TaskApproval = () => {
   };
   return (
     <div>
-      <Card className="py-1  w-full header-secondary">
+      <Card className="py-1  w-full header-secondary  default-shadow">
         <Card.Header className="d-flex justify-content-between align-items-center py-2">
-          <Card.Title as="h5">Task List</Card.Title>
+          <Card.Title as="h5">Task Approval</Card.Title>
           <CardSubtitle className="user-table-right">
             <input
               type="text"

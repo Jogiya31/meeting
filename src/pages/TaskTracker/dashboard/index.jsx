@@ -1,37 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Row, Col, Card, Modal} from 'react-bootstrap';
+import { Row, Col, Card, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { dashboardActions } from '../../../store/dashboard/dashboardSlice';
-import DonutChart from '../../../components/chart/DonutChart';
-import TaskCalendar from 'components/TaskCalander';
-import moment from 'moment';
-import pdf_i from '../../../assets/images/pdf_i.svg';
 import './style.scss';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '../../../contexts/DataContext';
 import { meetingsActions } from '../../../store/mom/momSlice';
 import { userActions } from '../../../store/user/userSlice';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { motion } from 'framer-motion';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { FaProjectDiagram } from 'react-icons/fa';
 import { useTheme } from '../../../contexts/themeContext';
+
 const DashDefault = () => {
   const { mode, theme } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const pdfContent = useRef();
-  const { filterWith } = useStore();
-  const [events, setEvents] = useState([]);
   const [showProjects, setShowProjects] = useState(false);
-  const [selectedEvents, setSelectedEvents] = useState([]);
-  const [selectedEventId, setSelectedEventId] = useState(null);
-  const [selectedMeeting, setSelectedMeeting] = useState(null);
   const dashboardCountInfo = useSelector((state) => state.dashboard.data);
-  const MeetingLists = useSelector((state) => state.meetings.data);
   const projectDataList = useSelector((state) => state.settings.projectData);
-  const designationDataList = useSelector((state) => state.settings.designationData);
 
   useEffect(() => {
     dispatch(dashboardActions.getdashboardInfo());
@@ -41,114 +27,57 @@ const DashDefault = () => {
     dispatch(settingsActions.getDesignationInfo());
   }, []);
 
-  useEffect(() => {
-    if (Array.isArray(MeetingLists?.MeetingDetails) && MeetingLists.MeetingDetails.length > 0) {
-      const groupedEvents = MeetingLists.MeetingDetails.reduce((acc, row) => {
-        if (Number(row.Draft) === 4) {
-          const formattedDate = moment(row?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD');
-
-          if (!acc[formattedDate]) {
-            acc[formattedDate] = [];
-          }
-
-          acc[formattedDate].push({
-            id: row.MeetingId,
-            title: row.MeetingTitle,
-            start: row.MeetingDate,
-            description: row.MeetingDescription
-          });
-        }
-
-        return acc;
-      }, {});
-
-      // Only convert groups that have events
-      setEvents(
-        Object.entries(groupedEvents).map(([date, eventsForDate]) => ({
-          id: eventsForDate[0].id,
-          title: eventsForDate.length === 1 ? eventsForDate[0].title : `${eventsForDate.length} Events`,
-          start: date,
-          backgroundColor: '#5EB562',
-          events: eventsForDate
-        }))
-      );
-    }
-  }, [MeetingLists]);
-
-  useEffect(() => {
-    if (selectedEvents.length) setshowInfo(true);
-  }, [selectedEvents]);
-
-  useEffect(() => {
-    if (selectedEventId) {
-      setSelectedMeeting(MeetingLists?.MeetingDetails.filter((item) => item.MeetingId === selectedEventId.id));
-      setshowInfoDetails(true);
-    }
-  }, [selectedEventId]);
-
-  useEffect(() => {
-    if (selectedMeeting?.length) setshowInfo(true);
-  }, [selectedMeeting]);
-
-  const handleEvents = (data) => {
-    setEvents(data);
-  };
-
   const calculatePercentage = (part, total) => (total > 0 ? (part / total) * 100 : 0);
 
   const stats = dashboardCountInfo?.Result?.[0];
 
   const handleCardClick = (card) => {
     if (card === 'user') {
-      navigate('/meetings/users');
-    } else if (card === 'meeting') {
-      filterWith(null);
-      navigate('/meetings/view');
-    } else if (card === 'panding') {
-      filterWith(1);
-      navigate('/meetings/view');
-    } else if (card === 'inprogress') {
-      filterWith(2);
-      navigate('/meetings/view');
-    } else if (card === 'completed') {
-      filterWith(3);
-      navigate('/meetings/view');
-    } else if (card === 'projects') {
-      filterWith(3);
-      navigate('/meetings/masterSettings');
+      navigate('/tasktracker/users');
+    } else if (card === 'task') {
+      navigate('/tasktracker/Task-List');
     }
   };
 
   const handleClose = () => {
-    setshowInfo(false);
-    setshowInfoDetails(false);
     setShowProjects(false);
-    setSelectedEventId(null);
-    setSelectedMeeting(null);
-    setSelectedEvents([]);
   };
 
-  const exportPdf = () => {
-    if (!pdfContent.current) return;
+  const groupData = [
+    { name: 'CCBS', total: 41, pending: 13 },
+    { name: 'DAID', total: 10, pending: 4 },
+    { name: 'PRAYAS', total: 30, pending: 94 },
+    { name: 'TEJAS', total: 44, pending: 2 }
+  ];
+  const columns = [
+    [
+      { label: 'CCBS - Total Tasks', color: '#00C9A7' },
+      { label: 'CCBS - Pending Task', color: '#333' }
+    ],
+    [
+      { label: 'DAID - Total Tasks', color: '#ff5b5b' },
+      { label: 'DAID - Pending Task', color: '#f5c518' }
+    ],
+    [
+      { label: 'PRAYAS - Total Tasks', color: '#444' },
+      { label: 'PRAYAS - Pending Task', color: '#8ed6fb' }
+    ],
+    [
+      { label: 'TEJAS - Total Tasks', color: '#ff9c6e' },
+      { label: 'TEJAS - Pending Task', color: '#b478c2' }
+    ]
+  ];
 
-    html2canvas(pdfContent.current, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210; // A4 width in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(`Meeting_Details_${moment(selectedMeeting?.[0]?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}.pdf`);
-    });
-    setshowInfo(false);
-  };
-
-  const getDesignation = (val) => {
-    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
-    const found = data.find((item) => item.DesignationId === val);
-    return found ? found.DesignationTitle : '';
-  };
-
+  const legendItems = [
+    { label: 'CCBS - Total Tasks', color: '#00C9A7' },
+    { label: 'CCBS - Pending Task', color: '#333' },
+    { label: 'DAID - Total Tasks', color: '#ff5b5b' },
+    { label: 'DAID - Pending Task', color: '#f5c518' },
+    { label: 'PRAYAS - Total Tasks', color: '#444' },
+    { label: 'PRAYAS - Pending Task', color: '#8ed6fb' },
+    { label: 'TEJAS - Total Tasks', color: '#ff9c6e' },
+    { label: 'TEJAS - Pending Task', color: '#b478c2' }
+  ];
   return (
     <React.Fragment>
       <div className="dashboard-cards grid-wrapper">
@@ -219,7 +148,7 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-3' : 'grd-bg-color-3'} pointer`}
-              onClick={() => handleCardClick('meeting')}
+              onClick={() => handleCardClick('task')}
             >
               <Card.Body>
                 <Row>
@@ -250,7 +179,7 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-4' : 'grd-bg-color-4'}  pointer`}
-              onClick={() => handleCardClick('completed')}
+              onClick={() => handleCardClick('task')}
             >
               <Card.Body>
                 <Row>
@@ -279,7 +208,7 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1  ${theme === 'static' ? 'bg-color-5' : 'grd-bg-color-5'}  pointer`}
-              onClick={() => handleCardClick('panding')}
+              onClick={() => handleCardClick('task')}
             >
               <Card.Body>
                 <Row>
@@ -308,7 +237,7 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-6' : 'grd-bg-color-6'}  pointer`}
-              onClick={() => handleCardClick('inprogress')}
+              onClick={() => handleCardClick('task')}
             >
               <Card.Body>
                 <Row>
@@ -335,9 +264,52 @@ const DashDefault = () => {
             </Card>
           </div>
         </div>
+        <Row>
+          <Col md={6}>
+            <Card>
+              <Card.Header>
+                <Card.Title as="h5">Grouped Multi-Bar Chart</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <div>
+                  <h3 style={{ textAlign: 'center', marginBottom: 20 }}>Total Tasks/Pending Tasks By group</h3>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      marginBottom: '10px',
+                      gap: '40px' // spacing between columns
+                    }}
+                  >
+                    {columns.map((col, colIndex) => (
+                      <div key={colIndex} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {col.map((item) => (
+                          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div
+                              style={{
+                                width: 12,
+                                height: 12,
+                                backgroundColor: item.color,
+                                borderRadius: 2
+                              }}
+                            ></div>
+                            <span style={{ fontSize: 13 }}>{item.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+
+         
+        </Row>
       </div>
 
-      <Modal show={showProjects} animation={true}  backdrop="static" keyboard={false}>
+      <Modal show={showProjects} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">
             <h5>Total no. of projects</h5>

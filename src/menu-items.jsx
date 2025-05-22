@@ -157,6 +157,13 @@ const menuItems = {
           display: true,
           children: [
             {
+              id: 'task_list',
+              title: 'Task List',
+              type: 'item',
+              url: '/tasktracker/Task-List',
+              display: true
+            },
+            {
               id: 'create_taskDependencies',
               title: 'Create Dependancies',
               type: 'item',

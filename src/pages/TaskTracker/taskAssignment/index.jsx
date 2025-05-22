@@ -21,51 +21,53 @@ const TaskAssigment = () => {
   ];
 
   return (
-    <Row>
-      <Col md={12} className="">
-        <Tabs defaultActiveKey="assignedTask" className="default-shadow">
-          <Tab eventKey="assignedTask" title="Assigned Tasks">
-            <EnhancedTable
-              data={[]}
-              headers={GroupHeaders}
-              headerCss="success"
-              enablePagination
-              rowactions={(row) => (
-                <Button variant="primary" className="float-end btn-sm">
-                  Action
-                </Button>
-              )}
-            />
-          </Tab>
-          <Tab eventKey="UnAssignedTasks" title="UnAssigned Tasks">
-            <EnhancedTable
-              data={[]}
-              headers={GroupHeaders}
-              headerCss="info"
-              enablePagination
-              rowactions={(row) => (
-                <Button variant="primary" className="float-end btn-sm">
-                  Action
-                </Button>
-              )}
-            />
-          </Tab>
-          <Tab eventKey="taskProgress" title="Task Progress">
-            <EnhancedTable
-              data={[]}
-              headers={progressHeaders}
-              headerCss="warning"
-              enablePagination
-              rowactions={(row) => (
-                <Button variant="primary" className="float-end btn-sm">
-                  Action
-                </Button>
-              )}
-            />
-          </Tab>
-        </Tabs>
-      </Col>
-    </Row>
+    <Card className="w-full  w-full header-info  default-shadow">
+      <Row>
+        <Col md={12} className="">
+          <Tabs defaultActiveKey="assignedTask">
+            <Tab eventKey="assignedTask" title="Assigned Tasks">
+              <EnhancedTable
+                data={[]}
+                headers={GroupHeaders}
+                headerCss="success"
+                enablePagination
+                rowactions={(row) => (
+                  <Button variant="primary" className="float-end btn-sm">
+                    Action
+                  </Button>
+                )}
+              />
+            </Tab>
+            <Tab eventKey="UnAssignedTasks" title="UnAssigned Tasks">
+              <EnhancedTable
+                data={[]}
+                headers={GroupHeaders}
+                headerCss="info"
+                enablePagination
+                rowactions={(row) => (
+                  <Button variant="primary" className="float-end btn-sm">
+                    Action
+                  </Button>
+                )}
+              />
+            </Tab>
+            <Tab eventKey="taskProgress" title="Task Progress">
+              <EnhancedTable
+                data={[]}
+                headers={progressHeaders}
+                headerCss="warning"
+                enablePagination
+                rowactions={(row) => (
+                  <Button variant="primary" className="float-end btn-sm">
+                    Action
+                  </Button>
+                )}
+              />
+            </Tab>
+          </Tabs>
+        </Col>
+      </Row>
+    </Card>
   );
 };
 

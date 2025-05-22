@@ -401,127 +401,123 @@ const UserList = () => {
 
   return (
     <React.Fragment>
-      <Row>
-        <Col>
-          <Card className="Recent-Users widget-focus-lg header-info">
-            <Card.Header className="d-flex justify-content-between align-items-center py-2">
-              <Card.Title as="h5">List of Resource</Card.Title>
-              <CardSubtitle className="user-table-right">
-                <input
-                  type="text"
-                  placeholder="Search.."
-                  value={search}
-                  onChange={handleSearchChange}
-                  className="form-control mr-2 userSearch"
-                />
-                <Button onClick={() => handleShowRegister()} className="m-0 fw-bolder">
-                  <i className="feather icon-plus"> Add </i>
-                </Button>
-              </CardSubtitle>
-            </Card.Header>
-            <Card.Body className="p-3 pt-2 dark-table">
-              <Table responsive hover className="recent-users">
-                <thead className="header-bg">
-                  <tr>
-                    <th></th>
-                    {parentHeaders.map((headCell, idx) => (
-                      <th className="" key={`${headCell}_${idx} ${headCell.id === 'status' && 'w-10'}`}>
-                        <Button variant="link" onClick={() => handleRequestSort(headCell.id)} className="pl-0 pr-0">
-                          {headCell.label}
-                          {orderBy === headCell.id ? <FaSort className={order === 'desc' ? 'rotate-180' : ''} /> : null}
-                        </Button>
-                      </th>
-                    ))}
-                    <th className="text-center">Action</th>
+      <Card className="Recent-Users widget-focus-lg w-full default-shadow header-default ">
+        <Card.Header className="d-flex justify-content-between align-items-center py-2">
+          <Card.Title as="h5">List of Resource</Card.Title>
+          <CardSubtitle className="user-table-right">
+            <input
+              type="text"
+              placeholder="Search.."
+              value={search}
+              onChange={handleSearchChange}
+              className="form-control mr-2 userSearch"
+            />
+            <Button onClick={() => handleShowRegister()} className="m-0 fw-bolder">
+              <i className="feather icon-plus"> Add </i>
+            </Button>
+          </CardSubtitle>
+        </Card.Header>
+        <Card.Body className="p-3 pt-2 dark-table">
+          <Table responsive hover className="recent-users">
+            <thead className="header-bg">
+              <tr>
+                <th></th>
+                {parentHeaders.map((headCell, idx) => (
+                  <th className="" key={`${headCell}_${idx} ${headCell.id === 'status' && 'w-10'}`}>
+                    <Button variant="link" onClick={() => handleRequestSort(headCell.id)} className="pl-0 pr-0">
+                      {headCell.label}
+                      {orderBy === headCell.id ? <FaSort className={order === 'desc' ? 'rotate-180' : ''} /> : null}
+                    </Button>
+                  </th>
+                ))}
+                <th className="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visibleRows.map((item, index) => {
+                return (
+                  <tr className="unread" key={`${index}-${Math.random()}`}>
+                    <td>
+                      <img
+                        className="rounded-circle"
+                        style={{ width: '40px' }}
+                        src={item.ImgPath || item.Gender === 'Male' ? male_i : female_i}
+                        alt="activity-user"
+                      />
+                    </td>
+                    <td>
+                      <h6 className="mb-1">{item.UserName}</h6>
+                    </td>
+                    <td>
+                      <h6 className="mb-1">{item.DesignationTitle}</h6>
+                    </td>
+                    <td>
+                      <p className="m-0">{item.EmployeeDivisionTitle}</p>
+                    </td>
+                    <td>
+                      <p className="m-0">{item.EmployementTitle}</p>
+                    </td>
+                    <td>
+                      <p className="m-0">{item.AssociatedOfficer}</p>
+                    </td>
+                    <td>
+                      <h6 className="mb-1">{item.OrganisationTitle}</h6>
+                    </td>
+                    <td>
+                      {item.Status === '1' ? (
+                        <label
+                          className="label theme-bg text-white f-12 pointer"
+                          onClick={() => {
+                            handleToggleStatus(item); // Set selected user
+                          }}
+                        >
+                          In service
+                        </label>
+                      ) : (
+                        <label
+                          className="label theme-bg2 text-white f-12 pointer"
+                          onClick={() => {
+                            handleToggleStatus(item); // Set selected user
+                          }}
+                        >
+                          Not in Service
+                        </label>
+                      )}
+                    </td>
+                    <td>
+                      <span
+                        className="action-section pointer"
+                        title="Edit user"
+                        onClick={() => {
+                          setselectedUser(item); // Set selected user
+                          setShowregister(true); // Open modal without resetting
+                        }}
+                      >
+                        <Image src={edit} height={20} />
+                        <span className="text-black ml-1"></span>
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {visibleRows.map((item, index) => {
-                    return (
-                      <tr className="unread" key={`${index}-${Math.random()}`}>
-                        <td>
-                          <img
-                            className="rounded-circle"
-                            style={{ width: '40px' }}
-                            src={item.ImgPath || item.Gender === 'Male' ? male_i : female_i}
-                            alt="activity-user"
-                          />
-                        </td>
-                        <td>
-                          <h6 className="mb-1">{item.UserName}</h6>
-                        </td>
-                        <td>
-                          <h6 className="mb-1">{item.DesignationTitle}</h6>
-                        </td>
-                        <td>
-                          <p className="m-0">{item.EmployeeDivisionTitle}</p>
-                        </td>
-                        <td>
-                          <p className="m-0">{item.EmployementTitle}</p>
-                        </td>
-                        <td>
-                          <p className="m-0">{item.AssociatedOfficer}</p>
-                        </td>
-                        <td>
-                          <h6 className="mb-1">{item.OrganisationTitle}</h6>
-                        </td>
-                        <td>
-                          {item.Status === '1' ? (
-                            <label
-                              className="label theme-bg text-white f-12 pointer"
-                              onClick={() => {
-                                handleToggleStatus(item); // Set selected user
-                              }}
-                            >
-                              In service
-                            </label>
-                          ) : (
-                            <label
-                              className="label theme-bg2 text-white f-12 pointer"
-                              onClick={() => {
-                                handleToggleStatus(item); // Set selected user
-                              }}
-                            >
-                              Not in Service
-                            </label>
-                          )}
-                        </td>
-                        <td>
-                          <span
-                            className="action-section pointer"
-                            title="Edit user"
-                            onClick={() => {
-                              setselectedUser(item); // Set selected user
-                              setShowregister(true); // Open modal without resetting
-                            }}
-                          >
-                            <Image src={edit} height={20} />
-                            <span className="text-black ml-1"></span>
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-              <Pagination className="custom-pagination">
-                <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="limit">
-                  {[5, 10, 25, 50].map((rowsPerPageOption) => (
-                    <option key={rowsPerPageOption} value={rowsPerPageOption}>
-                      {rowsPerPageOption}
-                    </option>
-                  ))}
-                </Form.Control>
-                <div className="flex">
-                  <Pagination.Prev onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
-                  {renderPaginationItems()}
-                  <Pagination.Next onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
-                </div>
-              </Pagination>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+                );
+              })}
+            </tbody>
+          </Table>
+          <Pagination className="custom-pagination">
+            <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="limit">
+              {[5, 10, 25, 50].map((rowsPerPageOption) => (
+                <option key={rowsPerPageOption} value={rowsPerPageOption}>
+                  {rowsPerPageOption}
+                </option>
+              ))}
+            </Form.Control>
+            <div className="flex">
+              <Pagination.Prev onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
+              {renderPaginationItems()}
+              <Pagination.Next onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
+            </div>
+          </Pagination>
+        </Card.Body>
+      </Card>
 
       <Modal size="xl" show={showregister} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>

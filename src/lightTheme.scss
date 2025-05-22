@@ -32,6 +32,11 @@
     }
   }
 
+  .default-shadow {
+    box-shadow: 0 0 15px #524f4f !important;
+    border-radius: 8px !important;
+  }
+
   .main-search {
     padding: 16px 12px;
   }
@@ -1251,5 +1256,9 @@
     .nav-link.active {
       box-shadow: 0 0 21px rgba(77, 123, 177, 0.75) !important;
     }
+  }
+
+  .tab-content {
+    padding: 10px 18px;
   }
 }
