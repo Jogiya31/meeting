@@ -6,7 +6,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [role, setRole] = useState('user');
+  const [role, setRole] = useState('');
 
   useEffect(() => {
     setLoggedIn(localStorage.getItem('loggedIn'));
