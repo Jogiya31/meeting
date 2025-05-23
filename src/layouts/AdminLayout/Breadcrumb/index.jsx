@@ -13,7 +13,7 @@ const Breadcrumb = () => {
   const [item, setItem] = useState([]);
 
   useEffect(() => {
-    role === 'user'
+    role !== 'superadmin'
       ? navigation.user.map((item, index) => {
           if (item.type && item.type === 'group') {
             getCollapse(item, index);

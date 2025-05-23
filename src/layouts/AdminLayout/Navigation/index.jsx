@@ -31,14 +31,14 @@ const Navigation = () => {
   let navContent = (
     <div className={navBarClass.join(' ')}>
       <NavLogo />
-      {role === 'user' ? <NavContent navigation={navigation.user} /> : <NavContent navigation={navigation.items} />}
+      {role !== 'superadmin' ? <NavContent navigation={navigation.user} /> : <NavContent navigation={navigation.items} />}
     </div>
   );
   if (windowSize.width < 992) {
     navContent = (
       <div className="navbar-wrapper">
         <NavLogo />
-        {role === 'user' ? <NavContent navigation={navigation.user} /> : <NavContent navigation={navigation.items} />}
+        {role !== 'superadmin' ? <NavContent navigation={navigation.user} /> : <NavContent navigation={navigation.items} />}
       </div>
     );
   }
