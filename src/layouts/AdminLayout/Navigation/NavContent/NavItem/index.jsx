@@ -24,6 +24,7 @@ const NavItem = ({ item }) => {
 
   const handleLogoutClick = async (e) => {
     e.preventDefault(); // prevent default link behavior
+    console.log('item.url', item.url)
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: 'Do you want to log out?',
@@ -34,7 +35,6 @@ const NavItem = ({ item }) => {
       confirmButtonText: 'Yes, logout!',
       theme: mode
     });
-
     if (result.isConfirmed) {
       navigate(item.url); // this will go to the logout route
     }

@@ -63,16 +63,16 @@ const routes = [
   {
     exact: true,
     path: '/',
-    element: () => <Navigate to="/login" />
+    element: () => <Navigate to="/meetings/login" />
   },
   {
     exact: true,
-    path: '/login',
+    path: '/meetings/login',
     element: Login
   },
   {
     exact: true,
-    path: '/logout',
+    path: '/meetings/logout',
     element: SignOut
   },
   {

@@ -108,7 +108,7 @@ const menuItems = {
           id: 'logout',
           title: 'Logout',
           type: 'item',
-          url: '/logout',
+          url: '/meetings/logout',
           classes: 'nav-item',
           icon: 'feather icon-log-out',
           display: true
@@ -212,7 +212,7 @@ const menuItems = {
           id: 'logout',
           title: 'Logout',
           type: 'item',
-          url: '/logout',
+          url: '/meetings/logout',
           classes: 'nav-item',
           icon: 'feather icon-log-out',
           display: true
