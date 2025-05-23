@@ -8,7 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 const JWTLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loggedIn, login } = useAuth();
+  const { loggedIn, login, role } = useAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -41,16 +41,24 @@ const JWTLogin = () => {
 
   useEffect(() => {
     if (loggedIn || localStorage.getItem('loggedIn')) {
-      navigate('/tasktracker/dashboard');
+      if (role === 'admin') {
+        navigate('/meetings/dashboard');
+      } else {
+        navigate('/tasktracker/dashboard');
+      }
     }
   }, [loggedIn, navigate]);
 
-  useEffect(() => {    
+  useEffect(() => {
     if (loginDetails?.Result && loginDetails.Result.length > 0) {
       localStorage.setItem('loggedIn', true);
-      localStorage.setItem('role', 'user');
-      login({ Role: 'user' });
-      navigate('/tasktracker/dashboard');
+      localStorage.setItem('role', loginDetails?.Result[0].Role);
+      login({ Role: loginDetails?.Result[0].Role });
+      if (loginDetails?.Result?.[0]?.Role === 'admin') {
+        navigate('/meetings/dashboard');
+      } else {
+        navigate('/tasktracker/dashboard');
+      }
     }
   }, [loginDetails]);
 
