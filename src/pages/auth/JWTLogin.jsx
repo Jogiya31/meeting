@@ -41,7 +41,7 @@ const JWTLogin = () => {
 
   useEffect(() => {
     if (loggedIn || localStorage.getItem('loggedIn')) {
-      if (role === 'admin') {
+      if (role === 'admin' || localStorage.getItem('role') === 'admin') {
         navigate('/meetings/dashboard');
       } else {
         navigate('/tasktracker/dashboard');
@@ -53,7 +53,8 @@ const JWTLogin = () => {
     if (loginDetails?.Result && loginDetails.Result.length > 0) {
       localStorage.setItem('loggedIn', true);
       localStorage.setItem('role', loginDetails?.Result[0].Role);
-      login({ Role: loginDetails?.Result[0].Role });
+      localStorage.setItem('userDetails', JSON.stringify(loginDetails?.Result[0]));
+      login(loginDetails?.Result[0]);
       if (loginDetails?.Result?.[0]?.Role === 'admin') {
         navigate('/meetings/dashboard');
       } else {

@@ -6,7 +6,7 @@ import { useAuth } from './contexts/AuthContext';
 
 const AuthGuard = ({ children }) => {
   const { loggedIn } = useAuth();
-  return loggedIn ? children : <Navigate to="/login" />;
+  return loggedIn ? children : <Navigate to="/meetings/login" replace />;
 };
 
 export const renderRoutes = (routes = []) => (
@@ -119,6 +119,11 @@ const routes = [
       /// task tracker urls
       {
         exact: true,
+        path: '/tasktracker',
+        element: userDashboard
+      },
+      {
+        exact: true,
         path: '/tasktracker/dashboard',
         element: userDashboard
       },
@@ -147,7 +152,7 @@ const routes = [
         path: '/tasktracker/Task-Approval',
         element: TaskApproval
       },
-       {
+      {
         exact: true,
         path: '/tasktracker/Task-Assignment',
         element: TaskAssignment
