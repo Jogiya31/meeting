@@ -15,6 +15,7 @@ import {
   GetOrganisationDetails,
   GetPriorityDetails,
   GetProjectDetails,
+  GetRoleDetails,
   GetSalutationDetails,
   GetStatusDetails,
   UpdateDesignation,
@@ -394,7 +395,6 @@ function* handleUpdateProjectInfo(data) {
   }
 }
 
-
 // Saga function to handle fetching Organization information
 function* handleSalutationInfo() {
   try {
@@ -456,6 +456,26 @@ function* handleUpdateSalutationInfo(data) {
   }
 }
 
+// Saga function to handle fetching Organization information
+function* handleRoleInfo() {
+  try {
+    // Call the API to fetch Role information
+    const response = yield call(GetRoleDetails);
+    // Check if the response Role is 200 (OK)
+    if (response.status === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.getRoleInfoSuccess(data || []));
+    } else {
+      // If response Role is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.getRoleInfoFailed(error.message)); // Dispatch failure action
+  }
+}
 
 // Saga function to handle fetching Organization information
 function* handlePriorityInfo() {
@@ -518,7 +538,6 @@ function* handleUpdatePriorityInfo(data) {
   }
 }
 
-
 // Watcher saga to take latest action of fetching user information
 export default function* settingsSaga() {
   yield takeLatest(settingsActions.getDesignationInfo.type, handleDesignationInfo);
@@ -548,6 +567,8 @@ export default function* settingsSaga() {
   yield takeLatest(settingsActions.getSalutationInfo.type, handleSalutationInfo);
   yield takeLatest(settingsActions.addSalutationInfo.type, handleAddSalutationInfo);
   yield takeLatest(settingsActions.updateSalutationInfo.type, handleUpdateSalutationInfo);
+
+  yield takeLatest(settingsActions.getRoleInfo.type, handleRoleInfo);
 
   yield takeLatest(settingsActions.getPriorityInfo.type, handlePriorityInfo);
   yield takeLatest(settingsActions.addPriorityInfo.type, handleAddPriorityInfo);

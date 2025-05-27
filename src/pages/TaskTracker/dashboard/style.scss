@@ -50,6 +50,14 @@
     }
   }
 
+  .dashboard-cards {
+    .customcard.card {
+      min-height: 145px !important;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #d5d5d5;
+    }
+  }
+
   .dashboardModalHeader {
     display: flex;
     width: 100%;
@@ -92,7 +100,7 @@
 
     .grid-inner {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
       @media (max-width: 1440px) {
         grid-template-columns: repeat(3, 1fr);
@@ -128,6 +136,14 @@
     }
     .calander-card {
       box-shadow: 0 0 5px #d5d5d5;
+    }
+  }
+
+  .dashboard-cards {
+    .customcard.card {
+      min-height: 145px !important;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #d5d5d5;
     }
   }
   .calander-card {

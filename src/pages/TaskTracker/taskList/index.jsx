@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Button, Card, Col, Dropdown, Form, Row } from 'react-bootstrap';
+import { Button, Card, Col, Dropdown, Form, Image, Row } from 'react-bootstrap';
 import pdf_i from '../../../assets/images/pdf_i.svg';
 import print_i from '../../../assets/images/print_i.svg';
+import setting from '../../../assets/images/settings.png';
 import EnhancedTable from '../../../components/Table';
 import DatePicker from 'react-datepicker';
 import { FaCog } from 'react-icons/fa';
@@ -172,7 +173,7 @@ const TaskList = () => {
                   <img src={pdf_i} alt="" className="img-fluid ml-1 pointer" width={30} />
                   <Dropdown className="table-column-setting ml-1 mr-1">
                     <Dropdown.Toggle variant="light" id="dropdown-basic" className="border-0 p-0 setting-btn">
-                      <FaCog size={24} className="text-primary setting-btn-item" />
+                      <Image src={setting} alt="" width={24}/>
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                       {taskHeaders.map((item, idx) => (

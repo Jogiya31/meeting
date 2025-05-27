@@ -51,7 +51,7 @@ const TaskCalendar = ({ extra, eventsData, handleEvets, handleSelectedEvent }) =
   };
 
   const colorOptions = [
-    { color: '#098a30', label: 'Green' },
+    { color: '#008d06', label: 'Green' },
     { color: '#991c1c', label: 'Red' },
     { color: '#12429d', label: 'Blue' },
     { color: '#f4a100', label: 'Yellow' }
@@ -69,7 +69,9 @@ const TaskCalendar = ({ extra, eventsData, handleEvets, handleSelectedEvent }) =
           <div
             className="C_event"
             style={{
-              backgroundColor: eventInfo.event.backgroundColor,
+              color: `#008d06`,
+              backgroundColor: '#fff',
+              border: `1px solid #008d06`,
               padding: '3px',
               borderRadius: '3px',
               fontSize: '11px',

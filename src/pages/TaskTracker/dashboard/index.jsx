@@ -13,9 +13,11 @@ import { useTheme } from '../../../contexts/themeContext';
 import DonutChart from '../../../components/charts/DonutChart';
 import DonutChart2 from '../../../components/charts/DonutChat2';
 import GroupedColumnChart from '../../../components/charts/GroupedColumnChart';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const DashDefault = () => {
   const { mode, theme } = useTheme();
+  const { role } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showProjects, setShowProjects] = useState(false);
@@ -104,7 +106,7 @@ const DashDefault = () => {
     <React.Fragment>
       <div className="dashboard-cards grid-wrapper">
         <div className="grid-inner">
-          <div className="grid-item">
+          <div className={`grid-item ${role === 'user' && 'd-none'}`}>
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-7' : 'grd-bg-color-7'} pointer`}
               onClick={() => handleCardClick('user')}
@@ -289,7 +291,7 @@ const DashDefault = () => {
         <Row>
           <Col md={6}>
             <Card className="mt-3">
-               <Card.Body className='p-0'>
+              <Card.Body className="p-0">
                 <div className="dashboard-barchart">
                   <GroupedColumnChart data={groupsData} labels={labels} title="Total Tasks/Pending Tasks By group" />
                 </div>
@@ -298,7 +300,7 @@ const DashDefault = () => {
           </Col>
           <Col md={6}>
             <Card className="mt-3">
-              <Card.Body className='p-0'>
+              <Card.Body className="p-0">
                 <div className="dashboard-donut">
                   <DonutChart2 title="Pending Tasks By Team Members" data={pendingTasksData} />;
                 </div>

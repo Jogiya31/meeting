@@ -195,6 +195,14 @@ export const UpdateSalutation = (data) => {
 };
 
 
+/////////////////// Role api  ///////////////////
+export const GetRoleDetails = () => {
+  const url = `/GetRole`;
+  return axiosClient().get(url, {
+    'Content-Type': 'application/json'
+  });
+};
+
 /////////////////// Priority api  ///////////////////
 export const GetPriorityDetails = () => {
   const url = `/GetPriorityOrderDetails`;

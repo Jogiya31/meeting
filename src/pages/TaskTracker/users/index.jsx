@@ -7,12 +7,13 @@ import edit from '../../../assets/images/edit.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../../../store/user/userSlice';
 import { settingsActions } from '../../../store/settings/settingSlice';
-import { FaSort, FaUserCircle, FaUserEdit } from 'react-icons/fa';
+import { FaUserCircle, FaUserEdit } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { MultiSelect } from 'react-multi-select-component';
 import { useTheme } from '../../../contexts/themeContext';
+import AdvanceTable from '../../../components/Table/advanceTable';
 
 const UserList = () => {
   const dispatch = useDispatch();
@@ -25,12 +26,7 @@ const UserList = () => {
   const [designationListOption, setDesignationListOptions] = useState([]); // User options state
   const [designationFilter, setDesignationFilter] = useState([]); // user filter state
   const [data, setData] = useState([]);
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('');
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
-  const [designationPriority, setdesignationPriority] = useState([]);
 
   const [genderDataList, setGenderDataList] = useState([
     {
@@ -42,6 +38,7 @@ const UserList = () => {
       GenderTitle: 'Female'
     }
   ]);
+
   const [formData, setFormData] = useState({
     SalutationId: '',
     UserName: '',
@@ -57,7 +54,15 @@ const UserList = () => {
     ImgPath: male_i,
     CreatedBy: Role,
     PriorityOrderId: '',
-    DisplayOrderId: ''
+    DisplayOrderId: '',
+    Group_id: '',
+    Team_id: '',
+    TeamName: '',
+    Dept_id: '',
+    Ministry_id: '',
+    Assigneddept: '',
+    Email: '',
+    Password: ''
   });
 
   const userList = useSelector((state) => state.users.data);
@@ -66,7 +71,96 @@ const UserList = () => {
   const employeementDataList = useSelector((state) => state.settings.employeementData);
   const organizationDataList = useSelector((state) => state.settings.organizationData);
   const salutationDataList = useSelector((state) => state.settings.salutationData);
-  const PriorityDataList = useSelector((state) => state.settings.priorityData);
+  const roleDataList = useSelector((state) => state.settings.roleData);
+
+  const ActionCellRenderer = (props) => {
+    const { data } = props;
+    const handleEdit = () => {
+      setselectedUser(data);
+      setShowregister(true);
+    };
+
+    const handleDelete = () => {
+      handleToggleStatus(data);
+    };
+
+    return (
+      <div className="action-column">
+        <Button variant="" size="sm" onClick={handleEdit}>
+          <img src={edit} width={20} alt="" />
+        </Button>
+        <Button
+          variant={data.Status === '1' || data.Status === 1 ? 'outline-success' : 'outline-danger'}
+          onClick={handleDelete}
+          className="c-btn-sm"
+        >
+          {data.Status === '1' || data.Status === 1 ? 'Activate' : 'Deactivate'}
+        </Button>
+      </div>
+    );
+  };
+  const StatusCellRenderer = (props) => {
+    const { data } = props;
+    return (
+      <div>
+        {data.Status === '1' ? (
+          <label
+            className="status-label theme-bg text-white f-12 pointer"
+            onClick={() => {
+              handleToggleStatus(data); // Set selected user
+            }}
+          >
+            In service
+          </label>
+        ) : (
+          <label
+            className="status-label theme-bg2 text-white f-12 pointer"
+            onClick={() => {
+              handleToggleStatus(data); // Set selected user
+            }}
+          >
+            Not in Service
+          </label>
+        )}
+      </div>
+    );
+  };
+  const UserNameCellRenderer = (props) => {
+    const { data } = props;
+    return (
+      <div className="d-flex">
+        <img
+          className="rounded-circle"
+          style={{ width: '40px', height: '40px', marginRight: '8px' }}
+          src={data.ImgPath || data.Gender === 'Male' ? male_i : female_i}
+          alt="activity-user"
+        />
+        {data.UserName}
+      </div>
+    );
+  };
+
+  const [columnDefs] = useState([
+    { field: 'UserName', sortable: true, filter: true, flex: 1, cellRenderer: UserNameCellRenderer },
+    { field: 'DesignationTitle', sortable: true, filter: true, flex: 1 },
+    { field: 'EmployeeDivisionTitle', sortable: true, filter: true, flex: 1 },
+    { field: 'EmployementTitle', sortable: true, filter: true, flex: 1 },
+    { field: 'AssociatedOfficer', sortable: true, filter: true, flex: 1 },
+    { field: 'OrganisationTitle', sortable: true, filter: true, flex: 1 },
+    { field: 'Mobile', sortable: true, filter: true, flex: 1 },
+    {
+      field: 'Status',
+      headerName: 'Status',
+      flex: 1,
+      cellRenderer: StatusCellRenderer
+    },
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      flex: 1,
+      cellRenderer: ActionCellRenderer
+    }
+  ]);
 
   const getUserList = () => {
     // Call the GET API to fetch users
@@ -81,11 +175,41 @@ const UserList = () => {
     dispatch(settingsActions.getOrganizationInfo());
     dispatch(settingsActions.getSalutationInfo());
     dispatch(settingsActions.getPriorityInfo());
+    dispatch(settingsActions.getRoleInfo());
   }, []);
 
+  // Filter rows based on search input
   useEffect(() => {
-    PriorityDataList?.Result?.map((item) => setdesignationPriority((prev) => [...prev, item.PriorityOrderTitle]));
-  }, [PriorityDataList]);
+    const updatedData = userList?.Result?.map((item) => {
+      const officer = userList?.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+      const desc = item?.DesignationId?.split(',')
+        .map((id) => getDesignation(id))
+        .join('/ ');
+      return {
+        ...item,
+        AssociatedOfficer: officer ? officer.UserName : '',
+        DesignationTitle: desc
+      };
+    });
+
+    const filteredData = updatedData?.filter((row) => {
+      const searchLower = search.toLowerCase();
+
+      // List of keys to search in
+      const searchableKeys = [
+        'UserName',
+        'OrganisationTitle',
+        'EmployeeDivisionTitle',
+        'EmployementTitle',
+        'DesignationTitle',
+        'AssociatedOfficer'
+      ];
+
+      // Check if any of the selected fields contain the search term
+      return searchableKeys.some((key) => row[key] && row[key].toLowerCase().includes(searchLower));
+    });
+    return search ? setData(filteredData) : setData(updatedData);
+  }, [search]);
 
   useEffect(() => {
     if (userList && Array.isArray(userList.Result)) {
@@ -100,7 +224,6 @@ const UserList = () => {
           DesignationTitle: desc
         };
       });
-
       setData(updatedData);
     } else {
       setData([]); // optional fallback
@@ -130,6 +253,32 @@ const UserList = () => {
 
   const handleClose = () => {
     setShowregister(false);
+    setFormData({
+      SalutationId: '',
+      UserName: '',
+      EmployementId: '',
+      DesignationId: '',
+      EmployeementDivisionId: '',
+      OrganizationId: '',
+      AssociatedOfficerId: '',
+      ServiceDate: '',
+      Mobile: '',
+      Status: 1,
+      Gender: '',
+      ImgPath: male_i,
+      CreatedBy: Role,
+      PriorityOrderId: '',
+      DisplayOrderId: '',
+      Group_id: '',
+      Team_id: '',
+      TeamName: '',
+      Dept_id: '',
+      Ministry_id: '',
+      Assigneddept: '',
+      Email: '',
+      Password: ''
+    });
+    setErrors({});
   };
 
   const handleShowRegister = () => {
@@ -149,22 +298,49 @@ const UserList = () => {
       ImgPath: '',
       CreatedBy: '',
       PriorityOrderId: '',
-      DisplayOrderId: ''
+      DisplayOrderId: '',
+      Group_id: '',
+      Team_id: '',
+      TeamName: '',
+      Dept_id: '',
+      Ministry_id: '',
+      Assigneddept: '',
+      Email: '',
+      Password: ''
     });
     setShowregister(true);
   };
 
   const validate = () => {
     let newErrors = {};
-    if (!formData.SalutationId) newErrors.SalutationId = 'Salutation is required';
-    if (!formData.UserName) newErrors.UserName = 'User name is required';
-    if (!formData.DesignationId) newErrors.DesignationId = 'Designation is required';
-    if (!formData.EmployementId) newErrors.EmployementId = 'Employment type is required';
-    if (!formData.EmployeementDivisionId) newErrors.EmployeementDivisionId = 'Division is required';
-    if (!formData.OrganizationId) newErrors.OrganizationId = 'Organization is required';
-    if (!formData.Gender) newErrors.Gender = 'Gender is required';
-    if (!formData.Mobile) newErrors.Mobile = 'Mobile number is required';
-    if (!formData.Status) newErrors.Status = 'Status is required';
+
+    const cleanedFormData = {};
+    for (const key in formData) {
+      const value = formData[key];
+      cleanedFormData[key] = typeof value === 'string' ? value.trim() : value;
+    }
+
+    if (!cleanedFormData.SalutationId) newErrors.SalutationId = 'Salutation is required';
+    if (!cleanedFormData.UserName) newErrors.UserName = 'User name is required';
+    if (!cleanedFormData.DesignationId) newErrors.DesignationId = 'Designation is required';
+    if (!cleanedFormData.EmployementId) newErrors.EmployementId = 'Employment type is required';
+    if (!cleanedFormData.EmployeementDivisionId) newErrors.EmployeementDivisionId = 'Division is required';
+    if (!cleanedFormData.OrganizationId) newErrors.OrganizationId = 'Organization is required';
+    if (!cleanedFormData.Gender) newErrors.Gender = 'Gender is required';
+    if (!cleanedFormData.Mobile) newErrors.Mobile = 'Mobile number is required';
+    if (!cleanedFormData.Status) newErrors.Status = 'Status is required';
+    if (!cleanedFormData.Role) newErrors.Role = 'User Role is required';
+    if (!cleanedFormData.Email) {
+      newErrors.Email = 'Email is required';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanedFormData.Email)) {
+        newErrors.Email = 'Invalid email format';
+      }
+    }
+
+    Object.assign(formData, cleanedFormData);
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -214,7 +390,14 @@ const UserList = () => {
       ImgPath: formData.ImgPath || '',
       SalutationId: formData.SalutationId || '0',
       PriorityOrderId: formData.PriorityOrderId || '',
-      DisplayOrderId: formData.DisplayOrderId || '999'
+      DisplayOrderId: formData.DisplayOrderId || '999',
+      Group_id: formData.EmployeementDivisionId,
+      Team_id: '',
+      TeamName: '',
+      Dept_id: '',
+      Ministry_id: '',
+      Assigneddept: '',
+      Email: formData.Email
     };
 
     if (selectedUser) {
@@ -224,10 +407,10 @@ const UserList = () => {
     } else {
       // Save New User Payload
       updatedData.CreatedBy = Role;
+      updatedData.Password = formData.Password;
     }
 
     const endpoint = selectedUser ? '/Update_User' : '/Save_User';
-
     api
       .post(endpoint, updatedData)
       .then(() => {
@@ -255,7 +438,14 @@ const UserList = () => {
         ImgPath: selectedUser.ImgPath || '',
         CreatedBy: Role,
         PriorityOrderId: selectedUser.PriorityOrderId,
-        DisplayOrderId: selectedUser.DisplayOrderId
+        DisplayOrderId: selectedUser.DisplayOrderId,
+        Group_id: selectedUser.EmployeementDivisionId,
+        Team_id: '',
+        TeamName: '',
+        Dept_id: '',
+        Ministry_id: '',
+        Assigneddept: '',
+        Email: selectedUser.Email
       });
       if (selectedUser?.ServiceDate) {
         if (selectedUser.ServiceDate === '01-01-1900 00:00:00') {
@@ -267,16 +457,6 @@ const UserList = () => {
       }
     }
   }, [selectedUser]);
-
-  const parentHeaders = [
-    { id: 'UserName', label: 'User Name' },
-    { id: 'DesignationTitle', label: 'Designation' },
-    { id: 'EmployeeDivisionTitle', label: 'Division' },
-    { id: 'EmployementTitle', label: 'Type' },
-    { id: 'AssociatedOfficer', label: 'Associated Officer' },
-    { id: 'OrganisationTitle', label: 'Company Name' },
-    { id: 'Status', label: 'Status' }
-  ];
 
   const handleToggleStatus = (user) => {
     const updatedData = {
@@ -295,8 +475,17 @@ const UserList = () => {
       UserId: user.UserId,
       ModifyBy: Role,
       PriorityOrderId: user.PriorityOrderId || '',
-      DisplayOrderId: user.DisplayOrderId || ''
+      DisplayOrderId: user.DisplayOrderId || '',
+      Group_id: user.EmployeementDivisionId,
+      Team_id: '',
+      TeamName: '',
+      Dept_id: '',
+      Ministry_id: '',
+      Assigneddept: '',
+      Email: user.Email,
+      Password: user.Password
     };
+
     Swal.fire({
       title: 'Are you sure?',
       text: 'Do you want to change status for this item?',
@@ -315,74 +504,8 @@ const UserList = () => {
     });
   };
 
-  // Filter rows based on search input
-  const filteredRows = useMemo(() => {
-    return data?.filter((row) => {
-      const searchLower = search.toLowerCase();
-
-      // List of keys to search in
-      const searchableKeys = [
-        'UserName',
-        'OrganisationTitle',
-        'EmployeeDivisionTitle',
-        'EmployementTitle',
-        'DesignationTitle',
-        'AssociatedOfficer'
-      ];
-
-      // Check if any of the selected fields contain the search term
-      return searchableKeys.some((key) => row[key] && row[key].toLowerCase().includes(searchLower));
-    });
-  }, [search, data]);
-
-  const sortedRows = useMemo(() => {
-    return [...filteredRows].sort((a, b) => {
-      if (orderBy === '') return 0;
-      return order === 'asc' ? (a[orderBy] < b[orderBy] ? -1 : 1) : a[orderBy] > b[orderBy] ? -1 : 1;
-    });
-  }, [filteredRows, order, orderBy]);
-
-  const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-
-  const visibleRows = useMemo(
-    () => sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [sortedRows, page, rowsPerPage]
-  );
-
-  const renderPaginationItems = () => {
-    const pagesToShow = 3;
-    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-
-    if (totalPages <= 1) 1; // Hide pagination if only one page
-
-    const startPage = Math.max(0, Math.min(page - Math.floor(pagesToShow / 2), totalPages - pagesToShow));
-    const endPage = Math.min(startPage + pagesToShow, totalPages);
-
-    return Array.from({ length: endPage - startPage }, (_, i) => startPage + i).map((pageIndex) => (
-      <Pagination.Item key={pageIndex} active={pageIndex === page} onClick={() => handleChangePage(pageIndex)}>
-        {pageIndex + 1}
-      </Pagination.Item>
-    ));
-  };
-
-  const handleChangePage = (newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
-    setPage(0); // Reset page when search is modified
-  };
-
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
   };
 
   const getDesignation = (val) => {
@@ -418,104 +541,14 @@ const UserList = () => {
           </CardSubtitle>
         </Card.Header>
         <Card.Body className="p-3 pt-2 dark-table">
-          <Table responsive hover className="recent-users">
-            <thead className="header-bg">
-              <tr>
-                <th></th>
-                {parentHeaders.map((headCell, idx) => (
-                  <th className="" key={`${headCell}_${idx} ${headCell.id === 'status' && 'w-10'}`}>
-                    <Button variant="link" onClick={() => handleRequestSort(headCell.id)} className="pl-0 pr-0">
-                      {headCell.label}
-                      {orderBy === headCell.id ? <FaSort className={order === 'desc' ? 'rotate-180' : ''} /> : null}
-                    </Button>
-                  </th>
-                ))}
-                <th className="text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleRows.map((item, index) => {
-                return (
-                  <tr className="unread" key={`${index}-${Math.random()}`}>
-                    <td>
-                      <img
-                        className="rounded-circle"
-                        style={{ width: '40px' }}
-                        src={item.ImgPath || item.Gender === 'Male' ? male_i : female_i}
-                        alt="activity-user"
-                      />
-                    </td>
-                    <td>
-                      <h6 className="mb-1">{item.UserName}</h6>
-                    </td>
-                    <td>
-                      <h6 className="mb-1">{item.DesignationTitle}</h6>
-                    </td>
-                    <td>
-                      <p className="m-0">{item.EmployeeDivisionTitle}</p>
-                    </td>
-                    <td>
-                      <p className="m-0">{item.EmployementTitle}</p>
-                    </td>
-                    <td>
-                      <p className="m-0">{item.AssociatedOfficer}</p>
-                    </td>
-                    <td>
-                      <h6 className="mb-1">{item.OrganisationTitle}</h6>
-                    </td>
-                    <td>
-                      {item.Status === '1' ? (
-                        <label
-                          className="label theme-bg text-white f-12 pointer"
-                          onClick={() => {
-                            handleToggleStatus(item); // Set selected user
-                          }}
-                        >
-                          In service
-                        </label>
-                      ) : (
-                        <label
-                          className="label theme-bg2 text-white f-12 pointer"
-                          onClick={() => {
-                            handleToggleStatus(item); // Set selected user
-                          }}
-                        >
-                          Not in Service
-                        </label>
-                      )}
-                    </td>
-                    <td>
-                      <span
-                        className="action-section pointer"
-                        title="Edit user"
-                        onClick={() => {
-                          setselectedUser(item); // Set selected user
-                          setShowregister(true); // Open modal without resetting
-                        }}
-                      >
-                        <Image src={edit} height={20} />
-                        <span className="text-black ml-1"></span>
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-          <Pagination className="custom-pagination">
-            <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="limit">
-              {[5, 10, 25, 50].map((rowsPerPageOption) => (
-                <option key={rowsPerPageOption} value={rowsPerPageOption}>
-                  {rowsPerPageOption}
-                </option>
-              ))}
-            </Form.Control>
-            <div className="flex">
-              <Pagination.Prev onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
-              {renderPaginationItems()}
-              <Pagination.Next onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
-            </div>
-          </Pagination>
+          <AdvanceTable
+            rowData={data}
+            columnDefs={columnDefs}
+            pagination={true}
+            paginationPageSize={15}
+            paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
+            cellRenderer={ActionCellRenderer}
+          />
         </Card.Body>
       </Card>
 
@@ -685,23 +718,6 @@ const UserList = () => {
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Mobile</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="Mobile"
-                    placeholder="Enter 10-digit mobile number..."
-                    value={formData.Mobile}
-                    onChange={handleChange}
-                    isInvalid={!!errors.Mobile}
-                    maxLength={10}
-                  />
-                  <Form.Control.Feedback type="invalid">{errors.Mobile}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
                   <Form.Label>Associated Officer</Form.Label>
                   <Form.Select
                     name="AssociatedOfficerId"
@@ -727,6 +743,77 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.AssociatedOfficerId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    name="Email"
+                    placeholder="Enter e-mail id..."
+                    value={formData.Email}
+                    onChange={handleChange}
+                    isInvalid={!!errors.Email}
+                  />
+                  <Form.Control.Feedback type="invalid">{errors.Email}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              {
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="Password"
+                      placeholder="Enter password..."
+                      value={formData.Password}
+                      onChange={handleChange}
+                      isInvalid={!!errors.Password}
+                    />
+                    <Form.Control.Feedback type="invalid">{errors.Password}</Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+              }
+            </Row>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Mobile</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Mobile"
+                    placeholder="Enter 10-digit mobile number..."
+                    value={formData.Mobile}
+                    onChange={handleChange}
+                    isInvalid={!!errors.Mobile}
+                    maxLength={10}
+                  />
+                  <Form.Control.Feedback type="invalid">{errors.Mobile}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Role</Form.Label>
+                  <Form.Select name="Role" value={formData.Role} className="custom-form-select" onChange={handleChange}>
+                    <option value="">Select role...</option>
+                    {Array.isArray(roleDataList?.Result)
+                      ? roleDataList.Result.map((item) => (
+                          <option key={item.RoleId} value={item.RoleId}>
+                            {item.Title}
+                          </option>
+                        ))
+                      : Object.values(roleDataList?.Result || {}).map((item) => (
+                          <option key={item.RoleId} value={item.RoleId}>
+                            {item.Title}
+                          </option>
+                        ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.Role}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Service Date</Form.Label>
@@ -742,8 +829,7 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.ServiceDate}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-            </Row>
-            <Row>
+
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Display Order</Form.Label>

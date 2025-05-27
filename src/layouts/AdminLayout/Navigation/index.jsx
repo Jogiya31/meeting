@@ -31,14 +31,26 @@ const Navigation = () => {
   let navContent = (
     <div className={navBarClass.join(' ')}>
       <NavLogo />
-      {role !== 'superadmin' ? <NavContent navigation={navigation.user} /> : <NavContent navigation={navigation.items} />}
+      {role === 'superadmin' ? (
+        <NavContent navigation={navigation.superAdmin} />
+      ) : role === 'admin' ? (
+        <NavContent navigation={navigation.admin} />
+      ) : (
+        <NavContent navigation={navigation.user} />
+      )}
     </div>
   );
   if (windowSize.width < 992) {
     navContent = (
       <div className="navbar-wrapper">
         <NavLogo />
-        {role !== 'superadmin' ? <NavContent navigation={navigation.user} /> : <NavContent navigation={navigation.items} />}
+        {role === 'superadmin' ? (
+          <NavContent navigation={navigation.superAdmin} />
+        ) : role === 'admin' ? (
+          <NavContent navigation={navigation.admin} />
+        ) : (
+          <NavContent navigation={navigation.user} />
+        )}
       </div>
     );
   }

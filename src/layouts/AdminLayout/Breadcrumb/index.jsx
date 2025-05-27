@@ -13,19 +13,26 @@ const Breadcrumb = () => {
   const [item, setItem] = useState([]);
 
   useEffect(() => {
-    role !== 'superadmin'
-      ? navigation.user.map((item, index) => {
+    role === 'superadmin'
+      ? navigation?.superAdmin.map((item, index) => {
           if (item.type && item.type === 'group') {
             getCollapse(item, index);
           }
           return false;
         })
-      : navigation.items.map((item, index) => {
-          if (item.type && item.type === 'group') {
-            getCollapse(item, index);
-          }
-          return false;
-        });
+      : role === 'admin'
+        ? navigation?.admin.map((item, index) => {
+            if (item.type && item.type === 'group') {
+              getCollapse(item, index);
+            }
+            return false;
+          })
+        : navigation?.user.map((item, index) => {
+            if (item.type && item.type === 'group') {
+              getCollapse(item, index);
+            }
+            return false;
+          });
   });
 
   const getCollapse = (item, index) => {

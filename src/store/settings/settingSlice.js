@@ -10,6 +10,7 @@ const initialState = {
   statusData: [],
   projectData: [],
   salutationData: [],
+  roleData: [],
   priorityData: [],
   success: false,
   message: ''
@@ -410,7 +411,25 @@ const settingsSlice = createSlice({
       state.success = false; // Set success flag to false
     },
 
-    // Action to  delete information
+    //////////////////////////////////// Role //////////////////////////////////////
+    // Action to initiate fetching Role information
+    getRoleInfo(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    // Action to handle successful retrieval of Role information
+    getRoleInfoSuccess(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.success = true; // Set success flag to true
+      state.roleData = action.payload; // Store received data
+    },
+    // Action to handle failure in fetching Role information
+    getRoleInfoFailed(state, action) {
+      state.loader = false; // Set loader to false after fetching
+      state.message = action.payload; // Store error message
+      state.success = false; // Set success flag to false
+    },
+
+    ///////////////////////// Action to  delete information///////////////////////////
     deleteDiscussionById(state) {
       state.loader = true; // Set loader to true while fetching
     },
@@ -452,6 +471,7 @@ const settingsSlice = createSlice({
       state.organizationData = [];
       state.statusData = [];
       state.projectData = [];
+      state.roleData = [];
       state.loader = false; // Set loader to false
       state.success = false; // Set success flag to false
       state.message = ''; // Clear error message

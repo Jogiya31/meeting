@@ -1,5 +1,5 @@
 const menuItems = {
-  items: [
+  superAdmin: [
     {
       id: 'menu',
       title: '',
@@ -116,7 +116,7 @@ const menuItems = {
       ]
     }
   ],
-  user: [
+  admin: [
     {
       id: 'menu',
       title: '',
@@ -182,6 +182,80 @@ const menuItems = {
               title: 'Task Approval',
               type: 'item',
               url: '/tasktracker/Task-Approval',
+              display: true
+            },
+            {
+              id: 'tasks_Assginment',
+              title: 'Task Assignment',
+              type: 'item',
+              url: '/tasktracker/Task-Assignment',
+              display: true
+            },
+            {
+              id: 'create_report',
+              title: 'Report',
+              type: 'item',
+              url: '/tasktracker/Task-Report',
+              display: true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'Others',
+      title: 'Others',
+      type: 'group',
+      icon: 'icon-ui',
+      children: [
+        {
+          id: 'logout',
+          title: 'Logout',
+          type: 'item',
+          url: '/meetings/logout',
+          classes: 'nav-item',
+          icon: 'feather icon-log-out',
+          display: true
+        }
+      ]
+    }
+  ],
+  user: [
+    {
+      id: 'menu',
+      title: '',
+      type: 'group',
+      icon: 'icon-pages',
+      children: [
+        {
+          id: 'dashboard',
+          title: 'Dashboard',
+          type: 'item',
+          url: '/tasktracker/dashboard',
+          classes: 'nav-item',
+          icon: 'feather icon-grid',
+          display: true
+        }
+      ]
+    },
+    {
+      id: 'Tasks',
+      title: 'Task Menu',
+      type: 'group',
+      icon: 'icon-ui',
+      children: [
+        {
+          id: 'task',
+          title: 'Task',
+          type: 'collapse',
+          icon: 'fas fa-handshake',
+          display: true,
+          children: [
+            {
+              id: 'task_list',
+              title: 'Task List',
+              type: 'item',
+              url: '/tasktracker/Task-List',
               display: true
             },
             {

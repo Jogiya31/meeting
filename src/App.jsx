@@ -4,6 +4,9 @@ import routes, { renderRoutes } from './routes';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import DataProvider from './contexts/DataContext';
 import ThemeProvider from './contexts/themeContext';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 const App = () => {
   return (

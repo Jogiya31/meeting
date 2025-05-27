@@ -223,7 +223,7 @@ const Index = () => {
     } catch (error) {}
   };
 
-  const renderList = (list, setList, apiAction, fetchAction, updateAction, fieldName) => {
+  const RenderList = ({ list, setList, apiAction, fetchAction, updateAction, fieldName, enableAddNew }) => {
     const [newItem, setNewItem] = useState('');
 
     return (
@@ -288,18 +288,20 @@ const Index = () => {
           ))}
         </div>
         <hr />
-        <div className="footer d-flex justify-content-between px-4">
-          <input
-            type="text"
-            className="form-control mr-3"
-            placeholder="Enter text here.."
-            value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
-          />
-          <Button className="m-0" onClick={() => handleAddItem(newItem, setNewItem, apiAction, fetchAction, fieldName)}>
-            Add
-          </Button>
-        </div>
+        {enableAddNew && (
+          <div className="footer d-flex justify-content-between px-4">
+            <input
+              type="text"
+              className="form-control mr-3"
+              placeholder="Enter text here.."
+              value={newItem}
+              onChange={(e) => setNewItem(e.target.value)}
+            />
+            <Button className="m-0" onClick={() => handleAddItem(newItem, setNewItem, apiAction, fetchAction, fieldName)}>
+              Add
+            </Button>
+          </div>
+        )}
       </>
     );
   };
@@ -309,98 +311,106 @@ const Index = () => {
       <Row>
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Division List" cardClass="info">
-            {renderList(
-              divisionList,
-              setDivisionList,
-              settingsActions.addDivisionInfo,
-              settingsActions.getDivisionInfo,
-              settingsActions.updateDivisionInfo,
-              'Division'
-            )}
+            <RenderList
+              list={divisionList}
+              setList={setDivisionList}
+              apiAction={settingsActions.addDivisionInfo}
+              fetchAction={settingsActions.getDivisionInfo}
+              updateAction={settingsActions.updateDivisionInfo}
+              fieldName={'Division'}
+              enableAddNew
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Employment Type" cardClass="warning">
-            {renderList(
-              employmentTypeList,
-              setEmploymentTypeList,
-              settingsActions.addEmployeementInfo,
-              settingsActions.getEmployeementInfo,
-              settingsActions.updateEmployeementInfo,
-              'Employeement'
-            )}
+            <RenderList
+              list={employmentTypeList}
+              setList={setEmploymentTypeList}
+              apiAction={settingsActions.addEmployeementInfo}
+              fetchAction={settingsActions.getEmployeementInfo}
+              updateAction={settingsActions.updateEmployeementInfo}
+              fieldName={'Employeement'}
+              enableAddNew
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Designation List" cardClass="success">
-            {renderList(
-              designationList,
-              setDesignationList,
-              settingsActions.addDesignationInfo,
-              settingsActions.getDesignationInfo,
-              settingsActions.updateDesignationInfo,
-              'Designation'
-            )}
+            <RenderList
+              list={designationList}
+              setList={setDesignationList}
+              apiAction={settingsActions.addDesignationInfo}
+              fetchAction={settingsActions.getDesignationInfo}
+              updateAction={settingsActions.updateDesignationInfo}
+              fieldName={'Employeement'}
+              enableAddNew
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Company List" cardClass="purple">
-            {renderList(
-              organisationList,
-              setOrganisationList,
-              settingsActions.addOrganizationInfo,
-              settingsActions.getOrganizationInfo,
-              settingsActions.updateOrganizationInfo,
-              'Organisation'
-            )}
+            <RenderList
+              list={organisationList}
+              setList={setOrganisationList}
+              apiAction={settingsActions.addOrganizationInfo}
+              fetchAction={settingsActions.getOrganizationInfo}
+              updateAction={settingsActions.updateOrganizationInfo}
+              fieldName={'Employeement'}
+              enableAddNew
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Task Status" cardClass="brown">
-            {renderList(
-              statusList,
-              setStatusList,
-              settingsActions.addStatusInfo,
-              settingsActions.getStatusInfo,
-              settingsActions.updateStatusInfo,
-              'Status'
-            )}
+            <RenderList
+              list={statusList}
+              setList={setStatusList}
+              apiAction={settingsActions.addStatusInfo}
+              fetchAction={settingsActions.getStatusInfo}
+              updateAction={settingsActions.updateStatusInfo}
+              fieldName={'Status'}
+              enableAddNew
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Available Projects" cardClass="secondary">
-            {renderList(
-              projectList,
-              setProjectList,
-              settingsActions.addProjectInfo,
-              settingsActions.getProjectInfo,
-              settingsActions.updateProjectInfo,
-              'Project'
-            )}
+            <RenderList
+              list={projectList}
+              setList={setProjectList}
+              apiAction={settingsActions.addProjectInfo}
+              fetchAction={settingsActions.getProjectInfo}
+              updateAction={settingsActions.updateProjectInfo}
+              fieldName={'Project'}
+              enableAddNew={false}
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Salutation List" cardClass="info">
-            {renderList(
-              salutationList,
-              setSalutationList,
-              settingsActions.addSalutationInfo,
-              settingsActions.getSalutationInfo,
-              settingsActions.updateSalutationInfo,
-              'Salutation'
-            )}
+            <RenderList
+              list={salutationList}
+              setList={setSalutationList}
+              apiAction={settingsActions.addSalutationInfo}
+              fetchAction={settingsActions.getSalutationInfo}
+              updateAction={settingsActions.updateSalutationInfo}
+              fieldName={'Salutation'}
+              enableAddNew
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Priority Order List" cardClass="warning">
-            {renderList(
-              priorityList,
-              setPriorityList,
-              settingsActions.addPriorityInfo,
-              settingsActions.getPriorityInfo,
-              settingsActions.updatePriorityInfo,
-              'PriorityOrder'
-            )}
+            <RenderList
+              list={priorityList}
+              setList={setPriorityList}
+              apiAction={settingsActions.addPriorityInfo}
+              fetchAction={settingsActions.getPriorityInfo}
+              updateAction={settingsActions.updatePriorityInfo}
+              fieldName={'PriorityOrder'}
+              enableAddNew
+            />
           </MainCard>
         </Col>
       </Row>
