@@ -483,7 +483,6 @@ const UserList = () => {
       Ministry_id: '',
       Assigneddept: '',
       Email: user.Email,
-      Password: user.Password
     };
 
     Swal.fire({
@@ -759,7 +758,7 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.Email}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              {
+              {!selectedUser && (
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Password</Form.Label>
@@ -774,7 +773,7 @@ const UserList = () => {
                     <Form.Control.Feedback type="invalid">{errors.Password}</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
-              }
+              )}
             </Row>
             <Row>
               <Col md={6}>
