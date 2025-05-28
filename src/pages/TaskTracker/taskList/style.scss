@@ -1,0 +1,13 @@
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.filter-col {
+  flex: 1 1 148px; /* shrink and grow with minimum width */
+  min-width: 150px;
+}
+.filter-title{
+    display: flex;
+    align-items: center;
+}

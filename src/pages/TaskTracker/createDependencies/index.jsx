@@ -99,7 +99,7 @@ const CreateDependencies = () => {
   ];
 
   const ModuleHeaders = [
-    { id: 'ProjectId', label: 'Project Name', class: '' },
+    { id: 'ProjectTitle', label: 'Project Name', class: '' },
     { id: 'ModuleName', label: 'Module Name', class: '' },
     { id: 'ModuleDescription', label: 'Module Description', class: '' },
     { id: 'CreatedBy', label: 'Created By', class: '' },
