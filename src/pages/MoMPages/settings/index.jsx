@@ -1,24 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import MainCard from '../../../components/Card/MainCard';
-import { Button, Col, Row } from 'react-bootstrap';
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { settingsActions } from 'store/settings/settingSlice';
 import Swal from 'sweetalert2';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { useTheme } from '../../../contexts/themeContext';
+import DatePicker from 'react-datepicker';
 
 const Index = () => {
   const dispatch = useDispatch();
   const { mode } = useTheme();
   const Role = localStorage.getItem('role');
-  const designationDataList = useSelector((state) => state.settings.designationData);
-  const divisionDataList = useSelector((state) => state.settings.divisionData);
-  const employeementDataList = useSelector((state) => state.settings.employeementData);
-  const organizationDataList = useSelector((state) => state.settings.organizationData);
-  const statusDataList = useSelector((state) => state.settings.statusData);
-  const projectDataList = useSelector((state) => state.settings.projectData);
-  const salutationDataList = useSelector((state) => state.settings.salutationData);
-  const priorityDataList = useSelector((state) => state.settings.priorityData);
 
   const [divisionList, setDivisionList] = useState([]);
   const [employmentTypeList, setEmploymentTypeList] = useState([]);
@@ -28,6 +21,29 @@ const Index = () => {
   const [projectList, setProjectList] = useState([]);
   const [salutationList, setSalutationList] = useState([]);
   const [priorityList, setPriorityList] = useState([]);
+  const [showProject, setShowProject] = useState(false);
+  const [ProjectformData, setProjectFormData] = useState({
+    projectName: '',
+    projectDescription: '',
+    groupName: '',
+    HOGName: '',
+    HODName: '',
+    technologyStack: '',
+    projectStartDate: null,
+    completionDate: null
+  });
+  const [projectErrors, setProjectErrors] = useState({});
+  const [projectstartDateError, setProjectStartDateError] = useState(false);
+  const [projectCompletionDateError, setProjectCompletionDateError] = useState(false);
+
+  const designationDataList = useSelector((state) => state.settings.designationData);
+  const divisionDataList = useSelector((state) => state.settings.divisionData);
+  const employeementDataList = useSelector((state) => state.settings.employeementData);
+  const organizationDataList = useSelector((state) => state.settings.organizationData);
+  const statusDataList = useSelector((state) => state.settings.statusData);
+  const projectDataList = useSelector((state) => state.settings.projectData);
+  const salutationDataList = useSelector((state) => state.settings.salutationData);
+  const priorityDataList = useSelector((state) => state.settings.priorityData);
 
   useEffect(() => {
     dispatch(settingsActions.getDesignationInfo());
@@ -306,6 +322,66 @@ const Index = () => {
     );
   };
 
+  const handleClose = () => {
+    setShowProject(false);
+    setProjectFormData({
+      projectName: '',
+      projectDescription: '',
+      groupName: '',
+      HOGName: '',
+      HODName: '',
+      technologyStack: '',
+      projectStartDate: null,
+      completionDate: null
+    });
+  };
+  const handleProjectChange = (e) => {
+    const { name, value } = e.target;
+    setProjectFormData({ ...ProjectformData, [name]: value });
+  };
+  const validateProject = () => {
+    let newErrors = {};
+    if (!ProjectformData.projectName) newErrors.projectName = 'Required field.';
+    if (!ProjectformData.projectDescription) newErrors.projectDescription = 'Required field.';
+    if (!ProjectformData.groupName) newErrors.groupName = 'Required field.';
+    if (!ProjectformData.HOGName) newErrors.HOGName = 'Required field.';
+    if (!ProjectformData.HODName) newErrors.HODName = 'Required field.';
+    if (!ProjectformData.technologyStack) newErrors.technologyStack = 'Required field.';
+    if (!ProjectformData.projectStartDate) {
+      setProjectStartDateError(!projectstartDateError);
+      newErrors.projectStartDate = 'Required field.';
+    }
+    if (!ProjectformData.completionDate) {
+      setProjectCompletionDateError(!projectCompletionDateError);
+      newErrors.completionDate = 'Required field.';
+    }
+    setProjectErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  const handleProjectStartDate = (date) => {
+    if (date instanceof Date && !isNaN(date)) {
+      setProjectStartDateError(false);
+      const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+      setProjectFormData({ ...ProjectformData, projectStartDate: formattedDate || '' });
+    } else {
+      setProjectFormData({ ...ProjectformData, projectStartDate: '' });
+    }
+  };
+  const handleProjectEndDate = (date) => {
+    if (date instanceof Date && !isNaN(date)) {
+      setProjectCompletionDateError(false);
+      const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+      setProjectFormData({ ...ProjectformData, completionDate: formattedDate || '' });
+    } else {
+      setProjectFormData({ ...ProjectformData, completionDate: '' });
+    }
+  };
+  const handleSubmitProject = (e) => {
+    e.preventDefault();
+    if (!validateProject()) return;
+    console.log('ProjectformData', ProjectformData);
+  };
+
   return (
     <div>
       <Row>
@@ -374,19 +450,7 @@ const Index = () => {
             />
           </MainCard>
         </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Available Projects" cardClass="secondary">
-            <RenderList
-              list={projectList}
-              setList={setProjectList}
-              apiAction={settingsActions.addProjectInfo}
-              fetchAction={settingsActions.getProjectInfo}
-              updateAction={settingsActions.updateProjectInfo}
-              fieldName={'Project'}
-              enableAddNew={false}
-            />
-          </MainCard>
-        </Col>
+
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Salutation List" cardClass="info">
             <RenderList
@@ -413,7 +477,222 @@ const Index = () => {
             />
           </MainCard>
         </Col>
+
+        <Col sm={12} md={12} xl={6} xxl={4}>
+          <MainCard title="Available Projects" cardClass="secondary">
+            <div className="px-4 py-2 c-card-body">
+              <div className="d-flex justify-content-between">
+                <h6>Title</h6>
+                <h6>Action</h6>
+              </div>
+              {projectList?.map((item) => (
+                <Row key={item.id}>
+                  <Col md={9} sm={9}>
+                    <div className={`d-flex justify-content-between custom-cards ${item.status ? '' : 'op-5'}`}>
+                      {item.isEditing ? (
+                        <input
+                          type="text"
+                          className="w-100 form-control bg-0 p-2"
+                          value={item.title}
+                          onChange={(e) => handleChange(projectList, setProjectList, item.id, e.target.value)}
+                          autoFocus
+                        />
+                      ) : (
+                        <span>{item.title}</span>
+                      )}
+                    </div>
+                  </Col>
+                  <Col md={2} sm={2} className="d-flex align-items-center">
+                    <div className="d-flex justify-content-between">
+                      {item.isEditing ? (
+                        <span
+                          title="Save"
+                          className={`feather icon-check theme-bg2 text-white f-14 p-2 pointer`}
+                          onClick={() => handleSaveChange(projectList, setProjectList, settingsActions.addProjectInfo, item.id, 'Project')}
+                        />
+                      ) : (
+                        <span
+                          title="Edit"
+                          className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
+                          onClick={() => handleEdit(projectList, setProjectList, item.id)}
+                        />
+                      )}
+                      {item.status ? (
+                        <span
+                          title="Visible"
+                          className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                          onClick={() => handleDelete(projectList, setProjectList, settingsActions.addProjectInfo, item.id, 'Project')}
+                        >
+                          <FaCheckCircle />
+                        </span>
+                      ) : (
+                        <span
+                          title="Not Visible"
+                          className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                          onClick={() => handleDelete(projectList, setProjectList, settingsActions.addProjectInfo, item.id, 'Project')}
+                        >
+                          <FaTimesCircle />
+                        </span>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+            <hr />
+            <div className="footer d-flex justify-content-end px-4">
+              <Button className="m-0" onClick={() => setShowProject(true)}>
+                Add
+              </Button>
+            </div>
+          </MainCard>
+        </Col>
       </Row>
+      <Modal size="lg" show={showProject} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+        <Modal.Header className={mode}>
+          <Modal.Title>
+            <h5>Add Project</h5>
+          </Modal.Title>
+          <span className="pointer" onClick={handleClose}>
+            {' '}
+            X{' '}
+          </span>
+        </Modal.Header>
+        <Modal.Body className={mode}>
+          <Form noValidate onSubmit={handleSubmitProject}>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Project Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="projectName"
+                    placeholder="Enter..."
+                    value={ProjectformData.projectName}
+                    onChange={handleProjectChange}
+                    isInvalid={!!projectErrors.projectName}
+                  />
+                  <Form.Control.Feedback type="invalid">{projectErrors.projectName}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Project Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    value={ProjectformData.projectDescription}
+                    rows={1}
+                    name="projectDescription"
+                    placeholder="Enter text here.."
+                    onChange={handleProjectChange}
+                    isInvalid={!!projectErrors.projectDescription}
+                  />
+                  <Form.Control.Feedback type="invalid">{projectErrors.projectDescription}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Group Name</Form.Label>
+                  <Form.Select
+                    name="groupName"
+                    value={ProjectformData.groupName}
+                    className="custom-form-select"
+                    onChange={handleProjectChange}
+                    isInvalid={!!projectErrors.groupName}
+                  >
+                    <option value="">Select officer...</option>
+                    <option value="1">1</option>
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{projectErrors.groupName}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>HOG Name</Form.Label>
+                  <Form.Select
+                    name="HOGName"
+                    value={ProjectformData.HOGName}
+                    className="custom-form-select"
+                    onChange={handleProjectChange}
+                    isInvalid={!!projectErrors.HOGName}
+                  >
+                    <option value="">Select officer...</option>
+                    <option value="1">1</option>
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{projectErrors.HOGName}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>HOD Name</Form.Label>
+                  <Form.Select
+                    name="HODName"
+                    value={ProjectformData.HODName}
+                    className="custom-form-select"
+                    onChange={handleProjectChange}
+                    isInvalid={!!projectErrors.HODName}
+                  >
+                    <option value="">Select officer...</option>
+                    <option value="1">1</option>
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{projectErrors.HODName}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Technology Stack</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="technologyStack"
+                    placeholder="Enter..."
+                    value={ProjectformData.technologyStack}
+                    onChange={handleProjectChange}
+                    isInvalid={!!projectErrors.technologyStack}
+                  />
+                  <Form.Control.Feedback type="invalid">{projectErrors.technologyStack}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Project Start Date</Form.Label>
+                  <DatePicker
+                    selected={ProjectformData.projectStartDate || null}
+                    className={`form-control cfs-14 ${projectstartDateError ? 'is-invalid' : ''}`}
+                    onChange={handleProjectStartDate}
+                    placeholderText="Start Date"
+                    dateFormat="dd-MM-yyyy"
+                    name="projectStartDate"
+                  />
+                  {projectstartDateError && <div className="text-danger">{projectErrors.projectStartDate}</div>}
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Completion Date</Form.Label>
+                  <DatePicker
+                    selected={ProjectformData.completionDate || null}
+                    className={`form-control cfs-14 ${projectCompletionDateError ? 'is-invalid' : ''}`}
+                    onChange={handleProjectEndDate}
+                    placeholderText="End Date"
+                    dateFormat="dd-MM-yyyy"
+                    name="completionDate"
+                  />
+                  {projectCompletionDateError && <div className="text-danger">{projectErrors.completionDate}</div>}
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <div className="d-flex justify-content-end mt-2">
+              <Button variant="primary" type="submit">
+                Submit
+              </Button>
+              <Button variant="secondary" onClick={handleClose} className="ms-2">
+                Cancel
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

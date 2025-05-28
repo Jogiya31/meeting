@@ -86,7 +86,7 @@ const UserList = () => {
 
     return (
       <div className="action-column">
-        <Button variant="" size="sm" onClick={handleEdit}>
+        <Button variant="" size="sm" onClick={handleEdit} title='Edit User'>
           <img src={edit} width={20} alt="" />
         </Button>
         <Button

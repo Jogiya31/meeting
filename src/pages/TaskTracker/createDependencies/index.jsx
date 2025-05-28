@@ -1,15 +1,19 @@
 import { useDispatch, useSelector } from 'react-redux';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Modal, Nav, Row, Tab } from 'react-bootstrap';
 import { useTheme } from '../../../contexts/themeContext';
 import EnhancedTable from '../../../components/Table';
 import DatePicker from 'react-datepicker';
-import moment from 'moment';
-
+import { settingsActions } from '../../../store/settings/settingSlice';
+import { userActions } from '../../../store/user/userSlice';
+import { moduleActions } from '../../../store/module/moduleSlice';
+import { useAuth } from '../../../contexts/AuthContext';
 const CreateDependencies = () => {
   const dispatch = useDispatch();
+  const { role } = useAuth();
   const { mode } = useTheme();
 
+  const [userdata, setUserData] = useState([]);
   const [showGroup, setShowGroup] = useState(false);
   const [showProject, setShowProject] = useState(false);
   const [showModule, setShowModule] = useState(false);
@@ -40,14 +44,53 @@ const CreateDependencies = () => {
     moduleDescription: ''
   });
 
+  const divisionDataList = useSelector((state) => state.settings.divisionData);
+  const projectDataList = useSelector((state) => state.settings.projectData);
+  const userList = useSelector((state) => state.users.data);
+  const moduleList = useSelector((state) => state.module.data);
+  const designationDataList = useSelector((state) => state.settings.designationData);
+
+  useEffect(() => {
+    dispatch(settingsActions.getDivisionInfo());
+    dispatch(settingsActions.getProjectInfo());
+    dispatch(userActions.getuserInfo());
+    dispatch(settingsActions.getDesignationInfo());
+    dispatch(moduleActions.getModuleInfo());
+  }, []);
+
+  useEffect(() => {
+    if (userList && Array.isArray(userList.Result)) {
+      const updatedData = userList.Result.map((item) => {
+        const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+        const desc = item?.DesignationId?.split(',')
+          .map((id) => getDesignation(id))
+          .join('/ ');
+        return {
+          ...item,
+          AssociatedOfficer: officer ? officer.UserName : '',
+          DesignationTitle: desc
+        };
+      });
+      setUserData(updatedData);
+    } else {
+      setUserData([]); // optional fallback
+    }
+  }, [userList, designationDataList]);
+
+  const getDesignation = (val) => {
+    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
+    const found = data.find((item) => item.DesignationId === val);
+    return found ? found.DesignationTitle : '';
+  };
+
   const GroupHeaders = [
-    { id: 'groupname', label: 'Group Name', class: '' },
+    { id: 'DivisionTitle', label: 'Group Name', class: '' },
     { id: 'groupDescription', label: 'Group Description', class: '' },
     { id: 'groupStartDate', label: 'group Start Date', class: '' }
   ];
 
   const ProjectHeaders = [
-    { id: 'projectName', label: 'Project Name', class: '' },
+    { id: 'ProjectTitle', label: 'Project Name', class: '' },
     { id: 'projectDescription', label: 'Project Description', class: '' },
     { id: 'groupName', label: 'Group Name', class: '' },
     { id: 'hodName', label: 'HOD Name', class: '' },
@@ -56,11 +99,11 @@ const CreateDependencies = () => {
   ];
 
   const ModuleHeaders = [
-    { id: 'projectName', label: 'Project Name', class: '' },
-    { id: 'moduleName', label: 'Module Name', class: '' },
-    { id: 'moduleDescription', label: 'Module Description', class: '' },
-    { id: 'createBy', label: 'Created By', class: '' },
-    { id: 'CreateAt', label: 'Create At', class: '' }
+    { id: 'ProjectId', label: 'Project Name', class: '' },
+    { id: 'ModuleName', label: 'Module Name', class: '' },
+    { id: 'ModuleDescription', label: 'Module Description', class: '' },
+    { id: 'CreatedBy', label: 'Created By', class: '' },
+    { id: 'CreatedDate', label: 'Create At', class: '' }
   ];
 
   const handleClose = () => {
@@ -191,7 +234,14 @@ const CreateDependencies = () => {
   const handleSubmitModule = (e) => {
     e.preventDefault();
     if (!validateModule()) return;
-    console.log('ModuleformData', ModuleformData);
+    const Payload = {
+      ModuleName: ModuleformData.moduleName,
+      ProjectId: ModuleformData.projectName,
+      ModuleDescription: ModuleformData.moduleDescription,
+      CreatedBy: role
+    };
+    dispatch(moduleActions.addModuleInfo(Payload));
+    handleClose();
   };
 
   return (
@@ -223,7 +273,13 @@ const CreateDependencies = () => {
                         </Button>
                       </div>
                       <div className="dark-table">
-                        <EnhancedTable data={[]} headers={GroupHeaders} headerCss="info" enablePagination />
+                        <EnhancedTable
+                          data={divisionDataList.Result || []}
+                          headers={GroupHeaders}
+                          headerCss="info"
+                          enablePagination
+                          enableSno
+                        />
                       </div>
                     </div>
                   </Tab.Pane>
@@ -235,7 +291,13 @@ const CreateDependencies = () => {
                         </Button>
                       </div>
                       <div className="dark-table">
-                        <EnhancedTable data={[]} headers={ProjectHeaders} headerCss="info" enablePagination />
+                        <EnhancedTable
+                          data={projectDataList.Result || []}
+                          headers={ProjectHeaders}
+                          headerCss="info"
+                          enablePagination
+                          enableSno
+                        />
                       </div>
                     </div>
                   </Tab.Pane>
@@ -247,7 +309,7 @@ const CreateDependencies = () => {
                         </Button>
                       </div>
                       <div className="dark-table">
-                        <EnhancedTable data={[]} headers={ModuleHeaders} headerCss="info" enablePagination />
+                        <EnhancedTable data={moduleList.Result || []} headers={ModuleHeaders} headerCss="info" enablePagination />
                       </div>
                     </div>
                   </Tab.Pane>
@@ -379,8 +441,20 @@ const CreateDependencies = () => {
                     onChange={handleProjectChange}
                     isInvalid={!!projectErrors.groupName}
                   >
-                    <option value="">Select officer...</option>
-                    <option value="1">1</option>
+                    <option value="">Select Group / Divison...</option>
+                    {Array.isArray(divisionDataList?.Result)
+                      ? divisionDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.DivisionId} value={item.DivisionId}>
+                            {item.DivisionTitle}
+                          </option>
+                        ))
+                      : Object.values(divisionDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.DivisionId} value={item.DivisionId}>
+                              {item.DivisionTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{projectErrors.groupName}</Form.Control.Feedback>
                 </Form.Group>
@@ -396,7 +470,13 @@ const CreateDependencies = () => {
                     isInvalid={!!projectErrors.HOGName}
                   >
                     <option value="">Select officer...</option>
-                    <option value="1">1</option>
+                    {userdata
+                      ?.filter((item) => item.DesignationTitle?.includes('HOG'))
+                      .map((item) => (
+                        <option key={item.UserId} value={item.UserId}>
+                          {item.UserName}
+                        </option>
+                      ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{projectErrors.HOGName}</Form.Control.Feedback>
                 </Form.Group>
@@ -412,7 +492,13 @@ const CreateDependencies = () => {
                     isInvalid={!!projectErrors.HODName}
                   >
                     <option value="">Select officer...</option>
-                    <option value="1">1</option>
+                    {userdata
+                      ?.filter((item) => item.DesignationTitle?.includes('HOD'))
+                      .map((item) => (
+                        <option key={item.UserId} value={item.UserId}>
+                          {item.UserName}
+                        </option>
+                      ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{projectErrors.HODName}</Form.Control.Feedback>
                 </Form.Group>
@@ -495,7 +581,20 @@ const CreateDependencies = () => {
                     onChange={handleModuleChange}
                     isInvalid={!!moduleErrors.projectName}
                   >
-                    <option value="">Select officer...</option>
+                    <option value="">Select project...</option>
+                    {Array.isArray(projectDataList?.Result)
+                      ? projectDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.ProjectId} value={item.ProjectId}>
+                            {item.ProjectTitle}
+                          </option>
+                        ))
+                      : Object.values(projectDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.ProjectId} value={item.ProjectId}>
+                              {item.ProjectTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{moduleErrors.projectName}</Form.Control.Feedback>
                 </Form.Group>

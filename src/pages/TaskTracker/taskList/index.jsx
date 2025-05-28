@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Dropdown, Form, Image, Row } from 'react-bootstrap';
 import pdf_i from '../../../assets/images/pdf_i.svg';
 import print_i from '../../../assets/images/print_i.svg';
 import setting from '../../../assets/images/settings.png';
 import EnhancedTable from '../../../components/Table';
 import DatePicker from 'react-datepicker';
-import { FaCog } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { settingsActions } from '../../../store/settings/settingSlice';
+import { userActions } from '../../../store/user/userSlice';
+import { moduleActions } from '../../../store/module/moduleSlice';
 
 const TaskList = () => {
+  const dispatch = useDispatch();
+  const divisionDataList = useSelector((state) => state.settings.divisionData);
+  const projectDataList = useSelector((state) => state.settings.projectData);
+  const statusLists = useSelector((state) => state.settings.statusData);
+  const userList = useSelector((state) => state.users.data);
+  const moduleList = useSelector((state) => state.module.data);
+
+  useEffect(() => {
+    dispatch(settingsActions.getDivisionInfo());
+    dispatch(settingsActions.getProjectInfo());
+    dispatch(settingsActions.getStatusInfo());
+    dispatch(userActions.getuserInfo());
+    dispatch(moduleActions.getModuleInfo());
+  }, []);
+
   const taskHeaders = [
     { id: 'projectName', label: 'Project Name', class: '' },
     { id: 'moduleName', label: 'Module Name', class: '' },
@@ -50,8 +69,6 @@ const TaskList = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!validateTasks()) return;
-    console.log('TaskformData', TaskformData);
   };
 
   const handleStartDate = (date) => {
@@ -90,7 +107,19 @@ const TaskList = () => {
                     onChange={handleTaskChange}
                   >
                     <option value="">Select Group</option>
-                    <option value="1">1</option>
+                    {Array.isArray(divisionDataList?.Result)
+                      ? divisionDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.DivisionId} value={item.DivisionId}>
+                            {item.DivisionTitle}
+                          </option>
+                        ))
+                      : Object.values(divisionDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.DivisionId} value={item.DivisionId}>
+                              {item.DivisionTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -103,7 +132,19 @@ const TaskList = () => {
                     onChange={handleTaskChange}
                   >
                     <option value="">Select Project</option>
-                    <option value="1">1</option>
+                    {Array.isArray(projectDataList?.Result)
+                      ? projectDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.ProjectId} value={item.ProjectId}>
+                            {item.ProjectTitle}
+                          </option>
+                        ))
+                      : Object.values(projectDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.ProjectId} value={item.ProjectId}>
+                              {item.ProjectTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -116,7 +157,9 @@ const TaskList = () => {
                     onChange={handleTaskChange}
                   >
                     <option value="">Select Module</option>
-                    <option value="1">1</option>
+                   {moduleList?.Result?.map((item) => (
+                      <option value={item.ModuleName}>{item.ModuleName}</option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -124,7 +167,9 @@ const TaskList = () => {
                 <Form.Group>
                   <Form.Select name="status" value={TaskformData.status} className="custom-form-select w-auto" onChange={handleTaskChange}>
                     <option value="">Select Status</option>
-                    <option value="1">1</option>
+                    {statusLists?.Result?.filter((item) => item.Status === '1')?.map((item) => (
+                      <option value={item.StatusId}>{item.StatusTitle}</option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -132,7 +177,11 @@ const TaskList = () => {
                 <Form.Group>
                   <Form.Select name="user" value={TaskformData.user} className="custom-form-select w-auto" onChange={handleTaskChange}>
                     <option value="">Select user</option>
-                    <option value="1">1</option>
+                    {userList?.Result?.map((item) => (
+                      <option key={item.UserId} value={item.UserId}>
+                        {item.UserName}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -168,12 +217,12 @@ const TaskList = () => {
                 </Form.Group>
               </Col>
               <Col>
-                <div className="d-flex align-items-center">
+                <div className="d-flex justify-content-center align-items-center">
                   <img src={print_i} alt="" className="img-fluid ml-2 pointer" width={30} />
                   <img src={pdf_i} alt="" className="img-fluid ml-1 pointer" width={30} />
                   <Dropdown className="table-column-setting ml-1 mr-1">
                     <Dropdown.Toggle variant="light" id="dropdown-basic" className="border-0 p-0 setting-btn">
-                      <Image src={setting} alt="" width={24}/>
+                      <Image src={setting} alt="" width={24} />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                       {taskHeaders.map((item, idx) => (

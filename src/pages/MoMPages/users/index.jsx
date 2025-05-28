@@ -86,8 +86,8 @@ const UserList = () => {
 
     return (
       <div className="action-column">
-        <Button variant="" size="sm" onClick={handleEdit}>
-          <img src={edit} width={20} alt="" />
+        <Button variant="" size="sm" onClick={handleEdit} title='Edit User'>
+          <img src={edit} width={20} alt=""/>
         </Button>
         <Button
           variant={data.Status === '1' || data.Status === 1 ? 'outline-success' : 'outline-danger'}

@@ -288,3 +288,27 @@ export const deleteDiscussionDetails = (data) => {
     'Content-Type': 'application/json'
   });
 };
+
+
+
+/////////////////// Module api  ///////////////////
+export const GetModuleDetails = () => {
+  const url = `/GetModule`;
+  return axiosClient().get(url, {
+    'Content-Type': 'application/json'
+  });
+};
+export const AddModuleDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Save_Module`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const UpdateModule = (data) => {
+  const payload = data.payload;
+  const url = `/Update_Module`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};

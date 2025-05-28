@@ -4,6 +4,7 @@ import settingsReducer from '../store/settings/settingSlice';
 import authReducer from '../store/auth/authrSlice';
 import meetingsReducer from '../store/mom/momSlice';
 import dashboardReducer from '../store/dashboard/dashboardSlice';
+import moduleReducer from '../store/module/moduleSlice';
 /**
  * here we combine all pages reducer for gets update redux state
  **/
@@ -18,7 +19,9 @@ const rootReducer = combineReducers({
   // Reducer for managing settings
   settings: settingsReducer,
   // Reducer for managing meetings
-  meetings: meetingsReducer
+  meetings: meetingsReducer,
+  // Reducer for managing Module
+  module: moduleReducer
 });
 
 // Export the combined rootReducer

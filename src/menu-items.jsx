@@ -177,13 +177,13 @@ const menuItems = {
               url: '/tasktracker/create-Task',
               display: true
             },
-            {
-              id: 'tasks_Approval',
-              title: 'Task Approval',
-              type: 'item',
-              url: '/tasktracker/Task-Approval',
-              display: true
-            },
+            // {
+            //   id: 'tasks_Approval',
+            //   title: 'Task Approval',
+            //   type: 'item',
+            //   url: '/tasktracker/Task-Approval',
+            //   display: true
+            // },
             {
               id: 'tasks_Assginment',
               title: 'Task Assignment',

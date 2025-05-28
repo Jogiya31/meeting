@@ -1,9 +1,14 @@
 import EnhancedTable from 'components/Table';
 import { useTheme } from '../../../contexts/themeContext';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, CardSubtitle, Col, Form, Modal, Row } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { settingsActions } from '../../../store/settings/settingSlice';
+import { moduleActions } from '../../../store/module/moduleSlice';
 
 const CreateTask = () => {
+  const dispatch = useDispatch();
   const { mode } = useTheme();
   const GroupHeaders = [
     { id: 'projectName', label: 'Project Name', class: '' },
@@ -23,6 +28,14 @@ const CreateTask = () => {
     task: '',
     taskDescription: ''
   });
+
+  const projectDataList = useSelector((state) => state.settings.projectData);
+  const moduleList = useSelector((state) => state.module.data);
+
+  useEffect(() => {
+    dispatch(settingsActions.getProjectInfo());
+    dispatch(moduleActions.getModuleInfo());
+  }, []);
 
   const handleClose = () => {
     setShowNewTask(false);
@@ -115,7 +128,19 @@ const CreateTask = () => {
                     isInvalid={!!taskErrors.projectName}
                   >
                     <option value="">Select project...</option>
-                    <option value="1">1</option>
+                    {Array.isArray(projectDataList?.Result)
+                      ? projectDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.ProjectId} value={item.ProjectId}>
+                            {item.ProjectTitle}
+                          </option>
+                        ))
+                      : Object.values(projectDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.ProjectId} value={item.ProjectId}>
+                              {item.ProjectTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{taskErrors.projectName}</Form.Control.Feedback>
                 </Form.Group>
@@ -131,7 +156,9 @@ const CreateTask = () => {
                     isInvalid={!!taskErrors.moduleName}
                   >
                     <option value="">Select Module...</option>
-                    <option value="1">1</option>
+                    {moduleList?.Result?.map((item) => (
+                      <option value={item.ModuleName}>{item.ModuleName}</option>
+                    ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{taskErrors.moduleName}</Form.Control.Feedback>
                 </Form.Group>
