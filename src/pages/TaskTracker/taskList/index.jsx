@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Dropdown, Form, Image, Row } from 'react-bootstrap';
 import pdf_i from '../../../assets/images/pdf_i.svg';
 import print_i from '../../../assets/images/print_i.svg';
-import setting from '../../../assets/images/settings.png';
-import EnhancedTable from '../../../components/Table';
+import refresh from '../../../assets/images/refresh-arrow.png';
 import DatePicker from 'react-datepicker';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -12,6 +11,7 @@ import { userActions } from '../../../store/user/userSlice';
 import { moduleActions } from '../../../store/module/moduleSlice';
 import { MultiSelect } from 'react-multi-select-component';
 import './style.scss';
+import AdvanceTable from '../../../components/Table/advanceTable';
 
 const TaskList = () => {
   const dispatch = useDispatch();
@@ -35,6 +35,7 @@ const TaskList = () => {
   const [moduleFilter, setModuleFilter] = useState([]);
   const [statusFilter, setStatusFilter] = useState([]);
   const [userFilter, setuserFilter] = useState([]);
+  const [resetTrigger, setResetTrigger] = useState(0);
 
   const divisionDataList = useSelector((state) => state.settings.divisionData);
   const projectDataList = useSelector((state) => state.settings.projectData);
@@ -238,29 +239,19 @@ const TaskList = () => {
     }
   };
 
-  const taskHeaders = [
-    { id: 'projectName', label: 'Project Name', class: '' },
-    { id: 'moduleName', label: 'Module Name', class: '' },
-    { id: 'taskName', label: 'Task Name', class: '' },
-    { id: 'taskDescription', label: 'Task Description', class: '' },
-    { id: 'assignedDate', label: 'Assigned/Expected Date', class: '' },
-    { id: 'status', label: 'Status', class: '' },
-    { id: 'assignedTo', label: 'Assigned To', class: '' },
-    { id: 'userRemarks', label: 'User Remarks', class: '' }
-  ];
+  const [columnDefs] = useState([
+    { field: 'projectName', sortable: true, filter: true, flex: 1 },
+    { field: 'moduleName', sortable: true, filter: true, flex: 1 },
+    { field: 'taskName', sortable: true, filter: true, flex: 1 },
+    { field: 'taskDescription', sortable: true, filter: true, flex: 1 },
+    { field: 'assignedDate', sortable: true, filter: true, flex: 1 },
+    { field: 'status', sortable: true, filter: true, flex: 1 },
+    { field: 'assignedTo', sortable: true, filter: true, flex: 1 },
+    { field: 'userRemarks', flex: 1 }
+  ]);
 
-  const [visibleColumns, setVisibleColumns] = useState(
-    taskHeaders.map((header) => header.id) // Initially show all columns
-  );
-  const filteredHeaders = taskHeaders.filter((header) => visibleColumns.includes(header.id));
-
-  const toggleColumn = (columnId) => {
-    setVisibleColumns(
-      (prev) =>
-        prev.includes(columnId)
-          ? prev.filter((id) => id !== columnId) // remove column
-          : [...prev, columnId] // add column
-    );
+  const triggerReset = () => {
+    setResetTrigger((prev) => prev + 1);
   };
 
   const handleSubmit = (e) => {
@@ -291,130 +282,6 @@ const TaskList = () => {
       <Card className="Recent-Users widget-focus-lg header-info default-shadow">
         <Card.Header className=" py-2">
           <Form noValidate onSubmit={handleSubmit}>
-            {/* <Row className="d-flex align-items-center">
-              <Col>
-                <h5>Task List</h5>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <MultiSelect
-                    options={groupOption}
-                    value={groupFilter}
-                    onChange={handleGroupFilter}
-                    overrideStrings={{
-                      selectSomeItems: 'Groups'
-                    }}
-                    hasSelectAll={true}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <MultiSelect
-                    options={projectOption}
-                    value={projectFilter}
-                    onChange={handleProjectFilter}
-                    overrideStrings={{
-                      selectSomeItems: 'Projects'
-                    }}
-                    hasSelectAll={true}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <MultiSelect
-                    options={moduleOption}
-                    value={moduleFilter}
-                    onChange={handleModuleFilter}
-                    overrideStrings={{
-                      selectSomeItems: 'Modules'
-                    }}
-                    hasSelectAll={true}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <MultiSelect
-                    options={userOption}
-                    value={userFilter}
-                    onChange={handleuserFilter}
-                    overrideStrings={{
-                      selectSomeItems: 'Users'
-                    }}
-                    hasSelectAll={true}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <MultiSelect
-                    options={statusOption}
-                    value={statusFilter}
-                    onChange={handleStatusFilter}
-                    overrideStrings={{
-                      selectSomeItems: 'Statuss'
-                    }}
-                    hasSelectAll={true}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <DatePicker
-                    selected={TaskformData.startDate || null}
-                    className={`form-control cfs-14`}
-                    onChange={handleStartDate}
-                    placeholderText="Start Date"
-                    dateFormat="dd-MM-yyyy"
-                    name="startDate"
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <DatePicker
-                    selected={TaskformData.endDate || null}
-                    className={`form-control cfs-14`}
-                    onChange={handleEndDate}
-                    placeholderText="End Date"
-                    dateFormat="dd-MM-yyyy"
-                    name="endDate"
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group className="d-flex  justify-content-between align-items-center">
-                  <Button variant="primary" type="submit" size="sm" className="m-0">
-                    Submit
-                  </Button>
-                </Form.Group>
-              </Col>
-              <Col>
-                <div className="d-flex justify-content-center align-items-center">
-                  <img src={print_i} alt="" className="img-fluid ml-2 pointer" width={30} />
-                  <img src={pdf_i} alt="" className="img-fluid ml-1 pointer" width={30} />
-                  <Dropdown className="table-column-setting ml-1 mr-1">
-                    <Dropdown.Toggle variant="light" id="dropdown-basic" className="border-0 p-0 setting-btn">
-                      <Image src={setting} alt="" width={24} />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      {taskHeaders.map((item, idx) => (
-                        <Form.Check
-                          key={item.id}
-                          type="switch"
-                          id={`custom-switch-${idx}`}
-                          label={item.label}
-                          checked={visibleColumns.includes(item.id)}
-                          onChange={() => toggleColumn(item.id)}
-                        />
-                      ))}
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
-              </Col>
-            </Row> */}
             <div className="filter-row">
               <div className="filter-title">
                 <h5>Task List</h5>
@@ -498,48 +365,36 @@ const TaskList = () => {
                 />
               </div>
               <div className="filter-submit">
-                <Button variant="primary" type="submit" size="sm" className="m-0" onClick={handleSubmit}>
+                <Button type="submit" size="sm" className="m-0 bg-defaultBlue" onClick={handleSubmit}>
                   Submit
                 </Button>
               </div>
               <div className="filter-col">
                 <div className="d-flex align-items-center justify-content-center">
-                  <img src={print_i} alt="" className="img-fluid ml-2 pointer" width={30} />
-                  <img src={pdf_i} alt="" className="img-fluid ml-1 pointer" width={30} />
-                  <Dropdown className="table-column-setting ml-1 mr-1">
-                    <Dropdown.Toggle variant="light" id="dropdown-basic" className="border-0 p-0 setting-btn">
-                      <Image src={setting} alt="" width={24} />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      {taskHeaders.map((item, idx) => (
-                        <Form.Check
-                          key={item.id}
-                          type="switch"
-                          id={`custom-switch-${idx}`}
-                          label={item.label}
-                          checked={visibleColumns.includes(item.id)}
-                          onChange={() => toggleColumn(item.id)}
-                        />
-                      ))}
-                    </Dropdown.Menu>
-                  </Dropdown>
+                  <img src={print_i} alt="" className="img-fluid ml-2 pointer" title="Print" width={30} />
+                  <img src={pdf_i} alt="" className="img-fluid ml-1 pointer" width={30} title="Export PDF" />
+                  <img
+                    src={refresh}
+                    alt=""
+                    className="img-fluid ml-1 pointer"
+                    title="Reset Table"
+                    width={30}
+                    onClick={() => triggerReset()}
+                  />
                 </div>
               </div>
             </div>
           </Form>
         </Card.Header>
         <Card.Body className="p-3 pt-0 dark-table">
-          <EnhancedTable
-            data={[]} // replace with actual data
-            headers={filteredHeaders}
-            headerCss="info"
-            enableSno
-            enablePagination
-            rowactions={(row) => (
-              <Button variant="primary" className="float-end btn-sm">
-                Action
-              </Button>
-            )}
+          <AdvanceTable
+            rowData={[]}
+            columnDefs={columnDefs}
+            pagination={true}
+            paginationPageSize={15}
+            paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
+            resetTrigger={resetTrigger}
+            tablethemes="blue"
           />
         </Card.Body>
       </Card>

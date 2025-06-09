@@ -386,7 +386,7 @@ const Index = () => {
     <div>
       <Row>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Division List" cardClass="info">
+          <MainCard title="Division List" cardClass="info default-shadow">
             <RenderList
               list={divisionList}
               setList={setDivisionList}
@@ -399,7 +399,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Employment Type" cardClass="warning">
+          <MainCard title="Employment Type" cardClass="warning default-shadow">
             <RenderList
               list={employmentTypeList}
               setList={setEmploymentTypeList}
@@ -412,7 +412,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Designation List" cardClass="success">
+          <MainCard title="Designation List" cardClass="success default-shadow">
             <RenderList
               list={designationList}
               setList={setDesignationList}
@@ -425,7 +425,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Company List" cardClass="purple">
+          <MainCard title="Company List" cardClass="purple default-shadow">
             <RenderList
               list={organisationList}
               setList={setOrganisationList}
@@ -438,7 +438,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Task Status" cardClass="brown">
+          <MainCard title="Task Status" cardClass="brown default-shadow">
             <RenderList
               list={statusList}
               setList={setStatusList}
@@ -452,7 +452,7 @@ const Index = () => {
         </Col>
 
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Salutation List" cardClass="info">
+          <MainCard title="Salutation List" cardClass="info default-shadow">
             <RenderList
               list={salutationList}
               setList={setSalutationList}
@@ -465,7 +465,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Priority Order List" cardClass="warning">
+          <MainCard title="Priority Order List" cardClass="warning default-shadow">
             <RenderList
               list={priorityList}
               setList={setPriorityList}
@@ -479,7 +479,7 @@ const Index = () => {
         </Col>
 
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Available Projects" cardClass="secondary">
+          <MainCard title="Available Projects" cardClass="secondary default-shadow">
             <div className="px-4 py-2 c-card-body">
               <div className="d-flex justify-content-between">
                 <h6>Title</h6>

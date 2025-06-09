@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ClientSideRowModelModule, ModuleRegistry, NumberFilterModule, PaginationModule, TextFilterModule } from 'ag-grid-community';
 
@@ -10,27 +10,25 @@ import './style.scss';
 
 ModuleRegistry.registerModules([ClientSideRowModelModule, NumberFilterModule, TextFilterModule, PaginationModule]);
 
-const AdvanceTable = ({ tablethemes ,rowData, columnDefs, pagination, paginationPageSize, paginationPageSizeSelector }) => {
+const AdvanceTable = ({ resetTrigger, tablethemes, rowData, columnDefs, pagination, paginationPageSize, paginationPageSizeSelector }) => {
   const { mode } = useTheme();
-  // const [rowData] = useState([
-  //   { name: 'John', age: 24, country: 'USA' },
-  //   { name: 'Anna', age: 30, country: 'Canada' },
-  //   { name: 'Kyle', age: 27, country: 'UK' },
-  //   { name: 'Linda', age: 22, country: 'Germany' },
-  //   { name: 'James', age: 29, country: 'Australia' }
-  // ]);
+  const [gridKey, setGridKey] = useState(0);
 
-  // const columnDefs = [
-  //   { field: 'name', sortable: true, filter: 'agTextColumnFilter', flex: 1 },
-  //   { field: 'age', sortable: true, filter: 'agNumberColumnFilter', flex: 1 },
-  //   { field: 'country', sortable: true, filter: 'agTextColumnFilter', flex: 1 }
-  // ];
+  const importRowData = useMemo(() => rowData, [rowData]);
+  const importColumnDefs = useMemo(() => columnDefs, [columnDefs]);
+
+  useEffect(() => {
+    // Whenever resetTrigger changes, remount grid by changing key
+    setGridKey((k) => k + 1);
+  }, [resetTrigger]);
 
   return (
     <div className={`AG-table ${mode === 'dark' ? 'ag-theme-material-dark' : 'ag-theme-material'}`} style={{ width: '100%' }}>
       <AgGridReact
-        rowData={rowData}
-        columnDefs={columnDefs}
+        className={tablethemes}
+        key={gridKey}
+        rowData={importRowData}
+        columnDefs={importColumnDefs}
         pagination={pagination}
         paginationPageSize={paginationPageSize}
         paginationPageSizeSelector={paginationPageSizeSelector || [5, 10, 20, 50, 100]}

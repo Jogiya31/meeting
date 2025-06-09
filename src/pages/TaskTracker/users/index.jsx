@@ -3,6 +3,7 @@ import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form, Pagina
 import female_i from '../../../assets/images/user/female.jpg';
 import male_i from '../../../assets/images/user/male.jpg';
 import api from '../../../api';
+import refresh from '../../../assets/images/refresh-arrow.png';
 import edit from '../../../assets/images/edit.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { userActions } from '../../../store/user/userSlice';
@@ -27,6 +28,7 @@ const UserList = () => {
   const [designationFilter, setDesignationFilter] = useState([]); // user filter state
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
+  const [resetTrigger, setResetTrigger] = useState(0);
 
   const [genderDataList, setGenderDataList] = useState([
     {
@@ -86,7 +88,7 @@ const UserList = () => {
 
     return (
       <div className="action-column">
-        <Button variant="" size="sm" onClick={handleEdit} title='Edit User'>
+        <Button variant="" size="sm" onClick={handleEdit} title="Edit User">
           <img src={edit} width={20} alt="" />
         </Button>
         <Button
@@ -162,6 +164,9 @@ const UserList = () => {
     }
   ]);
 
+  const triggerReset = () => {
+    setResetTrigger((prev) => prev + 1);
+  };
   const getUserList = () => {
     // Call the GET API to fetch users
     dispatch(userActions.getuserInfo());
@@ -482,7 +487,7 @@ const UserList = () => {
       Dept_id: '',
       Ministry_id: '',
       Assigneddept: '',
-      Email: user.Email,
+      Email: user.Email
     };
 
     Swal.fire({
@@ -537,6 +542,7 @@ const UserList = () => {
             <Button onClick={() => handleShowRegister()} className="m-0 fw-bolder">
               <i className="feather icon-plus"> Add </i>
             </Button>
+            <img src={refresh} alt="" className="img-fluid ml-1 pointer" title="Reset Table" width={30} onClick={() => triggerReset()} />
           </CardSubtitle>
         </Card.Header>
         <Card.Body className="p-3 pt-2 dark-table">
@@ -547,6 +553,8 @@ const UserList = () => {
             paginationPageSize={15}
             paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
             cellRenderer={ActionCellRenderer}
+            resetTrigger={resetTrigger}
+            tablethemes="primary"
           />
         </Card.Body>
       </Card>
