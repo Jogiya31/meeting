@@ -13,6 +13,7 @@ import { userActions } from '../../../store/user/userSlice';
 import { settingsActions } from 'store/settings/settingSlice';
 import { useStore } from '../../../contexts/DataContext';
 import { useTheme } from '../../../contexts/themeContext';
+import CustomPagination from 'components/Table/customPagination';
 
 export default function CollapsibleTable() {
   const Role = localStorage.getItem('role');
@@ -260,8 +261,8 @@ export default function CollapsibleTable() {
   };
 
   const handleSaveClick = () => {
-   console.log('selectedParentRow', selectedParentRow)
-   console.log('selectedRow', selectedRow)
+    console.log('selectedParentRow', selectedParentRow);
+    console.log('selectedRow', selectedRow);
     const payload = {
       MeetingId: Number(selectedParentRow.MeetingId),
       Description: selectedRow.Description,
@@ -375,24 +376,24 @@ export default function CollapsibleTable() {
                         </td>
                         <td>{moment(parent_row.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</td>
                         <td>
-                          <label to="#" className="label total-bg text-white f-12 fw-bolder">
+                          <span to="#" className="count text-c-blue default-text-shadow f-16 fw-bolder">
                             {statusCounts.TotalTasks}
-                          </label>
+                          </span>
                         </td>
                         <td>
-                          <label to="#" className="label pending-bg text-white f-12 fw-bolder">
+                          <span to="#" className="count text-c-yellow default-text-shadow f-16 fw-bolder">
                             {statusCounts.Pending}
-                          </label>
+                          </span>
                         </td>
                         <td>
-                          <label to="#" className="label pending-bg text-white f-12 fw-bolder">
+                          <span to="#" className="count text-c-yellow default-text-shadow f-16 fw-bolder">
                             {statusCounts.Inprogress}
-                          </label>
+                          </span>
                         </td>
                         <td>
-                          <label to="#" className="label completed-bg text-white f-12 fw-bolder">
+                          <span to="#" className="count text-c-green default-text-shadow f-16 fw-bolder">
                             {statusCounts.Completed}
-                          </label>
+                          </span>
                         </td>
 
                         <td className="text-center">
@@ -440,21 +441,27 @@ export default function CollapsibleTable() {
           </Col>
         </Row>
         <Pagination className="custom-pagination">
-          <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="limit">
-            {[5, 10, 25, 50].map((rowsPerPageOption) => (
-              <option key={rowsPerPageOption} value={rowsPerPageOption}>
-                {rowsPerPageOption}
-              </option>
-            ))}
-          </Form.Control>
-          <div className="flex">
-            <Pagination.Prev onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
-            {renderPaginationItems()}
-            <Pagination.Next onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
+          <div className="d-flex align-items-center">
+            Page Limit:
+            <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="text-center limit ml-1">
+              {[5, 10, 25, 50].map((rowsPerPageOption) => (
+                <option key={rowsPerPageOption} value={rowsPerPageOption}>
+                  {rowsPerPageOption}
+                </option>
+              ))}
+            </Form.Control>
+          </div>
+          <div className="d-flex align-items-center">
+            Pages:
+            <div className="flex ml-1">
+              <Pagination.Prev title="Previous Page" onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
+              {renderPaginationItems()}
+              <Pagination.Next title="Next Page" onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
+            </div>
           </div>
         </Pagination>
       </Card>
-      <Modal show={show} onHide={handleClose} animation={true}  backdrop="static" keyboard={false}>
+      <Modal show={show} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Update Details</h5>
@@ -512,7 +519,7 @@ export default function CollapsibleTable() {
         </Modal.Footer>
       </Modal>
 
-      <Modal size="xl" show={showAttendanceList} onHide={handleCloseAttendanceList}  backdrop="static" keyboard={false}>
+      <Modal size="xl" show={showAttendanceList} onHide={handleCloseAttendanceList} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title className="w-100">
             <div className="d-flex justify-content-between ">

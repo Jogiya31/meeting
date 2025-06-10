@@ -96,6 +96,12 @@
       color: $light-color;
     }
     .ag-popup {
+      .ag-menu {
+        background-color: #ffffff;
+        .ag-select {
+          display: none;
+        }
+      }
       .ag-select-list {
         background-color: #ffffff;
         box-shadow: 0 0 15px #524f4f !important;
@@ -191,6 +197,13 @@
       }
     }
     .ag-popup {
+      .ag-menu {
+        .ag-filter-wrapper {
+          .ag-picker-field {
+            display: none !important;
+          }
+        }
+      }
       .ag-select-list {
         background-color: $brand-background !important;
         box-shadow: 0 0 15px #524f4f !important;
@@ -254,4 +267,29 @@
   .filter_table_status {
     font-size: 12px !important;
   }
+}
+
+.ag-paging-panel {
+  display: flex;
+  justify-content: space-between;
+  .ag-paging-row-summary-panel {
+    display: none;
+  }
+}
+
+
+.custom-pagination .page-item .page-link {
+  color: #007bff;
+  padding: 6px 12px;
+  margin: 0 2px;
+}
+
+.custom-pagination .page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.custom-pagination select {
+  padding: 4px;
 }

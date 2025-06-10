@@ -115,6 +115,10 @@
     border-radius: 8px;
   }
 
+  .default-text-shadow {
+    box-shadow: 0 0 15px #524f4f;
+  }
+
   .card {
     background-color: $brand-background;
     color: $dark-layout-font;
@@ -1407,5 +1411,12 @@
         }
       }
     }
+  }
+  .count {
+    padding: 4px 10px;
+    min-height: auto;
+    position: relative;
+    margin-right: 5px;
+    margin-bottom: 5px;
   }
 }

@@ -90,6 +90,65 @@ const menuItems = {
       ]
     },
     {
+      id: 'Tasks',
+      title: 'Task Menu',
+      type: 'group',
+      icon: 'icon-ui',
+      children: [
+        {
+          id: 'task',
+          title: 'Task',
+          type: 'collapse',
+          icon: 'fas fa-handshake',
+          display: true,
+          children: [
+            {
+              id: 'task_list',
+              title: 'Task List',
+              type: 'item',
+              url: '/tasktracker/Task-List',
+              display: true
+            },
+            {
+              id: 'create_taskDependencies',
+              title: 'Create Dependancies',
+              type: 'item',
+              url: '/tasktracker/create-Dependancies',
+              display: true
+            },
+            {
+              id: 'Create_tasks',
+              title: 'Create Task',
+              type: 'item',
+              url: '/tasktracker/create-Task',
+              display: true
+            },
+            // {
+            //   id: 'tasks_Approval',
+            //   title: 'Task Approval',
+            //   type: 'item',
+            //   url: '/tasktracker/Task-Approval',
+            //   display: true
+            // },
+            {
+              id: 'tasks_Assginment',
+              title: 'Task Assignment',
+              type: 'item',
+              url: '/tasktracker/Task-Assignment',
+              display: true
+            },
+            {
+              id: 'create_report',
+              title: 'Report',
+              type: 'item',
+              url: '/tasktracker/Task-Report',
+              display: true
+            }
+          ]
+        }
+      ]
+    },
+    {
       id: 'setting',
       title: 'Settings',
       type: 'group',

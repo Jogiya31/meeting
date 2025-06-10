@@ -197,17 +197,23 @@ function EnhancedTable({
       </Table>
       {enablePagination && (
         <Pagination className="custom-pagination">
-          <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="text-center limit">
-            {[5, 10, 25, 50].map((rowsPerPageOption) => (
-              <option key={rowsPerPageOption} value={rowsPerPageOption}>
-                {rowsPerPageOption}
-              </option>
-            ))}
-          </Form.Control>
-          <div className="flex">
-            <Pagination.Prev title="Previous Page" onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
-            {renderPaginationItems()}
-            <Pagination.Next title="Next Page" onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
+          <div className="d-flex align-items-center">
+            Page Limit:
+            <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="text-center limit ml-1">
+              {[5, 10, 25, 50].map((rowsPerPageOption) => (
+                <option key={rowsPerPageOption} value={rowsPerPageOption}>
+                  {rowsPerPageOption}
+                </option>
+              ))}
+            </Form.Control>
+          </div>
+          <div className="d-flex align-items-center">
+            Pages:
+            <div className="flex ml-1">
+              <Pagination.Prev title="Previous Page" onClick={() => handleChangePage(page - 1)} disabled={page === 0} />
+              {renderPaginationItems()}
+              <Pagination.Next title="Next Page" onClick={() => handleChangePage(page + 1)} disabled={page >= totalPages - 1} />
+            </div>
           </div>
         </Pagination>
       )}

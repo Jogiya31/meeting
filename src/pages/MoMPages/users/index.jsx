@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import { MultiSelect } from 'react-multi-select-component';
 import { useTheme } from '../../../contexts/themeContext';
 import AdvanceTable from '../../../components/Table/advanceTable';
+import { capitalizeWords } from '../../../utils/utils';
 
 const UserList = () => {
   const dispatch = useDispatch();
@@ -28,7 +29,7 @@ const UserList = () => {
   const [designationFilter, setDesignationFilter] = useState([]); // user filter state
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
-   const [resetTrigger, setResetTrigger] = useState(0);
+  const [resetTrigger, setResetTrigger] = useState(0);
 
   const [genderDataList, setGenderDataList] = useState([
     {
@@ -38,6 +39,16 @@ const UserList = () => {
     {
       GenderId: 2,
       GenderTitle: 'Female'
+    }
+  ]);
+  const [userStatus, setUserStatus] = useState([
+    {
+      Status: 1,
+      StatusTitle: 'Active'
+    },
+    {
+      Status: 0,
+      StatusTitle: 'Deactive'
     }
   ]);
 
@@ -52,6 +63,7 @@ const UserList = () => {
     ServiceDate: '',
     Mobile: '',
     Status: 1,
+    Role: 3,
     Gender: '',
     ImgPath: male_i,
     CreatedBy: Role,
@@ -141,6 +153,11 @@ const UserList = () => {
       </div>
     );
   };
+  const UserRoleCellRenderer = (props) => {
+    const { data } = props;
+    const userData = roleDataList?.Result?.filter((item) => String(item.RoleId) === String(data.Role));
+    return <div className="d-flex">{capitalizeWords(userData?.[0]?.Title)}</div>;
+  };
 
   const [columnDefs] = useState([
     { field: 'UserName', sortable: true, filter: true, flex: 1, cellRenderer: UserNameCellRenderer },
@@ -150,6 +167,7 @@ const UserList = () => {
     { field: 'AssociatedOfficer', sortable: true, filter: true, flex: 1 },
     { field: 'OrganisationTitle', sortable: true, filter: true, flex: 1 },
     { field: 'Mobile', sortable: true, filter: true, flex: 1 },
+    { field: 'Role', sortable: true, filter: true, flex: 1, cellRenderer: UserRoleCellRenderer },
     {
       field: 'Status',
       headerName: 'Status',
@@ -268,6 +286,7 @@ const UserList = () => {
       ServiceDate: '',
       Mobile: '',
       Status: 1,
+      Role: 3,
       Gender: '',
       ImgPath: male_i,
       CreatedBy: Role,
@@ -297,10 +316,11 @@ const UserList = () => {
       AssociatedOfficerId: '',
       ServiceDate: '',
       Mobile: '',
-      Status: '',
+      Status: 1,
+      Role: '3',
       Gender: '',
-      ImgPath: '',
-      CreatedBy: '',
+      ImgPath: male_i,
+      CreatedBy: Role,
       PriorityOrderId: '',
       DisplayOrderId: '',
       Group_id: '',
@@ -390,7 +410,8 @@ const UserList = () => {
       serviceDate: formData.ServiceDate || '',
       Mobile: formData.Mobile,
       Gender: formData.Gender,
-      Status: formData.Status,
+      Status: formData.Status || 1,
+      Role: formData.Role || '3',
       ImgPath: formData.ImgPath || '',
       SalutationId: formData.SalutationId || '0',
       PriorityOrderId: formData.PriorityOrderId || '',
@@ -437,7 +458,8 @@ const UserList = () => {
         AssociatedOfficerId: selectedUser.AssociatedOfficerId,
         ServiceDate: selectedUser.ServiceDate || '',
         Mobile: selectedUser.Mobile,
-        Status: selectedUser.Status,
+        Status: selectedUser.Status || 1,
+        Role: selectedUser.Role,
         Gender: selectedUser.Gender,
         ImgPath: selectedUser.ImgPath || '',
         CreatedBy: Role,
@@ -475,6 +497,7 @@ const UserList = () => {
       Mobile: user.Mobile,
       Gender: user.Gender,
       Status: user.Status === '1' ? 0 : 1,
+      Role: user.Role,
       ImgPath: user.ImgPath,
       UserId: user.UserId,
       ModifyBy: Role,
@@ -765,22 +788,20 @@ const UserList = () => {
                   <Form.Control.Feedback type="invalid">{errors.Email}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              {!selectedUser && (
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="Password"
-                      placeholder="Enter password..."
-                      value={formData.Password}
-                      onChange={handleChange}
-                      isInvalid={!!errors.Password}
-                    />
-                    <Form.Control.Feedback type="invalid">{errors.Password}</Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-              )}
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Password"
+                    placeholder="Enter password..."
+                    value={formData.Password}
+                    onChange={handleChange}
+                    isInvalid={!!errors.Password}
+                  />
+                  <Form.Control.Feedback type="invalid">{errors.Password}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
             </Row>
             <Row>
               <Col md={6}>
@@ -806,12 +827,12 @@ const UserList = () => {
                     {Array.isArray(roleDataList?.Result)
                       ? roleDataList.Result.map((item) => (
                           <option key={item.RoleId} value={item.RoleId}>
-                            {item.Title}
+                            {capitalizeWords(item.Title)}
                           </option>
                         ))
                       : Object.values(roleDataList?.Result || {}).map((item) => (
                           <option key={item.RoleId} value={item.RoleId}>
-                            {item.Title}
+                            {capitalizeWords(item.Title)}
                           </option>
                         ))}
                   </Form.Select>
@@ -867,6 +888,24 @@ const UserList = () => {
                     ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{errors.Gender}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Status</Form.Label>
+                  <Form.Select
+                    name="Status"
+                    value={formData.Status}
+                    className="custom-form-select"
+                    onChange={handleChange}
+                    isInvalid={!!errors.Status}
+                  >
+                    <option value="">Select Status...</option>
+                    {userStatus?.map((item) => (
+                      <option value={item.Status}>{item.StatusTitle}</option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{errors.Status}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>

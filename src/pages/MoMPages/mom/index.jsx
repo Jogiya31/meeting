@@ -724,7 +724,7 @@ const NewPoint = () => {
 
                     <Col md={12} className="mt-3">
                       <Accordion defaultActiveKey="1">
-                        <Accordion.Item eventKey="1">
+                        <Accordion.Item eventKey="0">
                           <Accordion.Header className="mb-3">
                             <label className="fs-6 m-0 report-label pointer">Attendance List</label>
                           </Accordion.Header>
