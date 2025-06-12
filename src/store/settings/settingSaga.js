@@ -7,6 +7,7 @@ import {
   AddOrganisationDetails,
   AddPriorityDetails,
   AddProjectDetails,
+  AddProjectDetailsFromTracker,
   AddSalutationDetails,
   AddStatusDetails,
   GetDesignationDetails,
@@ -375,6 +376,26 @@ function* handleAddProjectInfo(data) {
   }
 }
 // Saga function to handle fetching Project information
+function* handleAddProjectInfoFromTracker(data) {
+  try {
+    // Call the API to fetch Project information
+    const response = yield call(AddProjectDetailsFromTracker, data);
+    // Check if the response Project is 200 (OK)
+    if (response.Project === 200) {
+      // If successful, dispatch success action with received data
+      const data = response.data;
+      yield put(settingsActions.addProjectInfoSuccess(data || []));
+    } else {
+      // If response Project is not 200, throw an error
+      throw new Error('Something went wrong');
+    }
+  } catch (error) {
+    // If an error occurs during the process, handle it
+    toast.error(error.message); // Display error message using toast
+    yield put(settingsActions.addProjectInfoFailed(error.message)); // Dispatch failure action
+  }
+}
+// Saga function to handle fetching Project information
 function* handleUpdateProjectInfo(data) {
   try {
     // Call the API to fetch Project information
@@ -562,6 +583,7 @@ export default function* settingsSaga() {
 
   yield takeLatest(settingsActions.getProjectInfo.type, handleProjectInfo);
   yield takeLatest(settingsActions.addProjectInfo.type, handleAddProjectInfo);
+  yield takeLatest(settingsActions.addProjectInfoFromTracker.type, handleAddProjectInfoFromTracker);
   yield takeLatest(settingsActions.updateProjectInfo.type, handleUpdateProjectInfo);
 
   yield takeLatest(settingsActions.getSalutationInfo.type, handleSalutationInfo);

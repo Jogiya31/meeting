@@ -157,7 +157,7 @@ const UserList = () => {
   };
   const UserRoleCellRenderer = (props) => {
     const { data } = props;
-    const userData = roleDataList?.Result.filter((item) => String(item.RoleId) === String(data.Role));
+    const userData = roleDataList?.Result?.filter((item) => String(item.RoleId) === String(data.Role));
     return <div className="d-flex">{capitalizeWords(userData?.[0]?.Title)}</div>;
   };
 

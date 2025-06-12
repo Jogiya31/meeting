@@ -22,15 +22,19 @@ const Index = () => {
   const [salutationList, setSalutationList] = useState([]);
   const [priorityList, setPriorityList] = useState([]);
   const [showProject, setShowProject] = useState(false);
+  const [userData, setUserData] = useState([]);
+  const [projectStartDate, setProjectStartDate] = useState(null);
+  const [projectEndDate, setProjectEndDate] = useState(null);
   const [ProjectformData, setProjectFormData] = useState({
-    projectName: '',
+    ProjectTitle: '',
     projectDescription: '',
-    groupName: '',
-    HOGName: '',
-    HODName: '',
-    technologyStack: '',
-    projectStartDate: null,
-    completionDate: null
+    GroupId: '',
+    HogName: '',
+    HodName: '',
+    Technology: '',
+    ProjectStartDate: null,
+    CompletionDate: null,
+    CreatedBy: Role
   });
   const [projectErrors, setProjectErrors] = useState({});
   const [projectstartDateError, setProjectStartDateError] = useState(false);
@@ -44,6 +48,7 @@ const Index = () => {
   const projectDataList = useSelector((state) => state.settings.projectData);
   const salutationDataList = useSelector((state) => state.settings.salutationData);
   const priorityDataList = useSelector((state) => state.settings.priorityData);
+  const userList = useSelector((state) => state.users.data);
 
   useEffect(() => {
     dispatch(settingsActions.getDesignationInfo());
@@ -139,6 +144,31 @@ const Index = () => {
     salutationDataList,
     priorityDataList
   ]);
+
+  useEffect(() => {
+    if (userList && Array.isArray(userList.Result)) {
+      const updatedData = userList.Result.map((item) => {
+        const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+        const desc = item?.DesignationId?.split(',')
+          .map((id) => getDesignation(id))
+          .join('/ ');
+        return {
+          ...item,
+          AssociatedOfficer: officer ? officer.UserName : '',
+          DesignationTitle: desc
+        };
+      });
+      setUserData(updatedData);
+    } else {
+      setUserData([]); // optional fallback
+    }
+  }, [userList]);
+
+  const getDesignation = (val) => {
+    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
+    const found = data.find((item) => item.DesignationId === val);
+    return found ? found.DesignationTitle : '';
+  };
 
   const handleEdit = (list, setList, id) => {
     Swal.fire({
@@ -334,6 +364,7 @@ const Index = () => {
       projectStartDate: null,
       completionDate: null
     });
+    dispatch(settingsActions.getProjectInfo());
   };
   const handleProjectChange = (e) => {
     const { name, value } = e.target;
@@ -341,19 +372,19 @@ const Index = () => {
   };
   const validateProject = () => {
     let newErrors = {};
-    if (!ProjectformData.projectName) newErrors.projectName = 'Required field.';
+    if (!ProjectformData.ProjectTitle) newErrors.ProjectTitle = 'Required field.';
     if (!ProjectformData.projectDescription) newErrors.projectDescription = 'Required field.';
-    if (!ProjectformData.groupName) newErrors.groupName = 'Required field.';
-    if (!ProjectformData.HOGName) newErrors.HOGName = 'Required field.';
-    if (!ProjectformData.HODName) newErrors.HODName = 'Required field.';
-    if (!ProjectformData.technologyStack) newErrors.technologyStack = 'Required field.';
-    if (!ProjectformData.projectStartDate) {
+    if (!ProjectformData.GroupId) newErrors.GroupId = 'Required field.';
+    if (!ProjectformData.HogName) newErrors.HogName = 'Required field.';
+    if (!ProjectformData.HodName) newErrors.HodName = 'Required field.';
+    if (!ProjectformData.Technology) newErrors.Technology = 'Required field.';
+    if (!ProjectformData.ProjectStartDate) {
       setProjectStartDateError(!projectstartDateError);
-      newErrors.projectStartDate = 'Required field.';
+      newErrors.ProjectStartDate = 'Required field.';
     }
-    if (!ProjectformData.completionDate) {
+    if (!ProjectformData.CompletionDate) {
       setProjectCompletionDateError(!projectCompletionDateError);
-      newErrors.completionDate = 'Required field.';
+      newErrors.CompletionDate = 'Required field.';
     }
     setProjectErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -362,24 +393,27 @@ const Index = () => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectStartDateError(false);
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setProjectFormData({ ...ProjectformData, projectStartDate: formattedDate || '' });
+      setProjectStartDate(date);
+      setProjectFormData({ ...ProjectformData, ProjectStartDate: formattedDate || '' });
     } else {
-      setProjectFormData({ ...ProjectformData, projectStartDate: '' });
+      setProjectFormData({ ...ProjectformData, ProjectStartDate: '' });
     }
   };
   const handleProjectEndDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectCompletionDateError(false);
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setProjectFormData({ ...ProjectformData, completionDate: formattedDate || '' });
+      setProjectEndDate(date);
+      setProjectFormData({ ...ProjectformData, CompletionDate: formattedDate || '' });
     } else {
-      setProjectFormData({ ...ProjectformData, completionDate: '' });
+      setProjectFormData({ ...ProjectformData, CompletionDate: '' });
     }
   };
   const handleSubmitProject = (e) => {
     e.preventDefault();
     if (!validateProject()) return;
-    console.log('ProjectformData', ProjectformData);
+    dispatch(settingsActions.addProjectInfoFromTracker(ProjectformData));
+    handleClose();
   };
 
   return (
@@ -566,13 +600,13 @@ const Index = () => {
                   <Form.Label>Project Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="projectName"
+                    name="ProjectTitle"
                     placeholder="Enter..."
-                    value={ProjectformData.projectName}
+                    value={ProjectformData.ProjectTitle}
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.projectName}
+                    isInvalid={!!projectErrors.ProjectTitle}
                   />
-                  <Form.Control.Feedback type="invalid">{projectErrors.projectName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.ProjectTitle}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -594,48 +628,62 @@ const Index = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Group Name</Form.Label>
                   <Form.Select
-                    name="groupName"
-                    value={ProjectformData.groupName}
+                    name="GroupId"
+                    value={ProjectformData.GroupId}
                     className="custom-form-select"
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.groupName}
+                    isInvalid={!!projectErrors.GroupId}
                   >
-                    <option value="">Select officer...</option>
-                    <option value="1">1</option>
+                    <option value="">Select Group...</option>
+                    {divisionDataList?.Result?.map((item) => (
+                      <option value={item.DivisionId}>{item.DivisionTitle}</option>
+                    ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{projectErrors.groupName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.GroupId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group>
                   <Form.Label>HOG Name</Form.Label>
                   <Form.Select
-                    name="HOGName"
-                    value={ProjectformData.HOGName}
+                    name="HogName"
+                    value={ProjectformData.HogName}
                     className="custom-form-select"
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.HOGName}
+                    isInvalid={!!projectErrors.HogName}
                   >
                     <option value="">Select officer...</option>
-                    <option value="1">1</option>
+                    {userData
+                      .filter((item) => item.DesignationTitle?.includes('HOG'))
+                      .map((item) => (
+                        <option key={item.UserName} value={item.UserId}>
+                          {item.UserName}
+                        </option>
+                      ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{projectErrors.HOGName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.HogName}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>HOD Name</Form.Label>
                   <Form.Select
-                    name="HODName"
-                    value={ProjectformData.HODName}
+                    name="HodName"
+                    value={ProjectformData.HodName}
                     className="custom-form-select"
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.HODName}
+                    isInvalid={!!projectErrors.HodName}
                   >
                     <option value="">Select officer...</option>
-                    <option value="1">1</option>
+                    {userData
+                      .filter((item) => item.DesignationTitle?.includes('HOD'))
+                      .map((item) => (
+                        <option key={item.UserName} value={item.UserId}>
+                          {item.UserName}
+                        </option>
+                      ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{projectErrors.HODName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.HodName}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -643,41 +691,41 @@ const Index = () => {
                   <Form.Label>Technology Stack</Form.Label>
                   <Form.Control
                     type="text"
-                    name="technologyStack"
+                    name="Technology"
                     placeholder="Enter..."
-                    value={ProjectformData.technologyStack}
+                    value={ProjectformData.Technology}
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.technologyStack}
+                    isInvalid={!!projectErrors.Technology}
                   />
-                  <Form.Control.Feedback type="invalid">{projectErrors.technologyStack}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.Technology}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Project Start Date</Form.Label>
                   <DatePicker
-                    selected={ProjectformData.projectStartDate || null}
+                    selected={projectStartDate || null}
                     className={`form-control cfs-14 ${projectstartDateError ? 'is-invalid' : ''}`}
                     onChange={handleProjectStartDate}
                     placeholderText="Start Date"
                     dateFormat="dd-MM-yyyy"
-                    name="projectStartDate"
+                    name="ProjectStartDate"
                   />
-                  {projectstartDateError && <div className="text-danger">{projectErrors.projectStartDate}</div>}
+                  {projectstartDateError && <div className="text-danger">{projectErrors.ProjectStartDate}</div>}
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Completion Date</Form.Label>
                   <DatePicker
-                    selected={ProjectformData.completionDate || null}
+                    selected={projectEndDate || null}
                     className={`form-control cfs-14 ${projectCompletionDateError ? 'is-invalid' : ''}`}
                     onChange={handleProjectEndDate}
                     placeholderText="End Date"
                     dateFormat="dd-MM-yyyy"
-                    name="completionDate"
+                    name="CompletionDate"
                   />
-                  {projectCompletionDateError && <div className="text-danger">{projectErrors.completionDate}</div>}
+                  {projectCompletionDateError && <div className="text-danger">{projectErrors.CompletionDate}</div>}
                 </Form.Group>
               </Col>
             </Row>

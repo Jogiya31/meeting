@@ -1047,6 +1047,8 @@
       color: $dark-layout-font;
       box-shadow: $dark-layout-shadow;
       .dropdown-content {
+        background-color: $brand-background;
+        z-index: 99;
         .panel-content {
           background-color: $brand-background;
           box-shadow: 0 0 4px $dark-layout-shadow !important;

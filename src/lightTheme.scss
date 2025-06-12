@@ -984,6 +984,13 @@
       }
     }
   }
+  .rmsc {
+    .dropdown-container {
+      .dropdown-content {
+        z-index: 99;
+      }
+    }
+  }
 
   .rmsc.custom-form-select .dropdown-container:focus {
     border: 0 !important;

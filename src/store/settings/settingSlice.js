@@ -284,10 +284,15 @@ const settingsSlice = createSlice({
       state.message = action.payload; // Store error message
       state.success = false; // Set success flag to false
     },
+
     // Action to initiate fetching Project information
     addProjectInfo(state) {
       state.loader = true; // Set loader to true while fetching
     },
+    addProjectInfoFromTracker(state) {
+      state.loader = true; // Set loader to true while fetching
+    },
+    
     // Action to handle successful retrieval of Project information
     addProjectInfoSuccess(state, action) {
       state.loader = false; // Set loader to false after fetching

@@ -4,7 +4,8 @@ import settingsSaga from '../store/settings/settingSaga';
 import authSaga from '../store/auth/authSaga';
 import MeetingsSaga from '../store/mom/momSaga';
 import dashboardSaga from '../store/dashboard/dashboardSaga';
-import moduleSaga from '../store/module/module.Saga';
+import moduleSaga from '../store/module/moduleSaga';
+import taskSaga from '../store/task/taskSaga';
 
 /**
  * used to allow a Redux store to interact with resources itself asynchronously
@@ -24,6 +25,9 @@ export default function* rootSaga() {
     // Call and run the userSaga
     MeetingsSaga(),
      // Call and run the userSaga
-    moduleSaga()
+    moduleSaga(),
+     // Call and run the userSaga
+    taskSaga()
+    
   ]);
 }

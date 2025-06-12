@@ -30,7 +30,6 @@ const UserList = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
   const [resetTrigger, setResetTrigger] = useState(0);
-
   const [genderDataList, setGenderDataList] = useState([
     {
       GenderId: 1,
@@ -51,7 +50,6 @@ const UserList = () => {
       StatusTitle: 'Deactive'
     }
   ]);
-
   const [formData, setFormData] = useState({
     SalutationId: '',
     UserName: '',

@@ -1,41 +1,95 @@
-import EnhancedTable from 'components/Table';
 import { useTheme } from '../../../contexts/themeContext';
 import React, { useEffect, useState } from 'react';
 import { Button, Card, CardSubtitle, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import api from '../../../api';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { moduleActions } from '../../../store/module/moduleSlice';
+import { taskActions } from '../../../store/task/taskSlice';
+import AdvanceTable from '../../../components/Table/advanceTable';
+import refresh from '../../../assets/images/refresh-arrow.png';
+import edit from '../../../assets/images/edit.png';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const CreateTask = () => {
+  const { user } = useAuth();
   const dispatch = useDispatch();
   const { mode } = useTheme();
-  const GroupHeaders = [
-    { id: 'projectName', label: 'Project Name', class: '' },
-    { id: 'moduleName', label: 'Module Name', class: '' },
-    { id: 'taskName', label: 'Task Name', class: '' },
-    { id: 'taskDescription', label: 'Task Description', class: '' },
-    { id: 'createdBy', label: 'Created By', class: '' },
-    { id: 'createdAt', label: 'Created At', class: '' }
-  ];
 
   const [showNewTask, setShowNewTask] = useState(false);
   const [taskErrors, setTaskErrors] = useState({});
   const [search, setSearch] = useState('');
   const [TaskformData, setTaskFormData] = useState({
-    projectName: '',
-    moduleName: '',
-    task: '',
-    taskDescription: ''
+    ProjectId: '',
+    ModuleId: '',
+    Task: '',
+    TaskDescription: ''
   });
-
+  const [resetTrigger, setResetTrigger] = useState(0);
+  const [selectedData, setselectedData] = useState(null);
   const projectDataList = useSelector((state) => state.settings.projectData);
   const moduleList = useSelector((state) => state.module.data);
+  const taskList = useSelector((state) => state.task.data);
 
   useEffect(() => {
+    dispatch(
+      taskActions.getTaskInfo({
+        ProjectId: '',
+        ModuleId: '',
+        Status: '',
+        UserId: '',
+        StartDate: '',
+        EndDate: '',
+        GroupId: ''
+      })
+    );
     dispatch(settingsActions.getProjectInfo());
     dispatch(moduleActions.getModuleInfo());
   }, []);
+
+  const handleEdit = (data) => {
+    setselectedData(data);
+    setShowNewTask(true);
+  };
+
+  const ActionCellRenderer = (props) => {
+    const { data } = props;
+    return (
+      <div className="action-column">
+        <Button variant="" size="sm" onClick={() => handleEdit(data)} title="Edit User">
+          <img src={edit} width={20} alt="" />
+        </Button>
+      </div>
+    );
+  };
+
+  const [columnDefs] = useState([
+    { field: 'ProjectTitle', sortable: true, filter: true, flex: 1 },
+    { field: 'ModuleName', sortable: true, filter: true, flex: 1 },
+    { field: 'Task', sortable: true, filter: true, flex: 1 },
+    { field: 'Description', sortable: true, filter: true, flex: 1 },
+    { field: 'StartDate', sortable: true, filter: true, flex: 1 },
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      flex: 1,
+      cellRenderer: ActionCellRenderer
+    }
+  ]);
+
+  useEffect(() => {
+    if (selectedData) {
+      const updatedFormData = {
+        ...TaskformData,
+        ProjectId: selectedData.ProjectId,
+        ModuleId: selectedData.ModuleId,
+        Task: selectedData.Task,
+        TaskDescription: selectedData.Description
+      };
+      setTaskFormData(updatedFormData);
+    }
+  }, [selectedData]);
 
   const handleClose = () => {
     setShowNewTask(false);
@@ -46,6 +100,7 @@ const CreateTask = () => {
       task: '',
       taskDescription: ''
     });
+    setselectedData(null);
   };
 
   const handleTaskChange = (e) => {
@@ -54,21 +109,57 @@ const CreateTask = () => {
   };
   const validateTasks = () => {
     let newErrors = {};
-    if (!TaskformData.projectName) newErrors.projectName = 'Required field.';
-    if (!TaskformData.moduleName) newErrors.moduleName = 'Required field.';
-    if (!TaskformData.task) newErrors.task = 'Required field.';
-    if (!TaskformData.taskDescription) newErrors.taskDescription = 'Required field.';
+    if (!TaskformData.ProjectId) newErrors.ProjectId = 'Required field.';
+    if (!TaskformData.ModuleId) newErrors.ModuleId = 'Required field.';
+    if (!TaskformData.Task) newErrors.Task = 'Required field.';
+    if (!TaskformData.TaskDescription) newErrors.TaskDescription = 'Required field.';
     setTaskErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleSubmitGroup = (e) => {
+  const handleSubmitTask = (e) => {
     e.preventDefault();
     if (!validateTasks()) return;
-    console.log('TaskformData', TaskformData);
+
+    const finalPayload = {
+      ProjectId: TaskformData.ProjectId,
+      ModuleId: TaskformData.ModuleId,
+      Task: TaskformData.Task,
+      TaskDescription: TaskformData.TaskDescription
+    };
+
+    if (selectedData) {
+      finalPayload.DiscussionId = selectedData.DiscussionId;
+      finalPayload.ModifyBy = user.UserName;
+      finalPayload.Status = selectedData.Status;
+    } else {
+      finalPayload.CreatedBy = user.UserName;
+    }
+    const endpoint = selectedData ? '/Update_Task' : '/Save_Task';
+    api
+      .post(endpoint, finalPayload)
+      .then(() => {
+        handleClose();
+        setShowNewTask(false);
+        dispatch(
+          taskActions.getTaskInfo({
+            ProjectId: '',
+            ModuleId: '',
+            Status: '',
+            UserId: '',
+            StartDate: '',
+            EndDate: '',
+            GroupId: ''
+          })
+        );
+      })
+      .catch((err) => console.error('Error saving user:', err));
   };
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
     setPage(0); // Reset page when search is modified
+  };
+  const triggerReset = () => {
+    setResetTrigger((prev) => prev + 1);
   };
 
   return (
@@ -87,20 +178,18 @@ const CreateTask = () => {
             <Button onClick={() => setShowNewTask(true)} className="m-0 fw-bolder">
               <i className="feather icon-plus"> Add </i>
             </Button>
+            <img src={refresh} alt="" className="img-fluid ml-1 pointer" title="Reset Table" width={30} onClick={() => triggerReset()} />
           </CardSubtitle>
         </Card.Header>
         <Card.Body className="p-3 pt-0 dark-table">
-          <EnhancedTable
-            data={[]}
-            headers={GroupHeaders}
-            headerCss="info"
-            enableSno
-            enablePagination
-            rowactions={(row) => (
-              <Button variant="primary" className="float-end btn-sm">
-                Action
-              </Button>
-            )}
+          <AdvanceTable
+            rowData={taskList?.Result || []}
+            columnDefs={columnDefs}
+            pagination={true}
+            paginationPageSize={15}
+            paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
+            resetTrigger={resetTrigger}
+            tablethemes="blue"
           />
         </Card.Body>
       </Card>
@@ -115,17 +204,17 @@ const CreateTask = () => {
           </span>
         </Modal.Header>
         <Modal.Body className={mode}>
-          <Form noValidate onSubmit={handleSubmitGroup}>
+          <Form noValidate onSubmit={handleSubmitTask}>
             <Row>
               <Col md={12}>
                 <Form.Group className="mb-3">
                   <Form.Label>Project Name</Form.Label>
                   <Form.Select
-                    name="projectName"
-                    value={TaskformData.projectName}
+                    name="ProjectId"
+                    value={TaskformData.ProjectId}
                     className="custom-form-select"
                     onChange={handleTaskChange}
-                    isInvalid={!!taskErrors.projectName}
+                    isInvalid={!!taskErrors.ProjectId}
                   >
                     <option value="">Select project...</option>
                     {Array.isArray(projectDataList?.Result)
@@ -142,25 +231,25 @@ const CreateTask = () => {
                             </option>
                           ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{taskErrors.projectName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{taskErrors.ProjectId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={12}>
                 <Form.Group className="mb-3">
                   <Form.Label>Module Name</Form.Label>
                   <Form.Select
-                    name="moduleName"
-                    value={TaskformData.moduleName}
+                    name="ModuleId"
+                    value={TaskformData.ModuleId}
                     className="custom-form-select"
                     onChange={handleTaskChange}
-                    isInvalid={!!taskErrors.moduleName}
+                    isInvalid={!!taskErrors.ModuleId}
                   >
                     <option value="">Select Module...</option>
                     {moduleList?.Result?.map((item) => (
-                      <option value={item.ModuleName}>{item.ModuleName}</option>
+                      <option value={item.ModuleId}>{item.ModuleName}</option>
                     ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{taskErrors.moduleName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{taskErrors.ModuleId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={12}>
@@ -168,13 +257,13 @@ const CreateTask = () => {
                   <Form.Label>Task</Form.Label>
                   <Form.Control
                     type="text"
-                    name="task"
+                    name="Task"
                     placeholder="Enter..."
-                    value={TaskformData.task}
+                    value={TaskformData.Task}
                     onChange={handleTaskChange}
-                    isInvalid={!!taskErrors.task}
+                    isInvalid={!!taskErrors.Task}
                   />
-                  <Form.Control.Feedback type="invalid">{taskErrors.task}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{taskErrors.Task}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={12}>
@@ -182,18 +271,17 @@ const CreateTask = () => {
                   <Form.Label>Task Description</Form.Label>
                   <Form.Control
                     as="textarea"
-                    value={TaskformData.taskDescription}
+                    value={TaskformData.TaskDescription}
                     rows={1}
-                    name="taskDescription"
+                    name="TaskDescription"
                     placeholder="Enter text here.."
                     onChange={handleTaskChange}
-                    isInvalid={!!taskErrors.taskDescription}
+                    isInvalid={!!taskErrors.TaskDescription}
                   />
-                  <Form.Control.Feedback type="invalid">{taskErrors.taskDescription}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{taskErrors.TaskDescription}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
-
             <div className="d-flex justify-content-end mt-2">
               <Button variant="primary" type="submit">
                 Submit

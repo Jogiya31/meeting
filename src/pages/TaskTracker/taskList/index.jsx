@@ -4,26 +4,26 @@ import pdf_i from '../../../assets/images/pdf_i.svg';
 import print_i from '../../../assets/images/print_i.svg';
 import refresh from '../../../assets/images/refresh-arrow.png';
 import DatePicker from 'react-datepicker';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { userActions } from '../../../store/user/userSlice';
 import { moduleActions } from '../../../store/module/moduleSlice';
 import { MultiSelect } from 'react-multi-select-component';
 import './style.scss';
 import AdvanceTable from '../../../components/Table/advanceTable';
+import { taskActions } from '../../../store/task/taskSlice';
 
 const TaskList = () => {
   const dispatch = useDispatch();
 
   const [filterPayload, setFilterPayload] = useState({
-    GroupId: '',
     ProjectId: '',
     ModuleId: '',
-    StatusId: '',
+    Status: '',
     UserId: '',
-    startDate: '',
-    endDate: ''
+    StartDate: '',
+    EndDate: '',
+    GroupId: ''
   });
   const [groupOption, setGroupOption] = useState([]);
   const [projectOption, setProjectOption] = useState([]);
@@ -42,8 +42,10 @@ const TaskList = () => {
   const statusLists = useSelector((state) => state.settings.statusData);
   const userList = useSelector((state) => state.users.data);
   const moduleList = useSelector((state) => state.module.data);
+  const taskList = useSelector((state) => state.task.data);
 
   useEffect(() => {
+    dispatch(taskActions.getTaskInfo(filterPayload));
     dispatch(settingsActions.getDivisionInfo());
     dispatch(settingsActions.getProjectInfo());
     dispatch(settingsActions.getStatusInfo());
@@ -240,14 +242,14 @@ const TaskList = () => {
   };
 
   const [columnDefs] = useState([
-    { field: 'projectName', sortable: true, filter: true, flex: 1 },
-    { field: 'moduleName', sortable: true, filter: true, flex: 1 },
-    { field: 'taskName', sortable: true, filter: true, flex: 1 },
-    { field: 'taskDescription', sortable: true, filter: true, flex: 1 },
-    { field: 'assignedDate', sortable: true, filter: true, flex: 1 },
-    { field: 'status', sortable: true, filter: true, flex: 1 },
-    { field: 'assignedTo', sortable: true, filter: true, flex: 1 },
-    { field: 'userRemarks', flex: 1 }
+    { field: 'ProjectTitle', sortable: true, filter: true, flex: 1 },
+    { field: 'ModuleName', sortable: true, filter: true, flex: 1 },
+    { field: 'Task', sortable: true, filter: true, flex: 1 },
+    { field: 'Description', sortable: true, filter: true, flex: 1 },
+    { field: 'StartDate', sortable: true, filter: true, flex: 1 },
+    { field: 'Status', sortable: true, filter: true, flex: 1 },
+    { field: 'AssignTo', sortable: true, filter: true, flex: 1 },
+    { field: 'Remark', flex: 1 }
   ]);
 
   const triggerReset = () => {
@@ -276,7 +278,6 @@ const TaskList = () => {
       setFilterPayload({ ...filterPayload, endDate: '' });
     }
   };
-
   return (
     <div>
       <Card className="Recent-Users widget-focus-lg header-info default-shadow">
@@ -388,7 +389,7 @@ const TaskList = () => {
         </Card.Header>
         <Card.Body className="p-3 pt-0 dark-table">
           <AdvanceTable
-            rowData={[]}
+            rowData={taskList?.Result || []}
             columnDefs={columnDefs}
             pagination={true}
             paginationPageSize={15}

@@ -5,6 +5,7 @@ import authReducer from '../store/auth/authrSlice';
 import meetingsReducer from '../store/mom/momSlice';
 import dashboardReducer from '../store/dashboard/dashboardSlice';
 import moduleReducer from '../store/module/moduleSlice';
+import taskReducer from '../store/task/taskSlice';
 /**
  * here we combine all pages reducer for gets update redux state
  **/
@@ -21,7 +22,9 @@ const rootReducer = combineReducers({
   // Reducer for managing meetings
   meetings: meetingsReducer,
   // Reducer for managing Module
-  module: moduleReducer
+  module: moduleReducer,
+  // Reducer for managing Task
+  task: taskReducer
 });
 
 // Export the combined rootReducer

@@ -306,9 +306,10 @@ export default function CollapsibleTable() {
       };
     });
   };
+
   const getDesignation = (val) => {
     const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
-    const found = data.find((item) => item.DesignationId === val);
+    const found = data.find((item) => String(item.DesignationId) === String(val));
     return found ? found.DesignationTitle : '';
   };
 
@@ -381,12 +382,12 @@ export default function CollapsibleTable() {
                           </span>
                         </td>
                         <td>
-                          <span to="#" className="count text-c-yellow default-text-shadow f-16 fw-bolder">
+                          <span to="#" className="count text-c-brown default-text-shadow f-16 fw-bolder">
                             {statusCounts.Pending}
                           </span>
                         </td>
                         <td>
-                          <span to="#" className="count text-c-yellow default-text-shadow f-16 fw-bolder">
+                          <span to="#" className="count text-c-brown default-text-shadow f-16 fw-bolder">
                             {statusCounts.Inprogress}
                           </span>
                         </td>

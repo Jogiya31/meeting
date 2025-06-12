@@ -4,44 +4,52 @@ import { Button, Col, Form, Modal, Nav, Row, Tab } from 'react-bootstrap';
 import { useTheme } from '../../../contexts/themeContext';
 import EnhancedTable from '../../../components/Table';
 import DatePicker from 'react-datepicker';
+import edit from '../../../assets/images/edit.png';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { userActions } from '../../../store/user/userSlice';
 import { moduleActions } from '../../../store/module/moduleSlice';
 import { useAuth } from '../../../contexts/AuthContext';
+import api from '../../../api';
 const CreateDependencies = () => {
   const dispatch = useDispatch();
-  const { role } = useAuth();
+  const { user } = useAuth();
   const { mode } = useTheme();
 
   const [userdata, setUserData] = useState([]);
-  const [showGroup, setShowGroup] = useState(false);
+  const [showDivision, setShowDivision] = useState(false);
   const [showProject, setShowProject] = useState(false);
   const [showModule, setShowModule] = useState(false);
-  const [groupErrors, setGroupErrors] = useState({});
+  const [divisionErrors, setDivisionErrors] = useState({});
   const [moduleErrors, setModuleErrors] = useState({});
   const [projectErrors, setProjectErrors] = useState({});
-  const [groupstartDateError, setGroupStartDateError] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+  const [currSelectedData, setCurrSelectedData] = useState('');
   const [projectstartDateError, setProjectStartDateError] = useState(false);
   const [projectCompletionDateError, setProjectCompletionDateError] = useState(false);
-  const [GroupformData, setGroupFormData] = useState({
-    groupName: '',
-    groupStartDate: null,
-    groupDescription: ''
+  const [projectData, setprojectData] = useState([]);
+
+  const [DivisionformData, setDivisionFormData] = useState({
+    DivisionTitle: '',
+    CreatedBy: user.UserName,
+    Description: '',
+    Status: '1'
   });
   const [ProjectformData, setProjectFormData] = useState({
-    projectName: '',
-    projectDescription: '',
-    groupName: '',
-    HOGName: '',
-    HODName: '',
-    technologyStack: '',
-    projectStartDate: null,
-    completionDate: null
+    ProjectTitle: '',
+    ProjectDescription: '',
+    DivisionId: '',
+    HogName: '',
+    HodName: '',
+    Technology: '',
+    ProjectStartDate: '',
+    CompletionDate: '',
+    CreatedBy: user.UserName
   });
   const [ModuleformData, setModuleFormData] = useState({
-    projectName: '',
-    moduleName: '',
-    moduleDescription: ''
+    ModuleName: '',
+    ProjectId: '',
+    ModuleDescription: '',
+    CreatedBy: user.UserName
   });
 
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -60,8 +68,8 @@ const CreateDependencies = () => {
 
   useEffect(() => {
     if (userList && Array.isArray(userList.Result)) {
-      const updatedData = userList.Result.map((item) => {
-        const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+      const updatedData = userList?.Result.map((item) => {
+        const officer = userList?.Result.find((user) => user.UserId === item.AssociatedOfficerId);
         const desc = item?.DesignationId?.split(',')
           .map((id) => getDesignation(id))
           .join('/ ');
@@ -75,7 +83,24 @@ const CreateDependencies = () => {
     } else {
       setUserData([]); // optional fallback
     }
-  }, [userList, designationDataList]);
+
+    if (projectDataList && Array.isArray(projectDataList.Result)) {
+      const updatedData = projectDataList?.Result?.map((item) => {
+        const officerHOD = userList?.Result.find((user) => String(user.UserId) === String(item.HODName));
+        const officerHOG = userList?.Result.find((user) => String(user.UserId) === String(item.HOGName));
+        return {
+          ...item,
+          HODName: officerHOD?.UserName,
+          HODId: officerHOD?.UserId,
+          HOGName: officerHOG?.UserName,
+          HOGId: officerHOG?.UserId
+        };
+      });
+      setprojectData(updatedData || []);
+    } else {
+      setprojectData([]);
+    }
+  }, [userList, designationDataList, projectDataList]);
 
   const getDesignation = (val) => {
     const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
@@ -83,19 +108,18 @@ const CreateDependencies = () => {
     return found ? found.DesignationTitle : '';
   };
 
-  const GroupHeaders = [
-    { id: 'DivisionTitle', label: 'Group Name', class: '' },
-    { id: 'groupDescription', label: 'Group Description', class: '' },
-    { id: 'groupStartDate', label: 'group Start Date', class: '' }
+  const DivisionHeaders = [
+    { id: 'DivisionTitle', label: 'Division Name', class: '' },
+    { id: 'Description', label: 'Division Description', class: '' }
   ];
 
   const ProjectHeaders = [
     { id: 'ProjectTitle', label: 'Project Name', class: '' },
-    { id: 'projectDescription', label: 'Project Description', class: '' },
-    { id: 'groupName', label: 'Group Name', class: '' },
-    { id: 'hodName', label: 'HOD Name', class: '' },
-    { id: 'hogName', label: 'HOG Name', class: '' },
-    { id: 'technologyStack', label: 'Technology Stack', class: '' }
+    { id: 'ProjectDescription', label: 'Project Description', class: '' },
+    { id: 'groupName', label: 'Division Name', class: '' },
+    { id: 'HODName', label: 'HOD Name', class: '' },
+    { id: 'HOGName', label: 'HOG Name', class: '' },
+    { id: 'Technology', label: 'Technology Stack', class: '' }
   ];
 
   const ModuleHeaders = [
@@ -107,69 +131,63 @@ const CreateDependencies = () => {
   ];
 
   const handleClose = () => {
-    setShowGroup(false);
+    setShowDivision(false);
     setShowProject(false);
     setShowModule(false);
-    setGroupFormData({ groupName: '', groupStartDate: '', groupDescription: '' });
     setProjectFormData({
-      projectName: '',
-      projectDescription: '',
-      groupName: '',
-      HOGName: '',
-      HODName: '',
-      technologyStack: '',
-      projectStartDate: null,
-      completionDate: null
+      ProjectTitle: '',
+      ProjectDescription: '',
+      DivisionId: '',
+      HogName: '',
+      HodName: '',
+      Technology: '',
+      ProjectStartDate: '',
+      CompletionDate: '',
+      CreatedBy: user.UserName
     });
-    setGroupFormData({
-      groupName: '',
-      groupStartDate: null,
-      groupDescription: ''
+    setDivisionFormData({
+      DivisionTitle: '',
+      CreatedBy: user.UserName,
+      Description: '',
+      Status: '1'
     });
     setModuleFormData({
       projectName: '',
       moduleName: '',
       moduleDescription: ''
     });
-    setGroupErrors({});
+    setDivisionErrors({});
     setProjectErrors({});
     setModuleErrors({});
-    setGroupStartDateError(false);
     setProjectStartDateError(false);
     setProjectCompletionDateError(false);
+    setSelectedData(null);
+    setCurrSelectedData('');
   };
 
-  const handleGroupChange = (e) => {
+  const handleDivisionChange = (e) => {
     const { name, value } = e.target;
-    console.log('first', name, value);
-    setGroupFormData({ ...GroupformData, [name]: value });
+    setDivisionFormData({ ...DivisionformData, [name]: value });
   };
-  const validateGroup = () => {
+  const validateDivision = () => {
     let newErrors = {};
-    if (!GroupformData.groupName) newErrors.groupName = 'Required field.';
-    if (!GroupformData.groupStartDate) {
-      setGroupStartDateError(!groupstartDateError);
-      newErrors.groupStartDate = 'Required field.';
-    }
-    if (!GroupformData.groupDescription) newErrors.groupDescription = 'Required field.';
-    setGroupErrors(newErrors);
-
-    console.log('newErrors', newErrors);
+    if (!DivisionformData.DivisionTitle) newErrors.DivisionTitle = 'Required field.';
+    if (!DivisionformData.Description) newErrors.Description = 'Required field.';
+    setDivisionErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleGroupDate = (date) => {
-    if (date instanceof Date && !isNaN(date)) {
-      const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setGroupStartDateError(false);
-      setGroupFormData({ ...GroupformData, groupStartDate: formattedDate });
-    } else {
-      setGroupFormData({ ...GroupformData, groupStartDate: '' });
-    }
-  };
-  const handleSubmitGroup = (e) => {
+  const handleSubmitDivision = (e) => {
     e.preventDefault();
-    if (!validateGroup()) return;
-    console.log('GroupformData', GroupformData);
+    if (!validateDivision()) return;
+
+    const endpoint = selectedData ? '/Update_Division' : '/Save_Division';
+    api
+      .post(endpoint, DivisionformData)
+      .then(() => {
+        dispatch(settingsActions.getDivisionInfo());
+      })
+      .catch((err) => console.error('Error saving user:', err));
+    handleClose();
   };
 
   const handleProjectChange = (e) => {
@@ -178,19 +196,19 @@ const CreateDependencies = () => {
   };
   const validateProject = () => {
     let newErrors = {};
-    if (!ProjectformData.projectName) newErrors.projectName = 'Required field.';
-    if (!ProjectformData.projectDescription) newErrors.projectDescription = 'Required field.';
-    if (!ProjectformData.groupName) newErrors.groupName = 'Required field.';
-    if (!ProjectformData.HOGName) newErrors.HOGName = 'Required field.';
-    if (!ProjectformData.HODName) newErrors.HODName = 'Required field.';
-    if (!ProjectformData.technologyStack) newErrors.technologyStack = 'Required field.';
-    if (!ProjectformData.projectStartDate) {
+    if (!ProjectformData.ProjectTitle) newErrors.ProjectTitle = 'Required field.';
+    if (!ProjectformData.ProjectDescription) newErrors.ProjectDescription = 'Required field.';
+    if (!ProjectformData.DivisionId) newErrors.DivisionId = 'Required field.';
+    if (!ProjectformData.HogName) newErrors.HogName = 'Required field.';
+    if (!ProjectformData.HodName) newErrors.HodName = 'Required field.';
+    if (!ProjectformData.Technology) newErrors.Technology = 'Required field.';
+    if (!ProjectformData.ProjectStartDate) {
       setProjectStartDateError(!projectstartDateError);
-      newErrors.projectStartDate = 'Required field.';
+      newErrors.ProjectStartDate = 'Required field.';
     }
-    if (!ProjectformData.completionDate) {
+    if (!ProjectformData.CompletionDate) {
       setProjectCompletionDateError(!projectCompletionDateError);
-      newErrors.completionDate = 'Required field.';
+      newErrors.CompletionDate = 'Required field.';
     }
     setProjectErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -199,24 +217,31 @@ const CreateDependencies = () => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectStartDateError(false);
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setProjectFormData({ ...ProjectformData, projectStartDate: formattedDate || '' });
+      setProjectFormData({ ...ProjectformData, ProjectStartDate: formattedDate || '' });
     } else {
-      setProjectFormData({ ...ProjectformData, projectStartDate: '' });
+      setProjectFormData({ ...ProjectformData, ProjectStartDate: '' });
     }
   };
   const handleProjectEndDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectCompletionDateError(false);
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setProjectFormData({ ...ProjectformData, completionDate: formattedDate || '' });
+      setProjectFormData({ ...ProjectformData, CompletionDate: formattedDate || '' });
     } else {
-      setProjectFormData({ ...ProjectformData, completionDate: '' });
+      setProjectFormData({ ...ProjectformData, CompletionDate: '' });
     }
   };
   const handleSubmitProject = (e) => {
     e.preventDefault();
     if (!validateProject()) return;
-    console.log('ProjectformData', ProjectformData);
+    const endpoint = selectedData ? '/Update_NewTMProject' : '/Save_NewTMProject';
+    api
+      .post(endpoint, ProjectformData)
+      .then(() => {
+        dispatch(settingsActions.getProjectInfo());
+      })
+      .catch((err) => console.error('Error saving user:', err));
+    handleClose();
   };
 
   const handleModuleChange = (e) => {
@@ -225,24 +250,67 @@ const CreateDependencies = () => {
   };
   const validateModule = () => {
     let newErrors = {};
-    if (!ModuleformData.projectName) newErrors.projectName = 'Required field.';
-    if (!ModuleformData.moduleDescription) newErrors.moduleDescription = 'Required field.';
-    if (!ModuleformData.moduleName) newErrors.moduleName = 'Required field.';
+    if (!ModuleformData.ModuleName) newErrors.ModuleName = 'Required field.';
+    if (!ModuleformData.ModuleDescription) newErrors.ModuleDescription = 'Required field.';
+    if (!ModuleformData.ProjectId) newErrors.ProjectId = 'Required field.';
     setModuleErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   const handleSubmitModule = (e) => {
     e.preventDefault();
     if (!validateModule()) return;
-    const Payload = {
-      ModuleName: ModuleformData.moduleName,
-      ProjectId: ModuleformData.projectName,
-      ModuleDescription: ModuleformData.moduleDescription,
-      CreatedBy: role
-    };
-    dispatch(moduleActions.addModuleInfo(Payload));
+    const endpoint = selectedData ? '/Update_Module' : '/Save_Module';
+    api
+      .post(endpoint, ModuleformData)
+      .then(() => {
+        dispatch(moduleActions.getModuleInfo());
+      })
+      .catch((err) => console.error('Error saving user:', err));
     handleClose();
   };
+
+  useEffect(() => {
+    if (currSelectedData === 'division') {
+      const updatedFormData = {
+        DivisionId: selectedData.DivisionId,
+        DivisionTitle: selectedData.DivisionTitle,
+        ModifyBy: user.UserName,
+        Description: selectedData.Description,
+        Status: selectedData.Status
+      };
+      setDivisionFormData(updatedFormData);
+      setShowDivision(true);
+    }
+    if (currSelectedData === 'project') {
+      const updatedFormData = {
+        ProjectId: selectedData.ProjectId,
+        ProjectTitle: selectedData.ProjectTitle,
+        ProjectDescription: selectedData.ProjectDescription,
+        DivisionId: selectedData.DivisionId,
+        HogName: selectedData.HOGId,
+        HodName: selectedData.HODId,
+        Technology: selectedData.Technology,
+        ProjectStartDate: selectedData.ProjectStartDate,
+        CompletionDate: selectedData.CompletionDate,
+        Status: selectedData.Status,
+        ModifyBy: user.UserName
+      };
+      setProjectFormData(updatedFormData);
+      setShowProject(true);
+    }
+    if (currSelectedData === 'module') {
+      const updatedData = {
+        ModuleId: selectedData.ModuleId,
+        ModuleName: selectedData.ModuleName,
+        ProjectId: selectedData.ProjectId,
+        ModuleDescription: selectedData.ModuleDescription,
+        ModifyBy: user.UserName,
+        Status: selectedData.Status
+      };
+      setModuleFormData(updatedData);
+      setShowModule(true);
+    }
+  }, [selectedData]);
 
   return (
     <div>
@@ -253,7 +321,7 @@ const CreateDependencies = () => {
               <Col sm={2}>
                 <Nav variant="pills" className="flex-column default-shadow">
                   <Nav.Item>
-                    <Nav.Link eventKey="group">Group</Nav.Link>
+                    <Nav.Link eventKey="group">Division</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="project">Projects</Nav.Link>
@@ -268,17 +336,29 @@ const CreateDependencies = () => {
                   <Tab.Pane eventKey="group">
                     <div>
                       <div className="w-full d-flex justify-content-end">
-                        <Button className="" onClick={() => setShowGroup(true)}>
+                        <Button className="" onClick={() => setShowDivision(true)}>
                           Add New
                         </Button>
                       </div>
                       <div className="dark-table">
                         <EnhancedTable
                           data={divisionDataList.Result || []}
-                          headers={GroupHeaders}
+                          headers={DivisionHeaders}
                           headerCss="info"
                           enablePagination
                           enableSno
+                          rowactions={(row) => (
+                            <Button
+                              variant=""
+                              size="sm"
+                              onClick={() => {
+                                setSelectedData(row), setCurrSelectedData('division');
+                              }}
+                              title="Edit"
+                            >
+                              <img src={edit} width={20} alt="" />
+                            </Button>
+                          )}
                         />
                       </div>
                     </div>
@@ -292,11 +372,23 @@ const CreateDependencies = () => {
                       </div>
                       <div className="dark-table">
                         <EnhancedTable
-                          data={projectDataList.Result || []}
+                          data={projectData || []}
                           headers={ProjectHeaders}
                           headerCss="info"
                           enablePagination
                           enableSno
+                          rowactions={(row) => (
+                            <Button
+                              variant=""
+                              size="sm"
+                              onClick={() => {
+                                setSelectedData(row), setCurrSelectedData('project');
+                              }}
+                              title="Edit"
+                            >
+                              <img src={edit} width={20} alt="" />
+                            </Button>
+                          )}
                         />
                       </div>
                     </div>
@@ -309,7 +401,24 @@ const CreateDependencies = () => {
                         </Button>
                       </div>
                       <div className="dark-table">
-                        <EnhancedTable data={moduleList.Result || []} headers={ModuleHeaders} headerCss="info" enablePagination />
+                        <EnhancedTable
+                          data={moduleList.Result || []}
+                          headers={ModuleHeaders}
+                          headerCss="info"
+                          enablePagination
+                          rowactions={(row) => (
+                            <Button
+                              variant=""
+                              size="sm"
+                              onClick={() => {
+                                setSelectedData(row), setCurrSelectedData('module');
+                              }}
+                              title="Edit"
+                            >
+                              <img src={edit} width={20} alt="" />
+                            </Button>
+                          )}
+                        />
                       </div>
                     </div>
                   </Tab.Pane>
@@ -319,10 +428,10 @@ const CreateDependencies = () => {
           </Tab.Container>
         </Col>
       </Row>
-      <Modal size="md" show={showGroup} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+      <Modal size="md" show={showDivision} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
-            <h5>Add Group</h5>
+            <h5>Add Division</h5>
           </Modal.Title>
           <span className="pointer" onClick={handleClose}>
             {' '}
@@ -330,50 +439,35 @@ const CreateDependencies = () => {
           </span>
         </Modal.Header>
         <Modal.Body className={mode}>
-          <Form noValidate onSubmit={handleSubmitGroup}>
+          <Form noValidate onSubmit={handleSubmitDivision}>
             <Row>
               <Col md={12}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Group Name</Form.Label>
+                  <Form.Label>Division Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="groupName"
+                    name="DivisionTitle"
                     placeholder="Enter..."
-                    value={GroupformData.groupName}
-                    onChange={handleGroupChange}
-                    isInvalid={!!groupErrors.groupName}
+                    value={DivisionformData.DivisionTitle}
+                    onChange={handleDivisionChange}
+                    isInvalid={!!divisionErrors.DivisionTitle}
                   />
-                  <Form.Control.Feedback type="invalid">{groupErrors.groupName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{divisionErrors.DivisionTitle}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={12}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Group Start Date</Form.Label>
-                  <DatePicker
-                    selected={GroupformData.groupStartDate || null}
-                    className={`form-control cfs-14 ${groupstartDateError ? 'is-invalid' : ''}`}
-                    onChange={handleGroupDate}
-                    placeholderText="Start Date"
-                    dateFormat="dd-MM-yyyy"
-                    name="groupStartDate"
-                  />
-
-                  {groupstartDateError && <div className="text-danger">{groupErrors.groupStartDate}</div>}
-                </Form.Group>
-              </Col>
-              <Col md={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Group Description</Form.Label>
+                  <Form.Label>Description</Form.Label>
                   <Form.Control
                     as="textarea"
-                    value={GroupformData.groupDescription}
+                    value={DivisionformData.Description}
                     rows={1}
-                    name="groupDescription"
+                    name="Description"
                     placeholder="Enter text here.."
-                    onChange={handleGroupChange}
-                    isInvalid={!!groupErrors.groupDescription}
+                    onChange={handleDivisionChange}
+                    isInvalid={!!divisionErrors.Description}
                   />
-                  <Form.Control.Feedback type="invalid">{groupErrors.groupDescription}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{divisionErrors.Description}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
@@ -407,13 +501,13 @@ const CreateDependencies = () => {
                   <Form.Label>Project Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="projectName"
+                    name="ProjectTitle"
                     placeholder="Enter..."
-                    value={ProjectformData.projectName}
+                    value={ProjectformData.ProjectTitle}
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.projectName}
+                    isInvalid={!!projectErrors.ProjectTitle}
                   />
-                  <Form.Control.Feedback type="invalid">{projectErrors.projectName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.ProjectTitle}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -421,27 +515,27 @@ const CreateDependencies = () => {
                   <Form.Label>Project Description</Form.Label>
                   <Form.Control
                     as="textarea"
-                    value={ProjectformData.projectDescription}
+                    value={ProjectformData.ProjectDescription}
                     rows={1}
-                    name="projectDescription"
+                    name="ProjectDescription"
                     placeholder="Enter text here.."
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.projectDescription}
+                    isInvalid={!!projectErrors.ProjectDescription}
                   />
-                  <Form.Control.Feedback type="invalid">{projectErrors.projectDescription}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.ProjectDescription}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Group Name</Form.Label>
+                  <Form.Label>Division Name</Form.Label>
                   <Form.Select
-                    name="groupName"
-                    value={ProjectformData.groupName}
+                    name="DivisionId"
+                    value={ProjectformData.DivisionId}
                     className="custom-form-select"
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.groupName}
+                    isInvalid={!!projectErrors.DivisionId}
                   >
-                    <option value="">Select Group / Divison...</option>
+                    <option value="">Select Divison...</option>
                     {Array.isArray(divisionDataList?.Result)
                       ? divisionDataList.Result.filter((item) => item.Status === '1').map((item) => (
                           <option key={item.DivisionId} value={item.DivisionId}>
@@ -456,18 +550,18 @@ const CreateDependencies = () => {
                             </option>
                           ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{projectErrors.groupName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.DivisionId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>HOG Name</Form.Label>
                   <Form.Select
-                    name="HOGName"
-                    value={ProjectformData.HOGName}
+                    name="HogName"
+                    value={ProjectformData.HogName}
                     className="custom-form-select"
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.HOGName}
+                    isInvalid={!!projectErrors.HogName}
                   >
                     <option value="">Select officer...</option>
                     {userdata
@@ -478,18 +572,18 @@ const CreateDependencies = () => {
                         </option>
                       ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{projectErrors.HOGName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.HogName}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>HOD Name</Form.Label>
                   <Form.Select
-                    name="HODName"
-                    value={ProjectformData.HODName}
+                    name="HodName"
+                    value={ProjectformData.HodName}
                     className="custom-form-select"
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.HODName}
+                    isInvalid={!!projectErrors.HodName}
                   >
                     <option value="">Select officer...</option>
                     {userdata
@@ -500,7 +594,7 @@ const CreateDependencies = () => {
                         </option>
                       ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{projectErrors.HODName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.HodName}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -508,41 +602,41 @@ const CreateDependencies = () => {
                   <Form.Label>Technology Stack</Form.Label>
                   <Form.Control
                     type="text"
-                    name="technologyStack"
+                    name="Technology"
                     placeholder="Enter..."
-                    value={ProjectformData.technologyStack}
+                    value={ProjectformData.Technology}
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.technologyStack}
+                    isInvalid={!!projectErrors.Technology}
                   />
-                  <Form.Control.Feedback type="invalid">{projectErrors.technologyStack}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.Technology}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Project Start Date</Form.Label>
                   <DatePicker
-                    selected={ProjectformData.projectStartDate || null}
+                    selected={ProjectformData.ProjectStartDate || null}
                     className={`form-control cfs-14 ${projectstartDateError ? 'is-invalid' : ''}`}
                     onChange={handleProjectStartDate}
                     placeholderText="Start Date"
                     dateFormat="dd-MM-yyyy"
-                    name="projectStartDate"
+                    name="ProjectStartDate"
                   />
-                  {projectstartDateError && <div className="text-danger">{projectErrors.projectStartDate}</div>}
+                  {projectstartDateError && <div className="text-danger">{projectErrors.ProjectStartDate}</div>}
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Completion Date</Form.Label>
                   <DatePicker
-                    selected={ProjectformData.completionDate || null}
+                    selected={ProjectformData.CompletionDate || null}
                     className={`form-control cfs-14 ${projectCompletionDateError ? 'is-invalid' : ''}`}
                     onChange={handleProjectEndDate}
                     placeholderText="End Date"
                     dateFormat="dd-MM-yyyy"
-                    name="completionDate"
+                    name="CompletionDate"
                   />
-                  {projectCompletionDateError && <div className="text-danger">{projectErrors.completionDate}</div>}
+                  {projectCompletionDateError && <div className="text-danger">{projectErrors.CompletionDate}</div>}
                 </Form.Group>
               </Col>
             </Row>
@@ -575,11 +669,11 @@ const CreateDependencies = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Project Name</Form.Label>
                   <Form.Select
-                    name="projectName"
-                    value={ModuleformData.projectName}
+                    name="ProjectId"
+                    value={ModuleformData.ProjectId}
                     className="custom-form-select"
                     onChange={handleModuleChange}
-                    isInvalid={!!moduleErrors.projectName}
+                    isInvalid={!!moduleErrors.ProjectId}
                   >
                     <option value="">Select project...</option>
                     {Array.isArray(projectDataList?.Result)
@@ -596,7 +690,7 @@ const CreateDependencies = () => {
                             </option>
                           ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{moduleErrors.projectName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{moduleErrors.ProjectId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={12}>
@@ -604,13 +698,13 @@ const CreateDependencies = () => {
                   <Form.Label>Module Name</Form.Label>
                   <Form.Control
                     type="text"
-                    name="moduleName"
+                    name="ModuleName"
                     placeholder="Enter..."
-                    value={ModuleformData.moduleName}
+                    value={ModuleformData.ModuleName}
                     onChange={handleModuleChange}
-                    isInvalid={!!moduleErrors.moduleName}
+                    isInvalid={!!moduleErrors.ModuleName}
                   />
-                  <Form.Control.Feedback type="invalid">{moduleErrors.moduleName}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{moduleErrors.ModuleName}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={12}>
@@ -618,14 +712,14 @@ const CreateDependencies = () => {
                   <Form.Label>Module Description</Form.Label>
                   <Form.Control
                     as="textarea"
-                    value={ModuleformData.moduleDescription}
+                    value={ModuleformData.ModuleDescription}
                     rows={3}
-                    name="moduleDescription"
+                    name="ModuleDescription"
                     placeholder="Enter text here.."
                     onChange={handleModuleChange}
-                    isInvalid={!!moduleErrors.moduleDescription}
+                    isInvalid={!!moduleErrors.ModuleDescription}
                   />
-                  <Form.Control.Feedback type="invalid">{moduleErrors.moduleDescription}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{moduleErrors.ModuleDescription}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>

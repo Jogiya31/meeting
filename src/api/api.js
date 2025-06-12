@@ -164,9 +164,23 @@ export const AddProjectDetails = (data) => {
     'Content-Type': 'application/json'
   });
 };
+export const AddProjectDetailsFromTracker = (data) => {
+  const payload = data.payload;
+  const url = `/Save_NewTMProject`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
 export const UpdateProject = (data) => {
   const payload = data.payload;
   const url = `/Update_Project`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const UpdateProjectDetailsFromTracker = (data) => {
+  const payload = data.payload;
+  const url = `/Update_NewTMProject`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });
@@ -193,7 +207,6 @@ export const UpdateSalutation = (data) => {
     'Content-Type': 'application/json'
   });
 };
-
 
 /////////////////// Role api  ///////////////////
 export const GetRoleDetails = () => {
@@ -289,8 +302,6 @@ export const deleteDiscussionDetails = (data) => {
   });
 };
 
-
-
 /////////////////// Module api  ///////////////////
 export const GetModuleDetails = () => {
   const url = `/GetModule`;
@@ -312,3 +323,27 @@ export const UpdateModule = (data) => {
     'Content-Type': 'application/json'
   });
 };
+
+/////////////////// Task api  ///////////////////
+export const GetTaskDetails = (data) => {
+  const payload = data.payload;
+  const url = `/GetTaskFilteredData`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const AddTaskDetails = (data) => {
+  const payload = data.payload;
+  const url = `/Save_Task`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+export const UpdateTask = (data) => {
+  const payload = data.payload;
+  const url = `/Update_Task`;
+  return axiosClient().post(url, payload, {
+    'Content-Type': 'application/json'
+  });
+};
+
