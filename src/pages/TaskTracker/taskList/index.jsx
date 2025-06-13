@@ -35,6 +35,7 @@ const TaskList = () => {
   const [moduleFilter, setModuleFilter] = useState([]);
   const [statusFilter, setStatusFilter] = useState([]);
   const [userFilter, setuserFilter] = useState([]);
+  const [taskData, setTaskData] = useState([]);
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -119,7 +120,7 @@ const TaskList = () => {
         }
         filterParams = {
           ...filterParams,
-          GroupId: groupPayload
+          GroupId: groupPayload.slice(0, -1)
         };
       }
     } else {
@@ -138,7 +139,7 @@ const TaskList = () => {
         }
         filterParams = {
           ...filterParams,
-          ProjectId: projectPayload
+          ProjectId: projectPayload.slice(0, -1)
         };
       }
     } else {
@@ -148,7 +149,7 @@ const TaskList = () => {
     // MODULE filter values
     if (moduleFilter && moduleFilter.length > 0) {
       let modulePayload = '';
-      if (moduleFilter && moduleFilter.length === moduleList?.Result?.length) {
+      if (moduleFilter && String(moduleFilter.length) === String(moduleList?.Result?.length)) {
         filterParams = { ...filterParams, ModuleId: '' };
       } else {
         for (let index = 0; index < moduleFilter.length; index++) {
@@ -157,7 +158,7 @@ const TaskList = () => {
         }
         filterParams = {
           ...filterParams,
-          ModuleId: modulePayload
+          ModuleId: modulePayload.slice(0, -1)
         };
       }
     } else {
@@ -176,7 +177,7 @@ const TaskList = () => {
         }
         filterParams = {
           ...filterParams,
-          UserId: userPayload
+          UserId: userPayload.slice(0, -1)
         };
       }
     } else {
@@ -187,7 +188,7 @@ const TaskList = () => {
     if (statusFilter && statusFilter.length > 0) {
       let statusPayload = '';
       if (statusFilter && statusFilter.length === statusLists?.Result?.length) {
-        filterParams = { ...filterParams, StatusId: '' };
+        filterParams = { ...filterParams, Status: '' };
       } else {
         for (let index = 0; index < statusFilter.length; index++) {
           const element = statusFilter[index];
@@ -195,11 +196,11 @@ const TaskList = () => {
         }
         filterParams = {
           ...filterParams,
-          StatusId: statusPayload
+          Status: statusPayload.slice(0, -1)
         };
       }
     } else {
-      filterParams = { ...filterParams, StatusId: '' };
+      filterParams = { ...filterParams, Status: '' };
     }
 
     setFilterPayload(filterParams);
@@ -249,35 +250,78 @@ const TaskList = () => {
     { field: 'StartDate', sortable: true, filter: true, flex: 1 },
     { field: 'Status', sortable: true, filter: true, flex: 1 },
     { field: 'AssignTo', sortable: true, filter: true, flex: 1 },
-    { field: 'Remark', flex: 1 }
+    { field: 'Reason', headerName:'Remark' ,flex: 1 }
   ]);
+
+useEffect(() => {
+  if (taskList && Array.isArray(taskList.Result)) {
+    const updatedData = taskList?.Result?.map((item) => {
+      let userName = '';
+      const UserIds = item.UserId.split(',');
+      UserIds.forEach((id) => {
+        const trimmedId = id.trim();
+        if (trimmedId && trimmedId !== '0') {
+          const user = userList?.Result?.find((u) => u.UserId === trimmedId);
+          if (user?.UserName) {
+            userName += user.UserName + ', ';
+          }
+        }
+      });
+
+      return {
+        ...item,
+        UserNames: userName.slice(0, -1),
+        AssignTo: userName.slice(0, -1),
+      };
+    });
+    setTaskData(updatedData || []);
+  } else {
+    setTaskData([]);
+  }
+}, [taskList, userList]);
+
 
   const triggerReset = () => {
     setResetTrigger((prev) => prev + 1);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('filterPayload', filterPayload);
+    setGroupFilter([]);
+    setProjectFilter([]);
+    setModuleFilter([]);
+    setStatusFilter([]);
+    setuserFilter([]);
+    setFilterPayload({
+      ProjectId: '',
+      ModuleId: '',
+      Status: '',
+      UserId: '',
+      StartDate: '',
+      EndDate: '',
+      GroupId: ''
+    });
   };
 
   const handleStartDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setFilterPayload({ ...filterPayload, startDate: formattedDate });
+      setFilterPayload({ ...filterPayload, StartDate: formattedDate });
     } else {
-      setFilterPayload({ ...filterPayload, startDate: '' });
+      setFilterPayload({ ...filterPayload, StartDate: '' });
     }
   };
 
   const handleEndDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setFilterPayload({ ...filterPayload, endDate: formattedDate });
+      setFilterPayload({ ...filterPayload, EndDate: formattedDate });
     } else {
-      setFilterPayload({ ...filterPayload, endDate: '' });
+      setFilterPayload({ ...filterPayload, EndDate: '' });
     }
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(taskActions.getTaskInfo(filterPayload));
+  };
+
   return (
     <div>
       <Card className="Recent-Users widget-focus-lg header-info default-shadow">
@@ -310,7 +354,6 @@ const TaskList = () => {
                 />
               </div>
               <div className="filter-col">
-                {' '}
                 <MultiSelect
                   options={moduleOption}
                   value={moduleFilter}
@@ -346,7 +389,7 @@ const TaskList = () => {
               <div className="filter-col">
                 {' '}
                 <DatePicker
-                  selected={filterPayload.startDate || null}
+                  selected={filterPayload.StartDate || null}
                   className={`form-control cfs-14`}
                   onChange={handleStartDate}
                   placeholderText="Start Date"
@@ -357,7 +400,7 @@ const TaskList = () => {
               <div className="filter-col">
                 {' '}
                 <DatePicker
-                  selected={filterPayload.endDate || null}
+                  selected={filterPayload.EndDate || null}
                   className={`form-control cfs-14`}
                   onChange={handleEndDate}
                   placeholderText="End Date"
@@ -389,7 +432,7 @@ const TaskList = () => {
         </Card.Header>
         <Card.Body className="p-3 pt-0 dark-table">
           <AdvanceTable
-            rowData={taskList?.Result || []}
+            rowData={taskData || []}
             columnDefs={columnDefs}
             pagination={true}
             paginationPageSize={15}

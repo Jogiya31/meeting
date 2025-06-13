@@ -96,19 +96,19 @@ $color-bt-color: $primary-color, $danger-color, $success-color, $warning-color, 
 $form-bg: #f0f3f6;
 
 $theme-colors: () !default;
-$theme-colors: map-merge(
-  (
-    'primary': $primary-color,
-    'secondary': $secondary-color,
-    'success': $success-color,
-    'info': $info-color,
-    'warning': $warning-color,
-    'danger': $danger-color,
-    'light': $light-color,
-    'dark': $dark-color
-  ),
-  $theme-colors
-); // Color contrast
+// $theme-colors: map-merge(
+//   (
+//     'primary': $primary-color,
+//     'secondary': $secondary-color,
+//     'success': $success-color,
+//     'info': $info-color,
+//     'warning': $warning-color,
+//     'danger': $danger-color,
+//     'light': $light-color,
+//     'dark': $dark-color
+//   ),
+//   $theme-colors
+// ); // Color contrast
 $yiq-contrasted-threshold: 200 !default;
 $yiq-dark-color: #37474f;
 $yiq-light-color: #fff;

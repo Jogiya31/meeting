@@ -11,6 +11,8 @@ import AdvanceTable from '../../../components/Table/advanceTable';
 import refresh from '../../../assets/images/refresh-arrow.png';
 import edit from '../../../assets/images/edit.png';
 import { useAuth } from '../../../contexts/AuthContext';
+import { userActions } from '../../../store/user/userSlice';
+import { MultiSelect } from 'react-multi-select-component';
 
 const CreateTask = () => {
   const { user } = useAuth();
@@ -28,9 +30,13 @@ const CreateTask = () => {
   });
   const [resetTrigger, setResetTrigger] = useState(0);
   const [selectedData, setselectedData] = useState(null);
+  const [userOption, setuserOption] = useState([]);
+  const [userFilter, setuserFilter] = useState([]);
+
   const projectDataList = useSelector((state) => state.settings.projectData);
   const moduleList = useSelector((state) => state.module.data);
   const taskList = useSelector((state) => state.task.data);
+  const userList = useSelector((state) => state.users.data);
 
   useEffect(() => {
     dispatch(
@@ -44,6 +50,7 @@ const CreateTask = () => {
         GroupId: ''
       })
     );
+    dispatch(userActions.getuserInfo());
     dispatch(settingsActions.getProjectInfo());
     dispatch(moduleActions.getModuleInfo());
   }, []);
@@ -52,7 +59,6 @@ const CreateTask = () => {
     setselectedData(data);
     setShowNewTask(true);
   };
-
   const ActionCellRenderer = (props) => {
     const { data } = props;
     return (
@@ -63,7 +69,6 @@ const CreateTask = () => {
       </div>
     );
   };
-
   const [columnDefs] = useState([
     { field: 'ProjectTitle', sortable: true, filter: true, flex: 1 },
     { field: 'ModuleName', sortable: true, filter: true, flex: 1 },
@@ -102,7 +107,6 @@ const CreateTask = () => {
     });
     setselectedData(null);
   };
-
   const handleTaskChange = (e) => {
     const { name, value } = e.target;
     setTaskFormData({ ...TaskformData, [name]: value });
@@ -110,7 +114,6 @@ const CreateTask = () => {
   const validateTasks = () => {
     let newErrors = {};
     if (!TaskformData.ProjectId) newErrors.ProjectId = 'Required field.';
-    if (!TaskformData.ModuleId) newErrors.ModuleId = 'Required field.';
     if (!TaskformData.Task) newErrors.Task = 'Required field.';
     if (!TaskformData.TaskDescription) newErrors.TaskDescription = 'Required field.';
     setTaskErrors(newErrors);
@@ -124,13 +127,15 @@ const CreateTask = () => {
       ProjectId: TaskformData.ProjectId,
       ModuleId: TaskformData.ModuleId,
       Task: TaskformData.Task,
-      TaskDescription: TaskformData.TaskDescription
+      TaskDescription: TaskformData.TaskDescription,
+      UserId: TaskformData.UserId
     };
 
     if (selectedData) {
       finalPayload.DiscussionId = selectedData.DiscussionId;
       finalPayload.ModifyBy = user.UserName;
       finalPayload.Status = selectedData.Status;
+      finalPayload.AssigTo = TaskformData.AssignTo;
     } else {
       finalPayload.CreatedBy = user.UserName;
     }
@@ -160,6 +165,49 @@ const CreateTask = () => {
   };
   const triggerReset = () => {
     setResetTrigger((prev) => prev + 1);
+  };
+
+  useEffect(() => {
+    if (userList) {
+      let options = [];
+      userList?.Result?.forEach((item) => {
+        if (item.Status === '1') {
+          options.push({ label: item.UserName, value: item.UserId });
+        }
+      });
+
+      setuserOption([...options]);
+    }
+  }, [userList]);
+
+  useEffect(() => {
+    let filterParams = { ...TaskformData };
+    if (userFilter && userFilter.length > 0) {
+      let userPayload = '';
+      if (userFilter && userFilter.length === userList?.Result?.filter((item) => item.Status === '1').length) {
+        filterParams = { ...filterParams, UserId: '' };
+      } else {
+        for (let index = 0; index < userFilter.length; index++) {
+          const element = userFilter[index];
+          userPayload += `${element.value},`;
+        }
+        filterParams = {
+          ...filterParams,
+          UserId: userPayload
+        };
+      }
+    } else {
+      filterParams = { ...filterParams, UserId: '' };
+    }
+    setTaskFormData(filterParams);
+  }, [userFilter]);
+
+  const handleuserFilter = (newSelected) => {
+    if (newSelected.length) {
+      setuserFilter(newSelected);
+    } else {
+      setuserFilter([]);
+    }
   };
 
   return (
@@ -279,6 +327,21 @@ const CreateTask = () => {
                     isInvalid={!!taskErrors.TaskDescription}
                   />
                   <Form.Control.Feedback type="invalid">{taskErrors.TaskDescription}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Assign</Form.Label>
+                  <MultiSelect
+                    options={userOption}
+                    value={userFilter}
+                    onChange={handleuserFilter}
+                    overrideStrings={{
+                      selectSomeItems: 'Users'
+                    }}
+                    hasSelectAll={true}
+                  />
+                  <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>
