@@ -32,6 +32,7 @@ const CreateTask = () => {
   const [selectedData, setselectedData] = useState(null);
   const [userOption, setuserOption] = useState([]);
   const [userFilter, setuserFilter] = useState([]);
+  const [changeAssignedUserFilter, setChangeAssignedUserFilter] = useState([]);
 
   const projectDataList = useSelector((state) => state.settings.projectData);
   const moduleList = useSelector((state) => state.module.data);
@@ -90,7 +91,9 @@ const CreateTask = () => {
         ProjectId: selectedData.ProjectId,
         ModuleId: selectedData.ModuleId,
         Task: selectedData.Task,
-        TaskDescription: selectedData.Description
+        TaskDescription: selectedData.Description,
+        UserId: selectedData.UserId,
+        ChangeAssignTo: selectedData.ChangeAssignTo
       };
       setTaskFormData(updatedFormData);
     }
@@ -105,6 +108,8 @@ const CreateTask = () => {
       task: '',
       taskDescription: ''
     });
+    setuserFilter([]);
+    setChangeAssignedUserFilter([]);
     setselectedData(null);
   };
   const handleTaskChange = (e) => {
@@ -135,7 +140,8 @@ const CreateTask = () => {
       finalPayload.DiscussionId = selectedData.DiscussionId;
       finalPayload.ModifyBy = user.UserName;
       finalPayload.Status = selectedData.Status;
-      finalPayload.AssigTo = TaskformData.AssignTo;
+      finalPayload.UserId = selectedData.UserId;
+      finalPayload.ChangeAssignTo = TaskformData.ChangeAssignTo;
     } else {
       finalPayload.CreatedBy = user.UserName;
     }
@@ -178,7 +184,7 @@ const CreateTask = () => {
 
       setuserOption([...options]);
     }
-  }, [userList]);
+  }, []);
 
   useEffect(() => {
     let filterParams = { ...TaskformData };
@@ -193,20 +199,47 @@ const CreateTask = () => {
         }
         filterParams = {
           ...filterParams,
-          UserId: userPayload
+          UserId: userPayload.slice(0, -1)
         };
       }
     } else {
       filterParams = { ...filterParams, UserId: '' };
     }
+
+    if (changeAssignedUserFilter && changeAssignedUserFilter.length > 0) {
+      let userPayload = '';
+      if (changeAssignedUserFilter && changeAssignedUserFilter.length === userList?.Result?.filter((item) => item.Status === '1').length) {
+        filterParams = { ...filterParams, ChangeAssignTo: '' };
+      } else {
+        for (let index = 0; index < changeAssignedUserFilter.length; index++) {
+          const element = changeAssignedUserFilter[index];
+          userPayload += `${element.value},`;
+        }
+        filterParams = {
+          ...filterParams,
+          ChangeAssignTo: userPayload.slice(0, -1)
+        };
+      }
+    } else {
+      filterParams = { ...filterParams, ChangeAssignTo: '' };
+    }
+
     setTaskFormData(filterParams);
-  }, [userFilter]);
+  }, [userFilter, changeAssignedUserFilter]);
 
   const handleuserFilter = (newSelected) => {
     if (newSelected.length) {
       setuserFilter(newSelected);
     } else {
       setuserFilter([]);
+    }
+  };
+
+  const handleChangeAssignedUserFilter = (newSelected) => {
+    if (newSelected.length) {
+      setChangeAssignedUserFilter(newSelected);
+    } else {
+      setChangeAssignedUserFilter([]);
     }
   };
 
@@ -243,9 +276,7 @@ const CreateTask = () => {
       </Card>
       <Modal size="md" show={showNewTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
-          <Modal.Title>
-            <h5>Add New Task</h5>
-          </Modal.Title>
+          <Modal.Title>{selectedData ? <h5>Update Task</h5> : <h5>Add New Task</h5>}</Modal.Title>
           <span className="pointer" onClick={handleClose}>
             {' '}
             X{' '}
@@ -334,16 +365,39 @@ const CreateTask = () => {
                   <Form.Label>Assign</Form.Label>
                   <MultiSelect
                     options={userOption}
-                    value={userFilter}
+                    value={userOption?.filter(
+                      (option) => TaskformData && TaskformData.UserId && TaskformData.UserId.split(',').includes(option.value)
+                    )}
                     onChange={handleuserFilter}
                     overrideStrings={{
                       selectSomeItems: 'Users'
                     }}
                     hasSelectAll={true}
+                    disabled={selectedData}
                   />
                   <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
+              {selectedData && (
+                <Col md={12}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Change Assigned user</Form.Label>
+                    {console.log('TaskformData', TaskformData && TaskformData.ChangeAssignTo)}
+                    <MultiSelect
+                      options={userOption}
+                      value={userOption?.filter(
+                        (option) =>
+                          TaskformData && TaskformData.ChangeAssignTo && TaskformData.ChangeAssignTo.split(',').includes(option.value)
+                      )}
+                      onChange={handleChangeAssignedUserFilter}
+                      overrideStrings={{
+                        selectSomeItems: 'Users'
+                      }}
+                      hasSelectAll={true}
+                    />
+                  </Form.Group>
+                </Col>
+              )}
             </Row>
             <div className="d-flex justify-content-end mt-2">
               <Button variant="primary" type="submit">

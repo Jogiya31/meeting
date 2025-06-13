@@ -430,9 +430,7 @@ const CreateDependencies = () => {
       </Row>
       <Modal size="md" show={showDivision} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
-          <Modal.Title>
-            <h5>Add Division</h5>
-          </Modal.Title>
+          <Modal.Title>{selectedData ? <h5>Update Division</h5> : <h5>Add Division</h5>}</Modal.Title>
           <span className="pointer" onClick={handleClose}>
             {' '}
             X{' '}
@@ -485,9 +483,7 @@ const CreateDependencies = () => {
       </Modal>
       <Modal size="lg" show={showProject} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
-          <Modal.Title>
-            <h5>Add Project</h5>
-          </Modal.Title>
+          <Modal.Title>{selectedData ? <h5>Update Project</h5> : <h5>Add Project</h5>}</Modal.Title>
           <span className="pointer" onClick={handleClose}>
             {' '}
             X{' '}
@@ -654,9 +650,7 @@ const CreateDependencies = () => {
       </Modal>
       <Modal size="md" show={showModule} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
-          <Modal.Title>
-            <h5>Add Module</h5>
-          </Modal.Title>
+          <Modal.Title>{selectedData ? <h5>Update Module</h5> : <h5>Add Module</h5>}</Modal.Title>
           <span className="pointer" onClick={handleClose}>
             {' '}
             X{' '}

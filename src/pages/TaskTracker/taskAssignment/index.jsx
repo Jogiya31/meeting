@@ -28,7 +28,8 @@ const TaskAssigment = () => {
 
   useEffect(() => {
     taskList?.Result.map((item) => {
-      if (item.AssignTo !== '') {
+      const trimmedId = item.UserId.trim();
+      if (trimmedId === '' && trimmedId === '0') {
         setassignedTask((prev) => [...prev, item]);
       } else {
         setUnAssignedTasks((prev) => [...prev, item]);
@@ -40,7 +41,7 @@ const TaskAssigment = () => {
     { id: 'ProjectTitle', label: 'Project Name', class: '' },
     { id: 'ModuleName', label: 'Module Name', class: '' },
     { id: 'Task', label: 'Task Name', class: '' },
-    { id: 'taskDescription', label: 'Task Description', class: '' },
+    { id: 'Description', label: 'Task Description', class: '' },
     { id: 'createdBy', label: 'Created By', class: '' },
     { id: 'StartDate', label: 'Created At', class: '' }
   ];
