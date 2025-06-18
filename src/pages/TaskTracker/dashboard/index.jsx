@@ -14,27 +14,41 @@ import DonutChart from '../../../components/charts/DonutChart';
 import DonutChart2 from '../../../components/charts/DonutChat2';
 import GroupedColumnChart from '../../../components/charts/GroupedColumnChart';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useStore } from '../../../contexts/DataContext';
+import { taskActions } from '../../../store/task/taskSlice';
 
 const DashDefault = () => {
   const { mode, theme } = useTheme();
   const { role } = useAuth();
+  const { filterWith } = useStore();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showProjects, setShowProjects] = useState(false);
+  const [assignedTask, setAssignedTasks] = useState([]);
+  const [UnAssignedTasks, setUnAssignedTasks] = useState([]);
+  const [taskProgress, setTaskProgress] = useState([]);
+  const [pendingTasksData, setPendingTasksData] = useState([]);
   const dashboardCountInfo = useSelector((state) => state.dashboard.data);
   const projectDataList = useSelector((state) => state.settings.projectData);
-
+  const statusDataList = useSelector((state) => state.settings.statusData);
+  const taskList = useSelector((state) => state.task.data);
+  const userList = useSelector((state) => state.users.data);
   useEffect(() => {
+    dispatch(
+      taskActions.getTaskInfo({ ProjectId: '', ModuleId: '', StatusMulti: '', UserId: '', StartDate: '', EndDate: '', GroupIdMulti: '' })
+    );
     dispatch(dashboardActions.getdashboardInfo());
     dispatch(meetingsActions.getMeetingsInfo());
     dispatch(userActions.getuserInfo());
     dispatch(settingsActions.getProjectInfo());
     dispatch(settingsActions.getDesignationInfo());
+    dispatch(settingsActions.getStatusInfo());
   }, []);
-
   const calculatePercentage = (part, total) => (total > 0 ? (part / total) * 100 : 0);
 
   const stats = dashboardCountInfo?.Result?.[0];
+
+  console.log('pendingTasksData', pendingTasksData)
 
   const handleCardClick = (card) => {
     if (card === 'user') {
@@ -92,16 +106,97 @@ const DashDefault = () => {
     }
   ];
 
-  const pendingTasksData = [
-    { name: 'Rohit Gusain', tasks: 1 },
-    { name: 'Ankit Pandey', tasks: 2 },
-    { name: 'Arpit Singh', tasks: 2 },
-    { name: 'Sanjay Shukla', tasks: 2 },
-    { name: 'Sanjeev kumar', tasks: 2 },
-    { name: 'Manish kumar', tasks: 3 },
-    { name: 'Arun Siwach', tasks: 4 }
-  ];
+  // const pendingTasksData = [
+  //   { name: 'Rohit Gusain', tasks: 1 },
+  //   { name: 'Ankit Pandey', tasks: 2 },
+  //   { name: 'Arpit Singh', tasks: 2 },
+  //   { name: 'Sanjay Shukla', tasks: 2 },
+  //   { name: 'Sanjeev kumar', tasks: 2 },
+  //   { name: 'Manish kumar', tasks: 3 },
+  //   { name: 'Arun Siwach', tasks: 4 }
+  // ];
+  useEffect(() => {
+    if (taskList?.Result && userList?.Result) {
+      const assignedTasks = [];
+      const unAssignedTasks = [];
+      const progressMap = {};
 
+      taskList.Result.forEach((item) => {
+        // Split and clean User IDs
+        const assignedIds =
+          item.UserId?.split(',')
+            .map((id) => id.trim())
+            .filter((id) => id && id !== '0') || [];
+
+        const changeAssignIds =
+          item.ChangeAssignTo?.split(',')
+            .map((id) => id.trim())
+            .filter((id) => id) || [];
+
+        // Combine and deduplicate IDs
+        const allAssignedUserIds = Array.from(new Set([...assignedIds, ...changeAssignIds]));
+
+        if (allAssignedUserIds.length === 0) {
+          unAssignedTasks.push(item);
+        } else {
+          // Get assigned user names
+          const userNames = allAssignedUserIds
+            .map((uid) => userList.Result.find((u) => u.UserId?.trim() === uid)?.UserName)
+            .filter(Boolean);
+
+          assignedTasks.push({
+            ...item,
+            AssignedToUsers: userNames.join(', ')
+          });
+
+          // Update progress stats
+          allAssignedUserIds.forEach((userId) => {
+            const user = userList.Result.find((u) => u.UserId?.trim() === userId);
+            const userName = user?.UserName || `User ID: ${userId}`;
+
+            if (!progressMap[userId]) {
+              progressMap[userId] = {
+                userId,
+                userName,
+                taskAssigned: 0,
+                taskpending: 0,
+                taskComplete: 0,
+                taskProgress: 0
+              };
+            }
+
+            progressMap[userId].taskAssigned += 1;
+
+            const status = item.Status?.toLowerCase() || '';
+            if (status === 'pending' || status === 'inprogress') {
+              progressMap[userId].taskpending += 1;
+            } else if (status === 'completed') {
+              progressMap[userId].taskComplete += 1;
+            }
+
+            progressMap[userId].taskProgress =
+              ((progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100).toFixed(2) + '%';
+          });
+        }
+      });
+
+      // Extract pendingTasksData
+      const pending = Object.values(progressMap)
+        .filter((user) => user.taskAssigned > 0)
+        .map((user) => ({
+          name: user.userName,
+          tasks: user.taskAssigned
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+
+      // Set all states
+      setAssignedTasks(assignedTasks);
+      setUnAssignedTasks(unAssignedTasks);
+      setTaskProgress(Object.values(progressMap));
+      setPendingTasksData(pending);
+    }
+  }, [taskList, userList]);
   return (
     <React.Fragment>
       <div className="dashboard-cards grid-wrapper">
@@ -172,7 +267,10 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-3' : 'grd-bg-color-3'} pointer`}
-              onClick={() => handleCardClick('task')}
+              onClick={() => {
+                handleCardClick('task');
+                filterWith(null);
+              }}
             >
               <Card.Body>
                 <Row>
@@ -203,7 +301,10 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-4' : 'grd-bg-color-4'}  pointer`}
-              onClick={() => handleCardClick('task')}
+              onClick={() => {
+                handleCardClick('task');
+                filterWith(statusDataList?.Result?.filter((item) => item.StatusTitle === 'Completed'));
+              }}
             >
               <Card.Body>
                 <Row>
@@ -232,7 +333,10 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1  ${theme === 'static' ? 'bg-color-5' : 'grd-bg-color-5'}  pointer`}
-              onClick={() => handleCardClick('task')}
+              onClick={() => {
+                handleCardClick('task');
+                filterWith(statusDataList?.Result?.filter((item) => item.StatusTitle === 'Pending'));
+              }}
             >
               <Card.Body>
                 <Row>
@@ -261,7 +365,10 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-6' : 'grd-bg-color-6'}  pointer`}
-              onClick={() => handleCardClick('task')}
+              onClick={() => {
+                handleCardClick('task');
+                filterWith(statusDataList?.Result?.filter((item) => item.StatusTitle === 'Inprogress'));
+              }}
             >
               <Card.Body>
                 <Row>

@@ -12,10 +12,11 @@ import { MultiSelect } from 'react-multi-select-component';
 import './style.scss';
 import AdvanceTable from '../../../components/Table/advanceTable';
 import { taskActions } from '../../../store/task/taskSlice';
+import { useStore } from '../../../contexts/DataContext';
 
 const TaskList = () => {
   const dispatch = useDispatch();
-
+  const { filterValue, filterWith } = useStore();
   const [filterPayload, setFilterPayload] = useState({
     ProjectId: '',
     ModuleId: '',
@@ -53,7 +54,6 @@ const TaskList = () => {
     dispatch(userActions.getuserInfo());
     dispatch(moduleActions.getModuleInfo());
   }, []);
-
   useEffect(() => {
     let options = [];
 
@@ -206,6 +206,14 @@ const TaskList = () => {
     setFilterPayload(filterParams);
   }, [groupFilter, projectFilter, moduleFilter, userFilter, statusFilter]);
 
+  useEffect(() => {
+    if (filterValue) {
+      const activeStatus = statusLists?.Result?.filter((item) => item.StatusId === filterValue?.[0]?.StatusId);
+      setStatusFilter([{ label: activeStatus?.[0]?.StatusTitle, value: activeStatus?.[0]?.StatusId }]);
+      dispatch(taskActions.getTaskInfo({ ...filterPayload, StatusMulti: activeStatus?.[0]?.StatusId }));
+    }
+  }, [filterValue]);
+
   const handleGroupFilter = (newSelected) => {
     if (newSelected.length) {
       setGroupFilter(newSelected);
@@ -241,7 +249,6 @@ const TaskList = () => {
       setStatusFilter([]);
     }
   };
-
   const [columnDefs] = useState([
     { field: 'ProjectTitle', sortable: true, filter: true, flex: 1 },
     { field: 'ModuleName', sortable: true, filter: true, flex: 1 },
@@ -295,6 +302,7 @@ const TaskList = () => {
 
   const triggerReset = () => {
     setResetTrigger((prev) => prev + 1);
+    filterWith(null);
     setGroupFilter([]);
     setProjectFilter([]);
     setModuleFilter([]);
@@ -321,7 +329,6 @@ const TaskList = () => {
       })
     );
   };
-
   const handleStartDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
@@ -330,7 +337,6 @@ const TaskList = () => {
       setFilterPayload({ ...filterPayload, StartDate: '' });
     }
   };
-
   const handleEndDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
@@ -339,7 +345,6 @@ const TaskList = () => {
       setFilterPayload({ ...filterPayload, EndDate: '' });
     }
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(taskActions.getTaskInfo(filterPayload));
