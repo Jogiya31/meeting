@@ -201,7 +201,7 @@ function EnhancedTable({
           <div className="d-flex align-items-center">
             Page Limit:
             <Form.Control as="select" value={rowsPerPage} onChange={handleChangeRowsPerPage} className="text-center limit ml-1">
-              {[5, 10, 25, 50].map((rowsPerPageOption) => (
+              {[5, 10, 15, 20, 25, 50].map((rowsPerPageOption) => (
                 <option key={rowsPerPageOption} value={rowsPerPageOption}>
                   {rowsPerPageOption}
                 </option>

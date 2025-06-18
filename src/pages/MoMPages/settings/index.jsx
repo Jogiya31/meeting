@@ -7,10 +7,12 @@ import Swal from 'sweetalert2';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { useTheme } from '../../../contexts/themeContext';
 import DatePicker from 'react-datepicker';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const Index = () => {
   const dispatch = useDispatch();
   const { mode } = useTheme();
+  const { user } = useAuth();
   const Role = localStorage.getItem('role');
 
   const [divisionList, setDivisionList] = useState([]);
@@ -23,18 +25,17 @@ const Index = () => {
   const [priorityList, setPriorityList] = useState([]);
   const [showProject, setShowProject] = useState(false);
   const [userData, setUserData] = useState([]);
-  const [projectStartDate, setProjectStartDate] = useState(null);
-  const [projectEndDate, setProjectEndDate] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
   const [ProjectformData, setProjectFormData] = useState({
     ProjectTitle: '',
-    projectDescription: '',
+    ProjectDescription: '',
     GroupId: '',
     HogName: '',
     HodName: '',
     Technology: '',
     ProjectStartDate: null,
     CompletionDate: null,
-    CreatedBy: Role
+    CreatedBy: user.UserName
   });
   const [projectErrors, setProjectErrors] = useState({});
   const [projectstartDateError, setProjectStartDateError] = useState(false);
@@ -112,7 +113,20 @@ const Index = () => {
         id: item.ProjectId,
         title: item.ProjectTitle,
         status: Number(item.Status),
-        isEditing: false
+        isEditing: false,
+
+        ProjectId: item.ProjectId,
+        ProjectTitle: item.ProjectTitle,
+        ProjectDescription: item.ProjectDescription,
+        DivisionId: item.DivisionId,
+        HogName: Number(item.HOGName),
+        HodName: Number(item.HODName),
+        Technology: item.Technology,
+        ProjectStartDate: item.ProjectStartDate,
+        CompletionDate: item.CompletionDate,
+        Status: item.Status,
+        ModifyBy: item.ModifyBy,
+        CreatedBy: item.CreatedBy
       }));
       setProjectList(list);
     }
@@ -197,9 +211,15 @@ const Index = () => {
     const payload = {
       [fieldName + 'Id']: updatedItem.id, // Dynamically setting the ID field
       [fieldName + 'Title']: updatedItem.title,
-      ModifyBy: Role,
+      ModifyBy: user.UserName,
       Status: updatedItem.status
     };
+    if (fieldName === 'Division') {
+      payload.Description = '';
+    }
+    if (fieldName === 'PriorityOrder') {
+      payload.UserId = updatedItem.UserId || 0;
+    }
 
     try {
       await dispatch(updateAction(payload));
@@ -229,6 +249,13 @@ const Index = () => {
           Status: updatedItem.status === 1 ? '0' : '1' // Ensure it's a string
         };
 
+        if (fieldName === 'Division') {
+          payload.Description = '';
+        }
+        if (fieldName === 'PriorityOrder') {
+          payload.UserId = updatedItem.UserId || 0;
+        }
+
         try {
           await dispatch(updateAction(payload));
 
@@ -245,13 +272,53 @@ const Index = () => {
     });
   };
 
+  const handleProjectDelete = (item) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to change status for this item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!',
+      theme: mode
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const payload = {
+          ProjectId: item.ProjectId,
+          ProjectTitle: item.ProjectTitle,
+          ProjectDescription: item.ProjectDescription,
+          GroupId: item.DivisionId,
+          HogName: item.HogName,
+          HodName: item.HodName,
+          Technology: item.Technology,
+          ProjectStartDate: item.ProjectStartDate,
+          CompletionDate: item.CompletionDate,
+          Status: item.status === 1 ? 0 : 1,
+          ModifyBy: user.UserName
+        };
+        try {
+          dispatch(settingsActions.updateProjectInfo(payload));
+        } catch (error) {}
+        Swal.fire({
+          title: 'Updated!',
+          text: 'Selected item status has been updated.',
+          icon: 'success',
+          theme: mode
+        }).then((result) => {
+          dispatch(settingsActions.getProjectInfo());
+        });
+      }
+    });
+  };
+
   const handleAddItem = async (newItem, setNewItem, apiAction, fetchAction, fieldName) => {
     if (!newItem.trim()) return; // Prevent empty input
 
     try {
       const payload = {
         [fieldName + 'Title']: newItem,
-        CreatedBy: Role,
+        CreatedBy: user.UserName,
         Status: '1'
       };
 
@@ -355,25 +422,29 @@ const Index = () => {
   const handleClose = () => {
     setShowProject(false);
     setProjectFormData({
-      projectName: '',
-      projectDescription: '',
-      groupName: '',
-      HOGName: '',
-      HODName: '',
-      technologyStack: '',
-      projectStartDate: null,
-      completionDate: null
+      ProjectTitle: '',
+      ProjectDescription: '',
+      GroupId: '',
+      HogName: '',
+      HodName: '',
+      Technology: '',
+      ProjectStartDate: null,
+      CompletionDate: null,
+      CreatedBy: user.UserName
     });
+    setSelectedData(null);
     dispatch(settingsActions.getProjectInfo());
   };
+
   const handleProjectChange = (e) => {
     const { name, value } = e.target;
     setProjectFormData({ ...ProjectformData, [name]: value });
   };
+
   const validateProject = () => {
     let newErrors = {};
     if (!ProjectformData.ProjectTitle) newErrors.ProjectTitle = 'Required field.';
-    if (!ProjectformData.projectDescription) newErrors.projectDescription = 'Required field.';
+    if (!ProjectformData.ProjectDescription) newErrors.ProjectDescription = 'Required field.';
     if (!ProjectformData.GroupId) newErrors.GroupId = 'Required field.';
     if (!ProjectformData.HogName) newErrors.HogName = 'Required field.';
     if (!ProjectformData.HodName) newErrors.HodName = 'Required field.';
@@ -389,32 +460,63 @@ const Index = () => {
     setProjectErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleProjectStartDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectStartDateError(false);
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setProjectStartDate(date);
       setProjectFormData({ ...ProjectformData, ProjectStartDate: formattedDate || '' });
     } else {
       setProjectFormData({ ...ProjectformData, ProjectStartDate: '' });
     }
   };
+
   const handleProjectEndDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectCompletionDateError(false);
       const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      setProjectEndDate(date);
       setProjectFormData({ ...ProjectformData, CompletionDate: formattedDate || '' });
     } else {
       setProjectFormData({ ...ProjectformData, CompletionDate: '' });
     }
   };
+
   const handleSubmitProject = (e) => {
     e.preventDefault();
     if (!validateProject()) return;
-    dispatch(settingsActions.addProjectInfoFromTracker(ProjectformData));
+
+    const Payload = { ...ProjectformData };
+
+    if (selectedData) {
+      dispatch(settingsActions.updateProjectInfo(Payload));
+    } else {
+      dispatch(settingsActions.addProjectInfo(Payload));
+    }
     handleClose();
+    setTimeout(() => {
+      dispatch(settingsActions.getProjectInfo());
+    }, 300);
   };
+
+  useEffect(() => {
+    if (selectedData) {
+      const updatedFormData = {
+        ProjectId: selectedData.ProjectId,
+        ProjectTitle: selectedData.ProjectTitle,
+        ProjectDescription: selectedData.ProjectDescription,
+        GroupId: selectedData.DivisionId,
+        HogName: selectedData.HogName,
+        HodName: selectedData.HodName,
+        Technology: selectedData.Technology,
+        ProjectStartDate: selectedData.ProjectStartDate,
+        CompletionDate: selectedData.CompletionDate,
+        Status: selectedData.Status,
+        ModifyBy: selectedData.ModifyBy
+      };
+      setProjectFormData(updatedFormData);
+      setShowProject(true);
+    }
+  }, [selectedData]);
 
   return (
     <div>
@@ -453,7 +555,7 @@ const Index = () => {
               apiAction={settingsActions.addDesignationInfo}
               fetchAction={settingsActions.getDesignationInfo}
               updateAction={settingsActions.updateDesignationInfo}
-              fieldName={'Employeement'}
+              fieldName={'Designation'}
               enableAddNew
             />
           </MainCard>
@@ -466,7 +568,7 @@ const Index = () => {
               apiAction={settingsActions.addOrganizationInfo}
               fetchAction={settingsActions.getOrganizationInfo}
               updateAction={settingsActions.updateOrganizationInfo}
-              fieldName={'Employeement'}
+              fieldName={'Organisation'}
               enableAddNew
             />
           </MainCard>
@@ -484,7 +586,6 @@ const Index = () => {
             />
           </MainCard>
         </Col>
-
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Salutation List" cardClass="info default-shadow">
             <RenderList
@@ -511,7 +612,6 @@ const Index = () => {
             />
           </MainCard>
         </Col>
-
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Available Projects" cardClass="secondary default-shadow">
             <div className="px-4 py-2 c-card-body">
@@ -523,39 +623,23 @@ const Index = () => {
                 <Row key={item.id}>
                   <Col md={9} sm={9}>
                     <div className={`d-flex justify-content-between custom-cards ${item.status ? '' : 'op-5'}`}>
-                      {item.isEditing ? (
-                        <input
-                          type="text"
-                          className="w-100 form-control bg-0 p-2"
-                          value={item.title}
-                          onChange={(e) => handleChange(projectList, setProjectList, item.id, e.target.value)}
-                          autoFocus
-                        />
-                      ) : (
-                        <span>{item.title}</span>
-                      )}
+                      <span>{item.title}</span>
                     </div>
                   </Col>
                   <Col md={2} sm={2} className="d-flex align-items-center">
                     <div className="d-flex justify-content-between">
-                      {item.isEditing ? (
-                        <span
-                          title="Save"
-                          className={`feather icon-check theme-bg2 text-white f-14 p-2 pointer`}
-                          onClick={() => handleSaveChange(projectList, setProjectList, settingsActions.addProjectInfo, item.id, 'Project')}
-                        />
-                      ) : (
-                        <span
-                          title="Edit"
-                          className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
-                          onClick={() => handleEdit(projectList, setProjectList, item.id)}
-                        />
-                      )}
+                      <span
+                        title="Edit"
+                        className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
+                        onClick={() => setSelectedData(item)}
+                      />
                       {item.status ? (
                         <span
                           title="Visible"
                           className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
-                          onClick={() => handleDelete(projectList, setProjectList, settingsActions.addProjectInfo, item.id, 'Project')}
+                          onClick={() => {
+                            handleProjectDelete(item);
+                          }}
                         >
                           <FaCheckCircle />
                         </span>
@@ -563,7 +647,9 @@ const Index = () => {
                         <span
                           title="Not Visible"
                           className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
-                          onClick={() => handleDelete(projectList, setProjectList, settingsActions.addProjectInfo, item.id, 'Project')}
+                          onClick={() => {
+                            handleProjectDelete(item);
+                          }}
                         >
                           <FaTimesCircle />
                         </span>
@@ -584,9 +670,7 @@ const Index = () => {
       </Row>
       <Modal size="lg" show={showProject} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
-          <Modal.Title>
-            <h5>Add Project</h5>
-          </Modal.Title>
+          <Modal.Title>{selectedData ? <h5>Update Project</h5> : <h5>Add Project</h5>}</Modal.Title>
           <span className="pointer" onClick={handleClose}>
             {' '}
             X{' '}
@@ -614,19 +698,19 @@ const Index = () => {
                   <Form.Label>Project Description</Form.Label>
                   <Form.Control
                     as="textarea"
-                    value={ProjectformData.projectDescription}
+                    value={ProjectformData.ProjectDescription}
                     rows={1}
-                    name="projectDescription"
+                    name="ProjectDescription"
                     placeholder="Enter text here.."
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.projectDescription}
+                    isInvalid={!!projectErrors.ProjectDescription}
                   />
-                  <Form.Control.Feedback type="invalid">{projectErrors.projectDescription}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.ProjectDescription}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Group Name</Form.Label>
+                  <Form.Label>Division Name</Form.Label>
                   <Form.Select
                     name="GroupId"
                     value={ProjectformData.GroupId}
@@ -634,16 +718,26 @@ const Index = () => {
                     onChange={handleProjectChange}
                     isInvalid={!!projectErrors.GroupId}
                   >
-                    <option value="">Select Group...</option>
-                    {divisionDataList?.Result?.map((item) => (
-                      <option value={item.DivisionId}>{item.DivisionTitle}</option>
-                    ))}
+                    <option value="">Select Divison...</option>
+                    {Array.isArray(divisionDataList?.Result)
+                      ? divisionDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.DivisionId} value={item.DivisionId}>
+                            {item.DivisionTitle}
+                          </option>
+                        ))
+                      : Object.values(divisionDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.DivisionId} value={item.DivisionId}>
+                              {item.DivisionTitle}
+                            </option>
+                          ))}
                   </Form.Select>
                   <Form.Control.Feedback type="invalid">{projectErrors.GroupId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group>
+                <Form.Group className="mb-3">
                   <Form.Label>HOG Name</Form.Label>
                   <Form.Select
                     name="HogName"
@@ -654,9 +748,9 @@ const Index = () => {
                   >
                     <option value="">Select officer...</option>
                     {userData
-                      .filter((item) => item.DesignationTitle?.includes('HOG'))
+                      ?.filter((item) => item.DesignationTitle?.includes('HOG'))
                       .map((item) => (
-                        <option key={item.UserName} value={item.UserId}>
+                        <option key={item.UserId} value={item.UserId}>
                           {item.UserName}
                         </option>
                       ))}
@@ -676,9 +770,9 @@ const Index = () => {
                   >
                     <option value="">Select officer...</option>
                     {userData
-                      .filter((item) => item.DesignationTitle?.includes('HOD'))
+                      ?.filter((item) => item.DesignationTitle?.includes('HOD'))
                       .map((item) => (
-                        <option key={item.UserName} value={item.UserId}>
+                        <option key={item.UserId} value={item.UserId}>
                           {item.UserName}
                         </option>
                       ))}
@@ -704,7 +798,7 @@ const Index = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Project Start Date</Form.Label>
                   <DatePicker
-                    selected={projectStartDate || null}
+                    selected={ProjectformData.ProjectStartDate || null}
                     className={`form-control cfs-14 ${projectstartDateError ? 'is-invalid' : ''}`}
                     onChange={handleProjectStartDate}
                     placeholderText="Start Date"
@@ -718,7 +812,7 @@ const Index = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Completion Date</Form.Label>
                   <DatePicker
-                    selected={projectEndDate || null}
+                    selected={ProjectformData.CompletionDate || null}
                     className={`form-control cfs-14 ${projectCompletionDateError ? 'is-invalid' : ''}`}
                     onChange={handleProjectEndDate}
                     placeholderText="End Date"

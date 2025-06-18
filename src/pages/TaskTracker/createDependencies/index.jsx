@@ -37,13 +37,12 @@ const CreateDependencies = () => {
   const [ProjectformData, setProjectFormData] = useState({
     ProjectTitle: '',
     ProjectDescription: '',
-    DivisionId: '',
+    GroupId: '',
     HogName: '',
     HodName: '',
     Technology: '',
     ProjectStartDate: '',
-    CompletionDate: '',
-    CreatedBy: user.UserName
+    CompletionDate: ''
   });
   const [ModuleformData, setModuleFormData] = useState({
     ModuleName: '',
@@ -88,12 +87,14 @@ const CreateDependencies = () => {
       const updatedData = projectDataList?.Result?.map((item) => {
         const officerHOD = userList?.Result.find((user) => String(user.UserId) === String(item.HODName));
         const officerHOG = userList?.Result.find((user) => String(user.UserId) === String(item.HOGName));
+        const divisionName = divisionDataList?.Result?.find((div) => String(div.DivisionId) === String(item.DivisionId));
         return {
           ...item,
           HODName: officerHOD?.UserName,
           HODId: officerHOD?.UserId,
           HOGName: officerHOG?.UserName,
-          HOGId: officerHOG?.UserId
+          HOGId: officerHOG?.UserId,
+          DivisionName: divisionName?.DivisionTitle
         };
       });
       setprojectData(updatedData || []);
@@ -116,7 +117,7 @@ const CreateDependencies = () => {
   const ProjectHeaders = [
     { id: 'ProjectTitle', label: 'Project Name', class: '' },
     { id: 'ProjectDescription', label: 'Project Description', class: '' },
-    { id: 'groupName', label: 'Division Name', class: '' },
+    { id: 'DivisionName', label: 'Division Name', class: '' },
     { id: 'HODName', label: 'HOD Name', class: '' },
     { id: 'HOGName', label: 'HOG Name', class: '' },
     { id: 'Technology', label: 'Technology Stack', class: '' }
@@ -137,7 +138,7 @@ const CreateDependencies = () => {
     setProjectFormData({
       ProjectTitle: '',
       ProjectDescription: '',
-      DivisionId: '',
+      GroupId: '',
       HogName: '',
       HodName: '',
       Technology: '',
@@ -180,9 +181,18 @@ const CreateDependencies = () => {
     e.preventDefault();
     if (!validateDivision()) return;
 
-    const endpoint = selectedData ? '/Update_Division' : '/Save_Division';
+    const payload = { ...DivisionformData };
+
+    if (selectedData) {
+      payload.Key = 9;
+      payload.DivisionId = selectedData.DivisionId;
+      payload.ModifyBy = user.UserName;
+    } else {
+      payload.Key = 8;
+    }
+
     api
-      .post(endpoint, DivisionformData)
+      .post('/Api', payload)
       .then(() => {
         dispatch(settingsActions.getDivisionInfo());
       })
@@ -198,7 +208,7 @@ const CreateDependencies = () => {
     let newErrors = {};
     if (!ProjectformData.ProjectTitle) newErrors.ProjectTitle = 'Required field.';
     if (!ProjectformData.ProjectDescription) newErrors.ProjectDescription = 'Required field.';
-    if (!ProjectformData.DivisionId) newErrors.DivisionId = 'Required field.';
+    if (!ProjectformData.GroupId) newErrors.GroupId = 'Required field.';
     if (!ProjectformData.HogName) newErrors.HogName = 'Required field.';
     if (!ProjectformData.HodName) newErrors.HodName = 'Required field.';
     if (!ProjectformData.Technology) newErrors.Technology = 'Required field.';
@@ -234,14 +244,16 @@ const CreateDependencies = () => {
   const handleSubmitProject = (e) => {
     e.preventDefault();
     if (!validateProject()) return;
-    const endpoint = selectedData ? '/Update_NewTMProject' : '/Save_NewTMProject';
-    api
-      .post(endpoint, ProjectformData)
-      .then(() => {
-        dispatch(settingsActions.getProjectInfo());
-      })
-      .catch((err) => console.error('Error saving user:', err));
+    const payload = { ...ProjectformData };
+    if (selectedData) {
+      dispatch(settingsActions.updateProjectInfo(payload));
+    } else {
+      dispatch(settingsActions.addProjectInfo(payload));
+    }
     handleClose();
+    setTimeout(() => {
+      dispatch(settingsActions.getProjectInfo());
+    }, 300);
   };
 
   const handleModuleChange = (e) => {
@@ -259,13 +271,27 @@ const CreateDependencies = () => {
   const handleSubmitModule = (e) => {
     e.preventDefault();
     if (!validateModule()) return;
-    const endpoint = selectedData ? '/Update_Module' : '/Save_Module';
-    api
-      .post(endpoint, ModuleformData)
-      .then(() => {
-        dispatch(moduleActions.getModuleInfo());
-      })
-      .catch((err) => console.error('Error saving user:', err));
+
+    const payload = {
+      ModuleName: ModuleformData.ModuleName,
+      ProjectId: ModuleformData.ProjectId,
+      ModuleDescription: ModuleformData.ModuleDescription
+    };
+
+    if (selectedData) {
+      payload.Status = selectedData.Status;
+      payload.ModuleId = selectedData.ModuleId;
+      payload.ModifyBy = user.UserName;
+      dispatch(moduleActions.updateModuleInfo(payload));
+    } else {
+      payload.CreatedBy = user.UserName;
+      dispatch(moduleActions.addModuleInfo(payload));
+    }
+
+    setTimeout(() => {
+      dispatch(moduleActions.getModuleInfo());
+    }, 300);
+
     handleClose();
   };
 
@@ -286,7 +312,7 @@ const CreateDependencies = () => {
         ProjectId: selectedData.ProjectId,
         ProjectTitle: selectedData.ProjectTitle,
         ProjectDescription: selectedData.ProjectDescription,
-        DivisionId: selectedData.DivisionId,
+        GroupId: selectedData.DivisionId,
         HogName: selectedData.HOGId,
         HodName: selectedData.HODId,
         Technology: selectedData.Technology,
@@ -525,11 +551,11 @@ const CreateDependencies = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Division Name</Form.Label>
                   <Form.Select
-                    name="DivisionId"
-                    value={ProjectformData.DivisionId}
+                    name="GroupId"
+                    value={ProjectformData.GroupId}
                     className="custom-form-select"
                     onChange={handleProjectChange}
-                    isInvalid={!!projectErrors.DivisionId}
+                    isInvalid={!!projectErrors.GroupId}
                   >
                     <option value="">Select Divison...</option>
                     {Array.isArray(divisionDataList?.Result)
@@ -546,7 +572,7 @@ const CreateDependencies = () => {
                             </option>
                           ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{projectErrors.DivisionId}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{projectErrors.GroupId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
               <Col md={6}>

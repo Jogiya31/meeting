@@ -18,11 +18,13 @@ import { useStore } from '../../../contexts/DataContext';
 import { meetingsActions } from '../../../store/mom/momSlice';
 import Swal from 'sweetalert2';
 import { useTheme } from '../../../contexts/themeContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const NewPoint = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { mode } = useTheme();
+  const { user } = useAuth();
   const { store, currentMeetingId } = useStore();
   const API_URL = import.meta.env.VITE_APP_API_BASE_URL;
   const Role = localStorage.getItem('role');
@@ -215,7 +217,7 @@ const NewPoint = () => {
     setcurrentTime(date);
     if (date instanceof Date && !isNaN(date)) {
       setTimeError(false);
-      setdiscussionTime(moment(date).format('hh:mm A'))
+      setdiscussionTime(moment(date).format('hh:mm A'));
     }
   };
 
@@ -253,7 +255,7 @@ const NewPoint = () => {
             MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
             MeetingTime: moment(currentTime).format('hh:mm A'),
             Draft: 1,
-            ModifyBy: Role
+            ModifyBy: user.UserName || Role
           })
         );
         return true;
@@ -263,7 +265,7 @@ const NewPoint = () => {
             MeetingTitle: meetingTitle,
             MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
             MeetingTime: moment(currentTime).format('hh:mm A'),
-            CreatedBy: Role
+            CreatedBy: user.UserName || Role
           })
         );
         return true;
@@ -383,7 +385,7 @@ const NewPoint = () => {
               MeetingId: meetingId,
               MeetingTitle: meetingTitle,
               MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
-            MeetingTime: moment(currentTime).format('hh:mm A'),
+              MeetingTime: moment(currentTime).format('hh:mm A'),
               Draft: 3,
               ModifyBy: Role
             })
@@ -839,7 +841,7 @@ const NewPoint = () => {
           )}
         </Col>
       </Row>
-      <Modal show={showInfo} onHide={handleClose} animation={true}  backdrop="static" keyboard={false}>
+      <Modal show={showInfo} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>User Details</h5>

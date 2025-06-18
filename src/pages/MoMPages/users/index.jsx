@@ -414,12 +414,6 @@ const UserList = () => {
       SalutationId: formData.SalutationId || '0',
       PriorityOrderId: formData.PriorityOrderId || '',
       DisplayOrderId: formData.DisplayOrderId || '999',
-      Group_id: formData.EmployeementDivisionId,
-      Team_id: '',
-      TeamName: '',
-      Dept_id: '',
-      Ministry_id: '',
-      Assigneddept: '',
       Email: formData.Email
     };
 
@@ -427,15 +421,16 @@ const UserList = () => {
       // Update User Payload
       updatedData.UserId = selectedUser.UserId;
       updatedData.ModifyBy = Role;
+      updatedData.key = "3";
     } else {
       // Save New User Payload
       updatedData.CreatedBy = Role;
       updatedData.Password = formData.Password;
+      updatedData.key = "2";
     }
 
-    const endpoint = selectedUser ? '/Update_User' : '/Save_User';
     api
-      .post(endpoint, updatedData)
+      .post('/Api', updatedData)
       .then(() => {
         getUserList();
         handleClose();

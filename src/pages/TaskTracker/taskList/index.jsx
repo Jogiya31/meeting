@@ -19,11 +19,11 @@ const TaskList = () => {
   const [filterPayload, setFilterPayload] = useState({
     ProjectId: '',
     ModuleId: '',
-    Status: '',
+    StatusMulti: '',
     UserId: '',
     StartDate: '',
     EndDate: '',
-    GroupId: ''
+    GroupIdMulti: ''
   });
   const [groupOption, setGroupOption] = useState([]);
   const [projectOption, setProjectOption] = useState([]);
@@ -112,7 +112,7 @@ const TaskList = () => {
     if (groupFilter && groupFilter.length > 0) {
       let groupPayload = '';
       if (groupFilter && groupFilter.length === divisionDataList?.Result?.length) {
-        filterParams = { ...filterParams, GroupId: '' };
+        filterParams = { ...filterParams, GroupIdMulti: '' };
       } else {
         for (let index = 0; index < groupFilter.length; index++) {
           const element = groupFilter[index];
@@ -120,11 +120,11 @@ const TaskList = () => {
         }
         filterParams = {
           ...filterParams,
-          GroupId: groupPayload.slice(0, -1)
+          GroupIdMulti: groupPayload.slice(0, -1)
         };
       }
     } else {
-      filterParams = { ...filterParams, GroupId: '' };
+      filterParams = { ...filterParams, GroupIdMulti: '' };
     }
 
     // PROJECT filter values
@@ -188,7 +188,7 @@ const TaskList = () => {
     if (statusFilter && statusFilter.length > 0) {
       let statusPayload = '';
       if (statusFilter && statusFilter.length === statusLists?.Result?.length) {
-        filterParams = { ...filterParams, Status: '' };
+        filterParams = { ...filterParams, StatusMulti: '' };
       } else {
         for (let index = 0; index < statusFilter.length; index++) {
           const element = statusFilter[index];
@@ -196,11 +196,11 @@ const TaskList = () => {
         }
         filterParams = {
           ...filterParams,
-          Status: statusPayload.slice(0, -1)
+          StatusMulti: statusPayload.slice(0, -1)
         };
       }
     } else {
-      filterParams = { ...filterParams, Status: '' };
+      filterParams = { ...filterParams, StatusMulti: '' };
     }
 
     setFilterPayload(filterParams);
@@ -250,36 +250,48 @@ const TaskList = () => {
     { field: 'StartDate', sortable: true, filter: true, flex: 1 },
     { field: 'Status', sortable: true, filter: true, flex: 1 },
     { field: 'AssignTo', sortable: true, filter: true, flex: 1 },
-    { field: 'Reason', headerName:'Remark' ,flex: 1 }
+    { field: 'Reason', headerName: 'Remark', flex: 1 }
   ]);
 
-useEffect(() => {
-  if (taskList && Array.isArray(taskList.Result)) {
-    const updatedData = taskList?.Result?.map((item) => {
-      let userName = '';
-      const UserIds = item.UserId.split(',');
-      UserIds.forEach((id) => {
-        const trimmedId = id.trim();
-        if (trimmedId && trimmedId !== '0') {
-          const user = userList?.Result?.find((u) => u.UserId === trimmedId);
-          if (user?.UserName) {
-            userName += user.UserName + ', ';
-          }
-        }
+  useEffect(() => {
+    if (taskList && Array.isArray(taskList.Result) && userList?.Result) {
+      const updatedData = taskList.Result.map((item) => {
+        // Merge and deduplicate user IDs from UserId and ChangeAssignTo
+        const userIdSet = new Set();
+
+        const collectIds = (idString) => {
+          if (!idString) return;
+          idString.split(',').forEach((id) => {
+            const trimmedId = id.trim();
+            if (trimmedId && trimmedId !== '0') {
+              userIdSet.add(trimmedId);
+            }
+          });
+        };
+
+        collectIds(item.UserId);
+        collectIds(item.ChangeAssignTo);
+
+        // Map user IDs to user names
+        const userNames = Array.from(userIdSet)
+          .map((id) => {
+            const user = userList.Result.find((u) => u.UserId === id);
+            return user?.UserName || null;
+          })
+          .filter(Boolean); // Remove nulls
+
+        return {
+          ...item,
+          UserNames: userNames.join(', '),
+          AssignTo: userNames.join(', ')
+        };
       });
 
-      return {
-        ...item,
-        UserNames: userName.slice(0, -1),
-        AssignTo: userName.slice(0, -1),
-      };
-    });
-    setTaskData(updatedData || []);
-  } else {
-    setTaskData([]);
-  }
-}, [taskList, userList]);
-
+      setTaskData(updatedData);
+    } else {
+      setTaskData([]);
+    }
+  }, [taskList, userList]);
 
   const triggerReset = () => {
     setResetTrigger((prev) => prev + 1);
@@ -297,6 +309,17 @@ useEffect(() => {
       EndDate: '',
       GroupId: ''
     });
+    dispatch(
+      taskActions.getTaskInfo({
+        ProjectId: '',
+        ModuleId: '',
+        StatusMulti: '',
+        UserId: '',
+        StartDate: '',
+        EndDate: '',
+        GroupIdMulti: ''
+      })
+    );
   };
 
   const handleStartDate = (date) => {

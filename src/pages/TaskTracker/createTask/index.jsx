@@ -64,7 +64,7 @@ const CreateTask = () => {
     const { data } = props;
     return (
       <div className="action-column">
-        <Button variant="" size="sm" onClick={() => handleEdit(data)} title="Edit User">
+        <Button variant="" size="sm" onClick={() => handleEdit(data)} title="Edit Task">
           <img src={edit} width={20} alt="" />
         </Button>
       </div>
@@ -173,7 +173,9 @@ const CreateTask = () => {
     setResetTrigger((prev) => prev + 1);
   };
 
+  // Update UserId when userFilter changes
   useEffect(() => {
+    if (!userList) return;
     if (userList) {
       let options = [];
       userList?.Result?.forEach((item) => {
@@ -184,48 +186,35 @@ const CreateTask = () => {
 
       setuserOption([...options]);
     }
-  }, []);
+    let userPayload = '';
+    if (userFilter && userFilter.length === userList?.Result?.filter((item) => item.Status === '1').length) {
+      userPayload = '';
+    } else if (userFilter && userFilter.length > 0) {
+      userPayload = userFilter.map((item) => item.value).join(',');
+    }
 
+    setTaskFormData((prev) => ({
+      ...prev,
+      UserId: userPayload
+    }));
+  }, [userFilter, userList]);
+
+  // Update ChangeAssignTo when changeAssignedUserFilter changes
   useEffect(() => {
-    let filterParams = { ...TaskformData };
-    if (userFilter && userFilter.length > 0) {
-      let userPayload = '';
-      if (userFilter && userFilter.length === userList?.Result?.filter((item) => item.Status === '1').length) {
-        filterParams = { ...filterParams, UserId: '' };
-      } else {
-        for (let index = 0; index < userFilter.length; index++) {
-          const element = userFilter[index];
-          userPayload += `${element.value},`;
-        }
-        filterParams = {
-          ...filterParams,
-          UserId: userPayload.slice(0, -1)
-        };
-      }
-    } else {
-      filterParams = { ...filterParams, UserId: '' };
+    if (!userList) return;
+
+    let userPayload = '';
+    if (changeAssignedUserFilter && changeAssignedUserFilter.length === userList?.Result?.filter((item) => item.Status === '1').length) {
+      userPayload = '';
+    } else if (changeAssignedUserFilter && changeAssignedUserFilter.length > 0) {
+      userPayload = changeAssignedUserFilter.map((item) => item.value).join(',');
     }
 
-    if (changeAssignedUserFilter && changeAssignedUserFilter.length > 0) {
-      let userPayload = '';
-      if (changeAssignedUserFilter && changeAssignedUserFilter.length === userList?.Result?.filter((item) => item.Status === '1').length) {
-        filterParams = { ...filterParams, ChangeAssignTo: '' };
-      } else {
-        for (let index = 0; index < changeAssignedUserFilter.length; index++) {
-          const element = changeAssignedUserFilter[index];
-          userPayload += `${element.value},`;
-        }
-        filterParams = {
-          ...filterParams,
-          ChangeAssignTo: userPayload.slice(0, -1)
-        };
-      }
-    } else {
-      filterParams = { ...filterParams, ChangeAssignTo: '' };
-    }
-
-    setTaskFormData(filterParams);
-  }, [userFilter, changeAssignedUserFilter]);
+    setTaskFormData((prev) => ({
+      ...prev,
+      ChangeAssignTo: userPayload
+    }));
+  }, [changeAssignedUserFilter, userList]);
 
   const handleuserFilter = (newSelected) => {
     if (newSelected.length) {
@@ -264,7 +253,7 @@ const CreateTask = () => {
         </Card.Header>
         <Card.Body className="p-3 pt-0 dark-table">
           <AdvanceTable
-            rowData={taskList?.Result || []}
+            rowData={taskList?.Result?.filter((item) => (item.UserId === '' || item.UserId === '0') && item.ChangeAssignTo === '') || []}
             columnDefs={columnDefs}
             pagination={true}
             paginationPageSize={15}
@@ -297,7 +286,7 @@ const CreateTask = () => {
                   >
                     <option value="">Select project...</option>
                     {Array.isArray(projectDataList?.Result)
-                      ? projectDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                      ? projectDataList?.Result?.filter((item) => item.Status === '1').map((item) => (
                           <option key={item.ProjectId} value={item.ProjectId}>
                             {item.ProjectTitle}
                           </option>
@@ -366,7 +355,7 @@ const CreateTask = () => {
                   <MultiSelect
                     options={userOption}
                     value={userOption?.filter(
-                      (option) => TaskformData && TaskformData.UserId && TaskformData.UserId.split(',').includes(option.value)
+                      (option) => TaskformData && TaskformData?.UserId && TaskformData?.UserId?.split(',').includes(option.value)
                     )}
                     onChange={handleuserFilter}
                     overrideStrings={{

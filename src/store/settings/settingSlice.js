@@ -110,7 +110,6 @@ const settingsSlice = createSlice({
     updateDivisionInfoSuccess(state, action) {
       state.loader = false; // Set loader to false after fetching
       state.success = true; // Set success flag to true
-      state.divisionData = action.payload; // Store received data
     },
     // Action to handle failure in fetching division information
     updateDivisionInfoFailed(state, action) {
@@ -289,10 +288,6 @@ const settingsSlice = createSlice({
     addProjectInfo(state) {
       state.loader = true; // Set loader to true while fetching
     },
-    addProjectInfoFromTracker(state) {
-      state.loader = true; // Set loader to true while fetching
-    },
-    
     // Action to handle successful retrieval of Project information
     addProjectInfoSuccess(state, action) {
       state.loader = false; // Set loader to false after fetching

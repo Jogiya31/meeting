@@ -36,12 +36,12 @@ const JWTLogin = () => {
     setErrors({});
     setSubmitError('');
 
-    dispatch(authActions.getauthInfo({ UsernameMobile: username, Password: password }));
+    dispatch(authActions.getauthInfo({ UsernameMobile: username, Password: password, Key: '20' }));
   };
 
   useEffect(() => {
     if (loggedIn || localStorage.getItem('loggedIn')) {
-      if (role === 'superadmin' || localStorage.getItem('role') === 'superadmin' ) {
+      if (role === 'superadmin' || localStorage.getItem('role') === 'superadmin') {
         navigate('/meetings/dashboard');
       } else {
         navigate('/tasktracker/dashboard');
