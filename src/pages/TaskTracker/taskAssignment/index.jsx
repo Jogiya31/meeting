@@ -42,11 +42,11 @@ const TaskAssigment = () => {
       taskActions.getTaskInfo({
         ProjectId: '',
         ModuleId: '',
-        Status: '',
+        StatusMulti: '',
         UserId: '',
         StartDate: '',
         EndDate: '',
-        GroupId: ''
+        GroupIdMulti: ''
       })
     );
     dispatch(userActions.getuserInfo());
@@ -331,7 +331,7 @@ const TaskAssigment = () => {
                 />
               </Tab>
               <Tab eventKey="taskProgress" title="Task Progress">
-                <EnhancedTable data={taskProgress} headers={progressHeaders} headerCss="warning" enablePagination PerPagelimit={15}  />
+                <EnhancedTable data={taskProgress} headers={progressHeaders} headerCss="warning" enablePagination PerPagelimit={15} />
               </Tab>
             </Tabs>
           </Col>

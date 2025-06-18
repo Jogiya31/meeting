@@ -44,11 +44,11 @@ const CreateTask = () => {
       taskActions.getTaskInfo({
         ProjectId: '',
         ModuleId: '',
-        Status: '',
+        StatusMulti: '',
         UserId: '',
         StartDate: '',
         EndDate: '',
-        GroupId: ''
+        GroupIdMulti: ''
       })
     );
     dispatch(userActions.getuserInfo());
