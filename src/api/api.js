@@ -304,21 +304,24 @@ export const updateMeetingsDetails = (data) => {
 };
 export const addAttendanceDetails = (data) => {
   const payload = data.payload;
-  const url = `/Save_Attendance`;
+  payload.key = 50;
+  const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });
 };
 export const updateAttendanceDetails = (data) => {
   const payload = data.payload;
-  const url = `/Update_Attendance`;
+  payload.key = 24;
+  const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });
 };
 export const addDiscussionDetails = (data) => {
   const payload = data.payload;
-  const url = `/Save_DiscussionPoint`;
+  payload.key = 17;
+  const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });
@@ -333,14 +336,16 @@ export const updateDiscussionDetails = (data) => {
 };
 export const deleteAttendanceDetails = (data) => {
   const payload = data.payload;
-  const url = `/Delete_Attendance`;
+  payload.key = 28;
+  const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });
 };
 export const deleteDiscussionDetails = (data) => {
   const payload = data.payload;
-  const url = `/Delete_Discussion`;
+  payload.key = 29;
+  const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });

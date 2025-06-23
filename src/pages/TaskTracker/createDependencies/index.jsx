@@ -248,6 +248,7 @@ const CreateDependencies = () => {
     if (selectedData) {
       dispatch(settingsActions.updateProjectInfo(payload));
     } else {
+      payload.CreatedBy = user.UserName;
       dispatch(settingsActions.addProjectInfo(payload));
     }
     handleClose();

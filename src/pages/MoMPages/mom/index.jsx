@@ -255,7 +255,7 @@ const NewPoint = () => {
             MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
             MeetingTime: moment(currentTime).format('hh:mm A'),
             Draft: 1,
-            ModifyBy: user.UserName || Role
+            ModifyBy: user.UserName
           })
         );
         return true;
@@ -265,7 +265,7 @@ const NewPoint = () => {
             MeetingTitle: meetingTitle,
             MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
             MeetingTime: moment(currentTime).format('hh:mm A'),
-            CreatedBy: user.UserName || Role
+            CreatedBy: user.UserName
           })
         );
         return true;
@@ -296,14 +296,16 @@ const NewPoint = () => {
 
           // If attendanceId is not available, treat it as a new attendance record (Save)
           if (!item.AttendanceId) {
-            return axios.post(`${API_URL}/Save_Attendance`, { ...requestPayload, CreatedBy: Role });
+            return dispatch(meetingsActions.addAttendanceInfo({ ...requestPayload, CreatedBy: user.UserName }));
           }
           // If attendanceId is available, update the attendance record (Update)
-          return axios.post(`${API_URL}/Update_Attendance`, {
-            ...requestPayload,
-            ModifyBy: Role,
-            AttendanceId: item.AttendanceId // Include AttendanceId for update
-          });
+          return dispatch(
+            meetingsActions.updateAttendanceInfo({
+              ...requestPayload,
+              ModifyBy: user.UserName,
+              AttendanceId: item.AttendanceId
+            })
+          );
         });
 
         Promise.all(attendanceRequests);
@@ -316,7 +318,7 @@ const NewPoint = () => {
             MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
             MeetingTime: moment(currentTime).format('hh:mm A'),
             Draft: 2,
-            ModifyBy: Role
+            ModifyBy: user.UserName
           })
         );
 
@@ -367,13 +369,15 @@ const NewPoint = () => {
               ProjectId: item.projectId || ''
             };
             if (!item.discussionId) {
-              return axios.post(`${API_URL}/Save_DiscussionPoint`, { ...requestPayload, CreatedBy: Role });
+              return dispatch(meetingsActions.addDiscussionInfo({ ...requestPayload, CreatedBy: user.UserName }));
             } else {
-              return axios.post(`${API_URL}/update_DiscussionPoint`, {
-                ...requestPayload,
-                ModifyBy: Role,
-                DiscussionId: item.id // Include DiscussionId for update
-              });
+              return dispatch(
+                meetingsActions.addDiscussionInfo({
+                  ...requestPayload,
+                  ModifyBy: user.UserName,
+                  DiscussionId: item.id
+                })
+              );
             }
           });
 
@@ -387,7 +391,7 @@ const NewPoint = () => {
               MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
               MeetingTime: moment(currentTime).format('hh:mm A'),
               Draft: 3,
-              ModifyBy: Role
+              ModifyBy: user.UserName
             })
           );
           return true;

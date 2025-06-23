@@ -48,8 +48,6 @@ const DashDefault = () => {
 
   const stats = dashboardCountInfo?.Result?.[0];
 
-  console.log('pendingTasksData', pendingTasksData)
-
   const handleCardClick = (card) => {
     if (card === 'user') {
       navigate('/tasktracker/users');
@@ -106,15 +104,6 @@ const DashDefault = () => {
     }
   ];
 
-  // const pendingTasksData = [
-  //   { name: 'Rohit Gusain', tasks: 1 },
-  //   { name: 'Ankit Pandey', tasks: 2 },
-  //   { name: 'Arpit Singh', tasks: 2 },
-  //   { name: 'Sanjay Shukla', tasks: 2 },
-  //   { name: 'Sanjeev kumar', tasks: 2 },
-  //   { name: 'Manish kumar', tasks: 3 },
-  //   { name: 'Arun Siwach', tasks: 4 }
-  // ];
   useEffect(() => {
     if (taskList?.Result && userList?.Result) {
       const assignedTasks = [];
@@ -189,7 +178,6 @@ const DashDefault = () => {
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
 
-
       // Set all states
       setAssignedTasks(assignedTasks);
       setUnAssignedTasks(unAssignedTasks);
@@ -232,7 +220,7 @@ const DashDefault = () => {
               </Card.Body>
             </Card>
           </div>
-          <div className="grid-item">
+          <div className={`grid-item ${role === 'user' && 'd-none'}`}>
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-12' : 'grd-bg-color-12'} pointer`}
               onClick={() => setShowProjects(!showProjects)}
@@ -395,26 +383,28 @@ const DashDefault = () => {
             </Card>
           </div>
         </div>
-        <Row>
-          <Col md={6}>
-            <Card className="mt-3">
-              <Card.Body className="p-0">
-                <div className="dashboard-barchart">
-                  <GroupedColumnChart data={groupsData} labels={labels} title="Total Tasks/Pending Tasks By group" />
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={6}>
-            <Card className="mt-3">
-              <Card.Body className="p-0">
-                <div className="dashboard-donut">
-                  <DonutChart2 title="Pending Tasks By Team Members" data={pendingTasksData} />;
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+        {role !== 'user' && (
+          <Row>
+            <Col md={6}>
+              <Card className="mt-3">
+                <Card.Body className="p-0">
+                  <div className="dashboard-barchart">
+                    <GroupedColumnChart data={groupsData} labels={labels} title="Total Tasks/Pending Tasks By group" />
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={6}>
+              <Card className="mt-3">
+                <Card.Body className="p-0">
+                  <div className="dashboard-donut">
+                    <DonutChart2 title="Pending Tasks By Team Members" data={pendingTasksData} />;
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        )}
       </div>
 
       <Modal show={showProjects} animation={true} backdrop="static" keyboard={false}>

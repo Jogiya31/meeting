@@ -14,16 +14,18 @@ import AdvanceTable from '../../../components/Table/advanceTable';
 import { taskActions } from '../../../store/task/taskSlice';
 import { useStore } from '../../../contexts/DataContext';
 import { exportJsonToExcel } from '../../../utils/utils';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const TaskList = () => {
   const dispatch = useDispatch();
   const gridRef = useRef();
+  const { user, role } = useAuth();
   const { filterValue, filterWith } = useStore();
   const [filterPayload, setFilterPayload] = useState({
     ProjectId: '',
     ModuleId: '',
     StatusMulti: '',
-    UserId: '',
+    UserId: user.UserId,
     StartDate: '',
     EndDate: '',
     GroupIdMulti: ''
@@ -412,17 +414,19 @@ const TaskList = () => {
                   hasSelectAll={true}
                 />
               </div>
-              <div className="filter-col">
-                <MultiSelect
-                  options={userOption}
-                  value={userFilter}
-                  onChange={handleuserFilter}
-                  overrideStrings={{
-                    selectSomeItems: 'Users'
-                  }}
-                  hasSelectAll={true}
-                />
-              </div>
+              {role !== 'user' && (
+                <div className="filter-col">
+                  <MultiSelect
+                    options={userOption}
+                    value={userFilter}
+                    onChange={handleuserFilter}
+                    overrideStrings={{
+                      selectSomeItems: 'Users'
+                    }}
+                    hasSelectAll={true}
+                  />
+                </div>
+              )}
               <div className="filter-col">
                 <MultiSelect
                   options={statusOption}

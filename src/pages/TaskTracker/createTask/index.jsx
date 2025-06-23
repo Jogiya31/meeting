@@ -139,31 +139,33 @@ const CreateTask = () => {
     if (selectedData) {
       finalPayload.DiscussionId = selectedData.DiscussionId;
       finalPayload.ModifyBy = user.UserName;
-      finalPayload.Status = selectedData.Status;
+      finalPayload.Status = '1';
       finalPayload.UserId = selectedData.UserId;
       finalPayload.ChangeAssignTo = TaskformData.ChangeAssignTo;
+
+      console.log('finalPayload', finalPayload);
+      dispatch(taskActions.updateTaskInfo(finalPayload));
     } else {
       finalPayload.CreatedBy = user.UserName;
+      dispatch(taskActions.addTaskInfo(finalPayload));
     }
-    const endpoint = selectedData ? '/Update_Task' : '/Save_Task';
-    api
-      .post(endpoint, finalPayload)
-      .then(() => {
-        handleClose();
-        setShowNewTask(false);
-        dispatch(
-          taskActions.getTaskInfo({
-            ProjectId: '',
-            ModuleId: '',
-            Status: '',
-            UserId: '',
-            StartDate: '',
-            EndDate: '',
-            GroupId: ''
-          })
-        );
-      })
-      .catch((err) => console.error('Error saving user:', err));
+
+    setTimeout(() => {
+      setShowNewTask(false);
+      dispatch(
+        taskActions.getTaskInfo({
+          ProjectId: '',
+          ModuleId: '',
+          StatusMulti: '',
+          UserId: '',
+          StartDate: '',
+          EndDate: '',
+          GroupIdMulti: ''
+        })
+      );
+    }, 300);
+
+    handleClose();
   };
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -362,7 +364,6 @@ const CreateTask = () => {
                       selectSomeItems: 'Users'
                     }}
                     hasSelectAll={true}
-                    disabled={selectedData}
                   />
                   <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
                 </Form.Group>

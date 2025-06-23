@@ -137,13 +137,13 @@ const menuItems = {
               url: '/tasktracker/Task-Assignment',
               display: true
             },
-            {
-              id: 'create_report',
-              title: 'Report',
-              type: 'item',
-              url: '/tasktracker/Task-Report',
-              display: true
-            }
+            // {
+            //   id: 'create_report',
+            //   title: 'Report',
+            //   type: 'item',
+            //   url: '/tasktracker/Task-Report',
+            //   display: true
+            // }
           ]
         }
       ]
@@ -250,13 +250,13 @@ const menuItems = {
               url: '/tasktracker/Task-Assignment',
               display: true
             },
-            {
-              id: 'create_report',
-              title: 'Report',
-              type: 'item',
-              url: '/tasktracker/Task-Report',
-              display: true
-            }
+            // {
+            //   id: 'create_report',
+            //   title: 'Report',
+            //   type: 'item',
+            //   url: '/tasktracker/Task-Report',
+            //   display: true
+            // }
           ]
         }
       ]
@@ -324,13 +324,13 @@ const menuItems = {
               url: '/tasktracker/Task-Assignment',
               display: true
             },
-            {
-              id: 'create_report',
-              title: 'Report',
-              type: 'item',
-              url: '/tasktracker/Task-Report',
-              display: true
-            }
+            // {
+            //   id: 'create_report',
+            //   title: 'Report',
+            //   type: 'item',
+            //   url: '/tasktracker/Task-Report',
+            //   display: true
+            // }
           ]
         }
       ]

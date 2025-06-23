@@ -14,7 +14,7 @@ import api from '../../../api';
 const TaskAssigment = () => {
   const dispatch = useDispatch();
   const { mode } = useTheme();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [assignedTask, setassignedTask] = useState([]);
   const [UnAssignedTasks, setUnAssignedTasks] = useState([]);
   const [taskProgress, setTaskProgress] = useState([]);
@@ -25,6 +25,7 @@ const TaskAssigment = () => {
     TaskDescription: ''
   });
   const [showNewTask, setShowNewTask] = useState(false);
+  const [showUserTask, setShowUserTask] = useState(false);
   const [showUnAssignedTask, setShowUnAssignedTask] = useState(false);
   const [taskErrors, setTaskErrors] = useState({});
   const [selectedData, setselectedData] = useState(null);
@@ -43,7 +44,7 @@ const TaskAssigment = () => {
         ProjectId: '',
         ModuleId: '',
         StatusMulti: '',
-        UserId: '',
+        UserId: role === 'user' ? user.UserId : '',
         StartDate: '',
         EndDate: '',
         GroupIdMulti: ''
@@ -56,7 +57,11 @@ const TaskAssigment = () => {
 
   const handleEdit = (data) => {
     setselectedData(data);
-    setShowNewTask(true);
+    if (role === 'user') {
+      setShowUserTask(true);
+    } else {
+      setShowNewTask(true);
+    }
   };
 
   const handleUnassignedEdit = (data) => {
@@ -122,31 +127,61 @@ const TaskAssigment = () => {
           });
 
           // Update progress stats
-          allAssignedUserIds.forEach((userId) => {
-            const user = userList.Result.find((u) => u.UserId?.trim() === userId);
-            const userName = user?.UserName || `User ID: ${userId}`;
+          if (role === 'user') {
+            allAssignedUserIds
+              .filter((item) => String(item) === String(user.UserId))
+              .forEach((userId) => {
+                const user = userList.Result.find((u) => u.UserId?.trim() === userId);
+                const userName = user?.UserName || `User ID: ${userId}`;
 
-            if (!progressMap[userId]) {
-              progressMap[userId] = {
-                userId,
-                userName,
-                taskAssigned: 0,
-                taskpending: 0,
-                taskComplete: 0,
-                taskProgress: 0
-              };
-            }
+                if (!progressMap[userId]) {
+                  progressMap[userId] = {
+                    userId,
+                    userName,
+                    taskAssigned: 0,
+                    taskpending: 0,
+                    taskComplete: 0,
+                    taskProgress: 0
+                  };
+                }
 
-            progressMap[userId].taskAssigned += 1;
+                progressMap[userId].taskAssigned += 1;
 
-            const status = item.Status?.toLowerCase() || '';
-            if (status === 'pending' || status === 'inprogress') {
-              progressMap[userId].taskpending += 1;
-            } else if (status === 'completed') {
-              progressMap[userId].taskComplete += 1;
-            }
-            progressMap[userId].taskProgress = (progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100 + '%';
-          });
+                const status = item.Status?.toLowerCase() || '';
+                if (status === 'pending' || status === 'inprogress') {
+                  progressMap[userId].taskpending += 1;
+                } else if (status === 'completed') {
+                  progressMap[userId].taskComplete += 1;
+                }
+                progressMap[userId].taskProgress = (progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100 + '%';
+              });
+          } else {
+            allAssignedUserIds.forEach((userId) => {
+              const user = userList.Result.find((u) => u.UserId?.trim() === userId);
+              const userName = user?.UserName || `User ID: ${userId}`;
+
+              if (!progressMap[userId]) {
+                progressMap[userId] = {
+                  userId,
+                  userName,
+                  taskAssigned: 0,
+                  taskpending: 0,
+                  taskComplete: 0,
+                  taskProgress: 0
+                };
+              }
+
+              progressMap[userId].taskAssigned += 1;
+
+              const status = item.Status?.toLowerCase() || '';
+              if (status === 'pending' || status === 'inprogress') {
+                progressMap[userId].taskpending += 1;
+              } else if (status === 'completed') {
+                progressMap[userId].taskComplete += 1;
+              }
+              progressMap[userId].taskProgress = (progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100 + '%';
+            });
+          }
         }
       });
 
@@ -182,13 +217,14 @@ const TaskAssigment = () => {
 
   const handleClose = () => {
     setShowNewTask(false);
+    setShowUserTask(false);
     setShowUnAssignedTask(false);
     setTaskErrors({});
     setTaskFormData({
-      projectName: '',
-      moduleName: '',
-      task: '',
-      taskDescription: ''
+      ProjectId: '',
+      ModuleId: '',
+      Task: '',
+      TaskDescription: ''
     });
     setuserFilter([]);
     setChangeAssignedUserFilter([]);
@@ -208,7 +244,7 @@ const TaskAssigment = () => {
 
     setTaskFormData((prev) => ({
       ...prev,
-      UserId: userPayload
+      UserId: userPayload.slice(0, -1)
     }));
   }, [userFilter, userList]);
 
@@ -259,25 +295,21 @@ const TaskAssigment = () => {
       UserId: TaskformData.UserId || selectedData.UserId,
       ChangeAssignTo: TaskformData.ChangeAssignTo || ''
     };
-
-    api
-      .post('/Update_Task', finalPayload)
-      .then(() => {
-        handleClose();
-        setShowNewTask(false);
-        dispatch(
-          taskActions.getTaskInfo({
-            ProjectId: '',
-            ModuleId: '',
-            Status: '',
-            UserId: '',
-            StartDate: '',
-            EndDate: '',
-            GroupId: ''
-          })
-        );
-      })
-      .catch((err) => console.error('Error saving user:', err));
+    dispatch(taskActions.updateTaskInfo(finalPayload));
+    setTimeout(() => {
+      setShowNewTask(false);
+      dispatch(
+        taskActions.getTaskInfo({
+          ProjectId: '',
+          ModuleId: '',
+          StatusMulti: '',
+          UserId: role === 'user' ? user.UserId : '',
+          StartDate: '',
+          EndDate: '',
+          GroupIdMulti: ''
+        })
+      );
+    }, 300);
   };
 
   const handleuserFilter = (newSelected) => {
@@ -316,20 +348,22 @@ const TaskAssigment = () => {
                   )}
                 />
               </Tab>
-              <Tab eventKey="UnAssignedTasks" title="UnAssigned Tasks">
-                <EnhancedTable
-                  data={UnAssignedTasks}
-                  headers={unAssignedHeaders}
-                  headerCss="info"
-                  enablePagination
-                  PerPagelimit={15}
-                  rowactions={(row) => (
-                    <Button className="float-end btn-sm table-header-primary" onClick={() => handleUnassignedEdit(row)}>
-                      Action
-                    </Button>
-                  )}
-                />
-              </Tab>
+              {role !== 'user' && (
+                <Tab eventKey="UnAssignedTasks" title="UnAssigned Tasks">
+                  <EnhancedTable
+                    data={UnAssignedTasks}
+                    headers={unAssignedHeaders}
+                    headerCss="info"
+                    enablePagination
+                    PerPagelimit={15}
+                    rowactions={(row) => (
+                      <Button className="float-end btn-sm table-header-primary" onClick={() => handleUnassignedEdit(row)}>
+                        Action
+                      </Button>
+                    )}
+                  />
+                </Tab>
+              )}
               <Tab eventKey="taskProgress" title="Task Progress">
                 <EnhancedTable data={taskProgress} headers={progressHeaders} headerCss="warning" enablePagination PerPagelimit={15} />
               </Tab>
@@ -337,6 +371,148 @@ const TaskAssigment = () => {
           </Col>
         </Row>
       </Card>
+      <Modal size="md" show={showUserTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+        <Modal.Header className={mode}>
+          <Modal.Title>
+            <h5>Update Task</h5>
+          </Modal.Title>
+          <span className="pointer" onClick={() => handleClose()}>
+            {' '}
+            X{' '}
+          </span>
+        </Modal.Header>
+        <Modal.Body className={mode}>
+          <Form noValidate onSubmit={handleSubmitTask}>
+            <Row>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Project Name</Form.Label>
+                  <Form.Select
+                    name="ProjectId"
+                    value={TaskformData.ProjectId}
+                    className="custom-form-select"
+                    onChange={handleTaskChange}
+                    isInvalid={!!taskErrors.ProjectId}
+                    disabled={selectedData}
+                  >
+                    <option value="">Select project...</option>
+                    {Array.isArray(projectDataList?.Result)
+                      ? projectDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.ProjectId} value={item.ProjectId}>
+                            {item.ProjectTitle}
+                          </option>
+                        ))
+                      : Object.values(projectDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.ProjectId} value={item.ProjectId}>
+                              {item.ProjectTitle}
+                            </option>
+                          ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{taskErrors.ProjectId}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Module Name</Form.Label>
+                  <Form.Select
+                    name="ModuleId"
+                    value={TaskformData.ModuleId}
+                    className="custom-form-select"
+                    onChange={handleTaskChange}
+                    isInvalid={!!taskErrors.ModuleId}
+                    disabled={selectedData}
+                  >
+                    <option value="">Select Module...</option>
+                    {moduleList?.Result?.map((item) => (
+                      <option value={item.ModuleId}>{item.ModuleName}</option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{taskErrors.ModuleId}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Task</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Task"
+                    placeholder="Enter..."
+                    value={TaskformData.Task}
+                    onChange={handleTaskChange}
+                    isInvalid={!!taskErrors.Task}
+                    disabled={selectedData}
+                  />
+                  <Form.Control.Feedback type="invalid">{taskErrors.Task}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Task Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    value={TaskformData.TaskDescription}
+                    rows={1}
+                    name="TaskDescription"
+                    placeholder="Enter text here.."
+                    onChange={handleTaskChange}
+                    isInvalid={!!taskErrors.TaskDescription}
+                    disabled={selectedData}
+                  />
+                  <Form.Control.Feedback type="invalid">{taskErrors.TaskDescription}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Assign</Form.Label>
+                  <MultiSelect
+                    options={userOption}
+                    value={userOption?.filter(
+                      (option) => TaskformData && TaskformData.UserId && TaskformData.UserId.split(',').includes(option.value)
+                    )}
+                    onChange={handleuserFilter}
+                    overrideStrings={{
+                      selectSomeItems: 'Users'
+                    }}
+                    hasSelectAll={true}
+                    disabled={selectedData}
+                  />
+                  <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              {selectedData && (
+                <Col md={12}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Change Assigned user</Form.Label>
+                    {console.log('TaskformData', TaskformData && TaskformData.ChangeAssignTo)}
+                    <MultiSelect
+                      options={userOption}
+                      value={userOption?.filter(
+                        (option) =>
+                          TaskformData && TaskformData.ChangeAssignTo && TaskformData.ChangeAssignTo.split(',').includes(option.value)
+                      )}
+                      onChange={handleChangeAssignedUserFilter}
+                      overrideStrings={{
+                        selectSomeItems: 'Users'
+                      }}
+                      hasSelectAll={true}
+                    />
+                  </Form.Group>
+                </Col>
+              )}
+            </Row>
+            <div className="d-flex justify-content-end mt-2">
+              <Button variant="primary" type="submit">
+                Submit
+              </Button>
+              <Button variant="secondary" onClick={() => handleClose()} className="ms-2">
+                Cancel
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
       <Modal size="md" show={showNewTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
