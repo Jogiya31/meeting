@@ -255,3 +255,20 @@
   background-color: $popup-dark-layout;
   color: $dark-layout-font;
 }
+
+.dashboard-donut {
+  display: flex;
+  justify-content: center;
+  min-height: '300px';
+  height: 370px;
+  position: 'relative';
+}
+
+.dashboard-barchart {
+  display: flex;
+  justify-content: center;
+  position: 'relative';
+  min-height: '300px';
+  height: 370px;
+  padding: 0 30px 10px 30px;
+}

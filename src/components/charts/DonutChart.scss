@@ -1,0 +1,37 @@
+.donut-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.chart-area {
+  flex: 1;
+  min-width: 300px;
+}
+
+.legend-area {
+  width: 200px;
+  max-height: 300px;
+  overflow-y: auto; 
+  padding: 10px;
+}
+
+.legend-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
