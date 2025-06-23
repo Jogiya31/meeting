@@ -9,7 +9,6 @@ import { useTheme } from '../../../contexts/themeContext';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { moduleActions } from '../../../store/module/moduleSlice';
 import { useAuth } from '../../../contexts/AuthContext';
-import api from '../../../api';
 
 const TaskAssigment = () => {
   const dispatch = useDispatch();

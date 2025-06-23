@@ -25,7 +25,7 @@ const TaskList = () => {
     ProjectId: '',
     ModuleId: '',
     StatusMulti: '',
-    UserId: user.UserId,
+    UserId: role === 'user' ? user.UserId : '',
     StartDate: '',
     EndDate: '',
     GroupIdMulti: ''
@@ -328,7 +328,7 @@ const TaskList = () => {
         ProjectId: '',
         ModuleId: '',
         StatusMulti: '',
-        UserId: '',
+        UserId: role === 'user' ? user.UserId : '',
         StartDate: '',
         EndDate: '',
         GroupIdMulti: ''

@@ -35,7 +35,15 @@ const DashDefault = () => {
   const userList = useSelector((state) => state.users.data);
   useEffect(() => {
     dispatch(
-      taskActions.getTaskInfo({ ProjectId: '', ModuleId: '', StatusMulti: '', UserId: '', StartDate: '', EndDate: '', GroupIdMulti: '' })
+      taskActions.getTaskInfo({
+        ProjectId: '',
+        ModuleId: '',
+        StatusMulti: '',
+        UserId: role === 'user' ? user.UserId : '',
+        StartDate: '',
+        EndDate: '',
+        GroupIdMulti: ''
+      })
     );
     dispatch(dashboardActions.getdashboardInfo());
     dispatch(meetingsActions.getMeetingsInfo());

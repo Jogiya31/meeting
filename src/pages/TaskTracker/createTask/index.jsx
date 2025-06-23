@@ -15,7 +15,7 @@ import { userActions } from '../../../store/user/userSlice';
 import { MultiSelect } from 'react-multi-select-component';
 
 const CreateTask = () => {
-  const { user } = useAuth();
+  const { role, user } = useAuth();
   const dispatch = useDispatch();
   const { mode } = useTheme();
 
@@ -45,7 +45,7 @@ const CreateTask = () => {
         ProjectId: '',
         ModuleId: '',
         StatusMulti: '',
-        UserId: '',
+        UserId: role === 'user' ? user.UserId : '',
         StartDate: '',
         EndDate: '',
         GroupIdMulti: ''
@@ -157,7 +157,7 @@ const CreateTask = () => {
           ProjectId: '',
           ModuleId: '',
           StatusMulti: '',
-          UserId: '',
+          UserId: role === 'user' ? user.UserId : '',
           StartDate: '',
           EndDate: '',
           GroupIdMulti: ''
