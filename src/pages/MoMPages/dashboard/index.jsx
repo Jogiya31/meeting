@@ -11,8 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../contexts/DataContext';
 import { meetingsActions } from '../../../store/mom/momSlice';
 import { userActions } from '../../../store/user/userSlice';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { motion } from 'framer-motion';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { FaProjectDiagram } from 'react-icons/fa';

@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form, Pagination, InputGroup } from 'react-bootstrap';
 import female_i from '../../../assets/images/user/female.jpg';
+import excel_i from '../../../assets/images/excel_i.svg';
 import male_i from '../../../assets/images/user/male.jpg';
 import api from '../../../api';
 import edit from '../../../assets/images/edit.png';
@@ -15,11 +16,12 @@ import Swal from 'sweetalert2';
 import { MultiSelect } from 'react-multi-select-component';
 import { useTheme } from '../../../contexts/themeContext';
 import AdvanceTable from '../../../components/Table/advanceTable';
-import { capitalizeWords } from '../../../utils/utils';
+import { capitalizeWords, exportJsonToExcel } from '../../../utils/utils';
 
 const UserList = () => {
   const dispatch = useDispatch();
   const { mode } = useTheme();
+  const gridRef = useRef();
   const Role = localStorage.getItem('role');
   const [selectedUser, setselectedUser] = useState(null);
   const [currentDate, setcurrentDate] = useState(null);
@@ -115,7 +117,7 @@ const UserList = () => {
     const { data } = props;
     return (
       <div>
-        {data.Status === '1' ? (
+        {data.StatusTitle === 'In Service' ? (
           <label
             className="status-label theme-bg text-white f-12 pointer"
             onClick={() => {
@@ -167,7 +169,7 @@ const UserList = () => {
     { field: 'Mobile', sortable: true, filter: true, flex: 1 },
     { field: 'Role', sortable: true, filter: true, flex: 1, cellRenderer: UserRoleCellRenderer },
     {
-      field: 'Status',
+      field: 'StatusTitle',
       headerName: 'Status',
       flex: 1,
       cellRenderer: StatusCellRenderer
@@ -202,13 +204,15 @@ const UserList = () => {
   useEffect(() => {
     const updatedData = userList?.Result?.map((item) => {
       const officer = userList?.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+      const StatusTitle = item.Status === '1' ? 'In Service' : 'Not In Service';
       const desc = item?.DesignationId?.split(',')
         .map((id) => getDesignation(id))
         .join('/ ');
       return {
         ...item,
         AssociatedOfficer: officer ? officer.UserName : '',
-        DesignationTitle: desc
+        DesignationTitle: desc,
+        StatusTitle: StatusTitle
       };
     });
 
@@ -235,13 +239,15 @@ const UserList = () => {
     if (userList && Array.isArray(userList.Result)) {
       const updatedData = userList.Result.map((item) => {
         const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+        const StatusTitle = item.Status === '1' ? 'In Service' : 'Not In Service';
         const desc = item?.DesignationId?.split(',')
           .map((id) => getDesignation(id))
           .join('/ ');
         return {
           ...item,
           AssociatedOfficer: officer ? officer.UserName : '',
-          DesignationTitle: desc
+          DesignationTitle: desc,
+          StatusTitle: StatusTitle
         };
       });
       setData(updatedData);
@@ -421,12 +427,12 @@ const UserList = () => {
       // Update User Payload
       updatedData.UserId = selectedUser.UserId;
       updatedData.ModifyBy = Role;
-      updatedData.key = "3";
+      updatedData.key = '3';
     } else {
       // Save New User Payload
       updatedData.CreatedBy = Role;
       updatedData.Password = formData.Password;
-      updatedData.key = "2";
+      updatedData.key = '2';
     }
 
     api
@@ -541,6 +547,24 @@ const UserList = () => {
     }
   };
 
+  const onExport = () => {
+    if (!gridRef.current?.api) return;
+
+    const visibleColumns = gridRef.current.api.getAllDisplayedColumns();
+    const visibleColKeys = visibleColumns.map((col) => col.getColId());
+
+    const rowData = [];
+    gridRef.current.api.forEachNodeAfterFilterAndSort((node) => {
+      const filteredRow = {};
+      visibleColKeys.forEach((key) => {
+        filteredRow[key] = node.data[key];
+      });
+      rowData.push(filteredRow);
+    });
+
+    exportJsonToExcel(rowData, 'User_List.xlsx');
+  };
+
   return (
     <React.Fragment>
       <Card className="Recent-Users widget-focus-lg w-full default-shadow header-default ">
@@ -557,11 +581,13 @@ const UserList = () => {
             <Button onClick={() => handleShowRegister()} className="m-0 fw-bolder">
               <i className="feather icon-plus"> Add </i>
             </Button>
+            <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={() => onExport()} title="Export PDF" />
             <img src={refresh} alt="" className="img-fluid ml-1 pointer" title="Reset Table" width={30} onClick={() => triggerReset()} />
           </CardSubtitle>
         </Card.Header>
         <Card.Body className="p-3 pt-2 dark-table">
           <AdvanceTable
+            reference={gridRef}
             rowData={data}
             columnDefs={columnDefs}
             pagination={true}

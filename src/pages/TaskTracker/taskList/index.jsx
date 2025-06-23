@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Dropdown, Form, Image, Row } from 'react-bootstrap';
-import pdf_i from '../../../assets/images/pdf_i.svg';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Card, Form } from 'react-bootstrap';
+import excel_i from '../../../assets/images/excel_i.svg';
 import print_i from '../../../assets/images/print_i.svg';
 import refresh from '../../../assets/images/refresh-arrow.png';
 import DatePicker from 'react-datepicker';
@@ -13,9 +13,11 @@ import './style.scss';
 import AdvanceTable from '../../../components/Table/advanceTable';
 import { taskActions } from '../../../store/task/taskSlice';
 import { useStore } from '../../../contexts/DataContext';
+import { exportJsonToExcel } from '../../../utils/utils';
 
 const TaskList = () => {
   const dispatch = useDispatch();
+  const gridRef = useRef();
   const { filterValue, filterWith } = useStore();
   const [filterPayload, setFilterPayload] = useState({
     ProjectId: '',
@@ -294,6 +296,8 @@ const TaskList = () => {
         };
       });
 
+      console.log('data', updatedData);
+
       setTaskData(updatedData);
     } else {
       setTaskData([]);
@@ -349,7 +353,23 @@ const TaskList = () => {
     e.preventDefault();
     dispatch(taskActions.getTaskInfo(filterPayload));
   };
+  const onExport = () => {
+    if (!gridRef.current?.api) return;
 
+    const visibleColumns = gridRef.current.api.getAllDisplayedColumns();
+    const visibleColKeys = visibleColumns.map((col) => col.getColId());
+
+    const rowData = [];
+    gridRef.current.api.forEachNodeAfterFilterAndSort((node) => {
+      const filteredRow = {};
+      visibleColKeys.forEach((key) => {
+        filteredRow[key] = node.data[key];
+      });
+      rowData.push(filteredRow);
+    });
+
+    exportJsonToExcel(rowData, 'Task_List.xlsx');
+  };
   return (
     <div>
       <Card className="Recent-Users widget-focus-lg header-info default-shadow">
@@ -443,8 +463,8 @@ const TaskList = () => {
               </div>
               <div className="filter-col">
                 <div className="d-flex align-items-center justify-content-center">
-                  <img src={print_i} alt="" className="img-fluid ml-2 pointer" title="Print" width={30} />
-                  <img src={pdf_i} alt="" className="img-fluid ml-1 pointer" width={30} title="Export PDF" />
+                  {/* <img src={print_i} alt="" className="img-fluid ml-2 pointer" title="Print" width={30} /> */}
+                  <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={() => onExport()} title="Export PDF" />
                   <img
                     src={refresh}
                     alt=""
@@ -460,6 +480,7 @@ const TaskList = () => {
         </Card.Header>
         <Card.Body className="p-3 pt-0 dark-table">
           <AdvanceTable
+            reference={gridRef}
             rowData={taskData || []}
             columnDefs={columnDefs}
             pagination={true}

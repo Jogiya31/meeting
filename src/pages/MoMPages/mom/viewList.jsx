@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Table, Button, Collapse, Card, Modal, Form, Row, Col, Pagination, InputGroup } from 'react-bootstrap';
+import { Table, Button, Collapse, Card, Modal, Form, Row, Col, Pagination } from 'react-bootstrap';
 import { Fragment } from 'react';
 import { FaSort } from 'react-icons/fa';
 import attendanceImg from '../../../assets/images/attendance.png';
 import excelImg from '../../../assets/images/excel_i.svg';
-import * as XLSX from 'xlsx';
 import moment from 'moment';
 import EnhancedTable from '../../../components/Table';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +12,7 @@ import { userActions } from '../../../store/user/userSlice';
 import { settingsActions } from 'store/settings/settingSlice';
 import { useStore } from '../../../contexts/DataContext';
 import { useTheme } from '../../../contexts/themeContext';
-import CustomPagination from 'components/Table/customPagination';
+import { exportcustomJsonToExcel } from '../../../utils/utils';
 
 export default function CollapsibleTable() {
   const Role = localStorage.getItem('role');
@@ -181,36 +180,35 @@ export default function CollapsibleTable() {
   );
 
   const handleSeletedAttendance = (row) => {
-    setattendanceData(row);
+    const updatedAttendance = row.map((item) => ({
+      ...item,
+      DesignationTitle: item?.DesignationId
+        ? item.DesignationId.split(',')
+            .map((id) => getDesignation(id))
+            .join('/ ')
+        : ''
+    }));
+
+    setattendanceData(updatedAttendance);
     setShowAttendanceList(!showAttendanceList);
   };
 
   // Function to export data to Excel
+
   const exportToExcel = () => {
-    const userHeaders = [
-      { id: 'username', label: 'User Name' },
-      { id: 'designation', label: 'Designation' },
-      { id: 'division', label: 'Division' },
-      { id: 'organization', label: 'Organization' },
-      { id: 'mobile', label: 'Mobile' }
+    const headerMapping = [
+      { id: 'UserName', label: 'User Name' },
+      { id: 'DesignationTitle', label: 'Designation' },
+      { id: 'DivisionTitle', label: 'Division' },
+      { id: 'OrganisationTitle', label: 'Organization' },
+      { id: 'Mobile', label: 'Mobile' }
     ];
-    const ws = XLSX.utils.json_to_sheet(
-      attendanceData.map((row) => {
-        const rowData = {};
-        userHeaders.forEach((header) => {
-          rowData[header.label] = row[header.id];
-        });
-        return rowData;
-      })
-    );
-    const date = new Date();
-    const CurrentTimeStamp = moment(date).format('DD-MM-YYYY HH:MM a');
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Users');
-
-    // Export file
-    XLSX.writeFile(wb, `Meeting Attendance ${CurrentTimeStamp}.xlsx`);
+    if (!attendanceData || attendanceData.length === 0) {
+      console.warn('No attendance data available for export.');
+      return;
+    }
+    exportcustomJsonToExcel(attendanceData, 'Attendance List', headerMapping);
   };
 
   const handleStatusChangeFilter = (e) => {
@@ -525,7 +523,7 @@ export default function CollapsibleTable() {
           <Modal.Title className="w-100">
             <div className="d-flex justify-content-between ">
               <h5 className="m-0">Attendance List</h5>
-              <img src={excelImg} className="mr-1" width={25} onClick={exportToExcel} alt="" />
+              <img src={excelImg} className="mr-1 pointer" width={25} onClick={exportToExcel} alt="" />
             </div>
           </Modal.Title>
           <span className="pointer" onClick={handleCloseAttendanceList}>

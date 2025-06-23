@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form, Pagination, InputGroup } from 'react-bootstrap';
+import React, { useEffect, useRef, useState } from 'react';
+import { Row, Col, Card, Modal, Button, CardSubtitle, Form } from 'react-bootstrap';
 import female_i from '../../../assets/images/user/female.jpg';
 import male_i from '../../../assets/images/user/male.jpg';
 import api from '../../../api';
-import pdf_i from '../../../assets/images/pdf_i.svg';
+import excel_i from '../../../assets/images/excel_i.svg';
 import print_i from '../../../assets/images/print_i.svg';
 import refresh from '../../../assets/images/refresh-arrow.png';
 import edit from '../../../assets/images/edit.png';
@@ -17,11 +17,12 @@ import Swal from 'sweetalert2';
 import { MultiSelect } from 'react-multi-select-component';
 import { useTheme } from '../../../contexts/themeContext';
 import AdvanceTable from '../../../components/Table/advanceTable';
-import { capitalizeWords } from '../../../utils/utils';
+import { capitalizeWords, exportJsonToExcel } from '../../../utils/utils';
 
 const UserList = () => {
   const dispatch = useDispatch();
   const { mode } = useTheme();
+  const gridRef = useRef();
   const Role = localStorage.getItem('role');
   const [selectedUser, setselectedUser] = useState(null);
   const [currentDate, setcurrentDate] = useState(null);
@@ -119,7 +120,7 @@ const UserList = () => {
     const { data } = props;
     return (
       <div>
-        {data.Status === '1' ? (
+        {data.StatusTitle === 'In Service' ? (
           <label
             className="status-label theme-bg text-white f-12 pointer"
             onClick={() => {
@@ -171,7 +172,7 @@ const UserList = () => {
     { field: 'Mobile', sortable: true, filter: true, flex: 1 },
     { field: 'Role', sortable: true, filter: true, flex: 1, cellRenderer: UserRoleCellRenderer },
     {
-      field: 'Status',
+      field: 'StatusTitle',
       headerName: 'Status',
       flex: 1,
       cellRenderer: StatusCellRenderer
@@ -207,13 +208,15 @@ const UserList = () => {
   useEffect(() => {
     const updatedData = userList?.Result?.map((item) => {
       const officer = userList?.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+      const StatusTitle = item.Status === '1' ? 'In Service' : 'Not In Service';
       const desc = item?.DesignationId?.split(',')
         .map((id) => getDesignation(id))
         .join('/ ');
       return {
         ...item,
         AssociatedOfficer: officer ? officer.UserName : '',
-        DesignationTitle: desc
+        DesignationTitle: desc,
+        StatusTitle: StatusTitle
       };
     });
 
@@ -240,13 +243,15 @@ const UserList = () => {
     if (userList && Array.isArray(userList.Result)) {
       const updatedData = userList.Result.map((item) => {
         const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+        const StatusTitle = item.Status === '1' ? 'In Service' : 'Not In Service';
         const desc = item?.DesignationId?.split(',')
           .map((id) => getDesignation(id))
           .join('/ ');
         return {
           ...item,
           AssociatedOfficer: officer ? officer.UserName : '',
-          DesignationTitle: desc
+          DesignationTitle: desc,
+          StatusTitle: StatusTitle
         };
       });
       setData(updatedData);
@@ -551,6 +556,24 @@ const UserList = () => {
     }
   };
 
+  const onExport = () => {
+    if (!gridRef.current?.api) return;
+
+    const visibleColumns = gridRef.current.api.getAllDisplayedColumns();
+    const visibleColKeys = visibleColumns.map((col) => col.getColId());
+
+    const rowData = [];
+    gridRef.current.api.forEachNodeAfterFilterAndSort((node) => {
+      const filteredRow = {};
+      visibleColKeys.forEach((key) => {
+        filteredRow[key] = node.data[key];
+      });
+      rowData.push(filteredRow);
+    });
+
+    exportJsonToExcel(rowData, 'User_List.xlsx');
+  };
+
   return (
     <React.Fragment>
       <Card className="Recent-Users widget-focus-lg w-full default-shadow header-default ">
@@ -568,12 +591,13 @@ const UserList = () => {
               <i className="feather icon-plus"> Add </i>
             </Button>
             <img src={print_i} alt="" className="img-fluid ml-2 pointer" title="Print" width={30} />
-            <img src={pdf_i} alt="" className="img-fluid ml-1 pointer" width={30} title="Export PDF" />
+            <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={() => onExport()} title="Export PDF" />
             <img src={refresh} alt="" className="img-fluid ml-1 pointer" title="Reset Table" width={30} onClick={() => triggerReset()} />
           </CardSubtitle>
         </Card.Header>
         <Card.Body className="p-3 pt-2 dark-table">
           <AdvanceTable
+            reference={gridRef}
             rowData={data}
             columnDefs={columnDefs}
             pagination={true}
@@ -608,7 +632,6 @@ const UserList = () => {
         </Modal.Header>
         <Modal.Body className={mode}>
           <Form noValidate onSubmit={handleSubmit}>
-            {console.log('form', formData)}
             <Row>
               <Col md={6}>
                 <Form.Label>Employee Name</Form.Label>
