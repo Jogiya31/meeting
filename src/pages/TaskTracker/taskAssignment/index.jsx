@@ -21,10 +21,13 @@ const TaskAssigment = () => {
     ProjectId: '',
     ModuleId: '',
     Task: '',
-    TaskDescription: ''
+    TaskDescription: '',
+    UserId: '',
+    ChangeAssignTo: '',
+    Status: '',
+    Remark: ''
   });
   const [showNewTask, setShowNewTask] = useState(false);
-  const [showUserTask, setShowUserTask] = useState(false);
   const [showUnAssignedTask, setShowUnAssignedTask] = useState(false);
   const [taskErrors, setTaskErrors] = useState({});
   const [selectedData, setselectedData] = useState(null);
@@ -36,6 +39,7 @@ const TaskAssigment = () => {
   const moduleList = useSelector((state) => state.module.data);
   const taskList = useSelector((state) => state.task.data);
   const userList = useSelector((state) => state.users.data);
+  const statusDataList = useSelector((state) => state.settings.statusData);
 
   useEffect(() => {
     dispatch(
@@ -52,15 +56,12 @@ const TaskAssigment = () => {
     dispatch(userActions.getuserInfo());
     dispatch(settingsActions.getProjectInfo());
     dispatch(moduleActions.getModuleInfo());
+    dispatch(settingsActions.getStatusInfo());
   }, []);
 
   const handleEdit = (data) => {
     setselectedData(data);
-    if (role === 'user') {
-      setShowUserTask(true);
-    } else {
-      setShowNewTask(true);
-    }
+    setShowNewTask(true);
   };
 
   const handleUnassignedEdit = (data) => {
@@ -77,7 +78,9 @@ const TaskAssigment = () => {
         Task: selectedData.Task,
         TaskDescription: selectedData.Description,
         UserId: selectedData.UserId,
-        ChangeAssignTo: selectedData.ChangeAssignTo
+        ChangeAssignTo: selectedData.ChangeAssignTo,
+        Status: selectedData.Status,
+        Remark: selectedData.Remark || ''
       };
       setTaskFormData(updatedFormData);
     }
@@ -216,7 +219,6 @@ const TaskAssigment = () => {
 
   const handleClose = () => {
     setShowNewTask(false);
-    setShowUserTask(false);
     setShowUnAssignedTask(false);
     setTaskErrors({});
     setTaskFormData({
@@ -243,7 +245,7 @@ const TaskAssigment = () => {
 
     setTaskFormData((prev) => ({
       ...prev,
-      UserId: userPayload.slice(0, -1)
+      UserId: userPayload
     }));
   }, [userFilter, userList]);
 
@@ -272,6 +274,7 @@ const TaskAssigment = () => {
   const validateTasks = () => {
     let newErrors = {};
     if (!TaskformData.ProjectId) newErrors.ProjectId = 'Required field.';
+    if (!TaskformData.ModuleId) newErrors.ModuleId = 'Required field.';
     if (!TaskformData.Task) newErrors.Task = 'Required field.';
     if (!TaskformData.TaskDescription) newErrors.TaskDescription = 'Required field.';
     setTaskErrors(newErrors);
@@ -288,12 +291,14 @@ const TaskAssigment = () => {
       Task: TaskformData.Task,
       TaskDescription: TaskformData.TaskDescription,
       UserId: TaskformData.UserId,
+
       DiscussionId: selectedData.DiscussionId,
       ModifyBy: user.UserName,
-      Status: selectedData.Status,
-      UserId: TaskformData.UserId || selectedData.UserId,
-      ChangeAssignTo: TaskformData.ChangeAssignTo || ''
+      Status: TaskformData.Status || selectedData.Status,
+      ChangeAssignTo: TaskformData.ChangeAssignTo || '',
+      Remark: TaskformData.Remark || selectedData.Remark || ''
     };
+
     dispatch(taskActions.updateTaskInfo(finalPayload));
     setTimeout(() => {
       setShowNewTask(false);
@@ -309,6 +314,7 @@ const TaskAssigment = () => {
         })
       );
     }, 300);
+    handleClose();
   };
 
   const handleuserFilter = (newSelected) => {
@@ -370,7 +376,7 @@ const TaskAssigment = () => {
           </Col>
         </Row>
       </Card>
-      <Modal size="md" show={showUserTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+      <Modal size="lg" show={showNewTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Update Task</h5>
@@ -383,7 +389,7 @@ const TaskAssigment = () => {
         <Modal.Body className={mode}>
           <Form noValidate onSubmit={handleSubmitTask}>
             <Row>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Project Name</Form.Label>
                   <Form.Select
@@ -412,7 +418,7 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.ProjectId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Module Name</Form.Label>
                   <Form.Select
@@ -431,7 +437,7 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.ModuleId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Task</Form.Label>
                   <Form.Control
@@ -446,7 +452,7 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.Task}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Task Description</Form.Label>
                   <Form.Control
@@ -462,7 +468,7 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.TaskDescription}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Assign</Form.Label>
                   <MultiSelect
@@ -480,164 +486,56 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              {selectedData && (
-                <Col md={12}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Change Assigned user</Form.Label>
-                    {console.log('TaskformData', TaskformData && TaskformData.ChangeAssignTo)}
-                    <MultiSelect
-                      options={userOption}
-                      value={userOption?.filter(
-                        (option) =>
-                          TaskformData && TaskformData.ChangeAssignTo && TaskformData.ChangeAssignTo.split(',').includes(option.value)
-                      )}
-                      onChange={handleChangeAssignedUserFilter}
-                      overrideStrings={{
-                        selectSomeItems: 'Users'
-                      }}
-                      hasSelectAll={true}
-                    />
-                  </Form.Group>
-                </Col>
-              )}
-            </Row>
-            <div className="d-flex justify-content-end mt-2">
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-              <Button variant="secondary" onClick={() => handleClose()} className="ms-2">
-                Cancel
-              </Button>
-            </div>
-          </Form>
-        </Modal.Body>
-      </Modal>
-      <Modal size="md" show={showNewTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
-        <Modal.Header className={mode}>
-          <Modal.Title>
-            <h5>Update Assign Task</h5>
-          </Modal.Title>
-          <span className="pointer" onClick={() => handleClose()}>
-            {' '}
-            X{' '}
-          </span>
-        </Modal.Header>
-        <Modal.Body className={mode}>
-          <Form noValidate onSubmit={handleSubmitTask}>
-            <Row>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Project Name</Form.Label>
-                  <Form.Select
-                    name="ProjectId"
-                    value={TaskformData.ProjectId}
-                    className="custom-form-select"
-                    onChange={handleTaskChange}
-                    isInvalid={!!taskErrors.ProjectId}
-                  >
-                    <option value="">Select project...</option>
-                    {Array.isArray(projectDataList?.Result)
-                      ? projectDataList.Result.filter((item) => item.Status === '1').map((item) => (
-                          <option key={item.ProjectId} value={item.ProjectId}>
-                            {item.ProjectTitle}
-                          </option>
-                        ))
-                      : Object.values(projectDataList?.Result || {})
-                          .filter((item) => item.Status === '1')
-                          .map((item) => (
-                            <option key={item.ProjectId} value={item.ProjectId}>
-                              {item.ProjectTitle}
-                            </option>
-                          ))}
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">{taskErrors.ProjectId}</Form.Control.Feedback>
+                  <Form.Label>Change Assigned user</Form.Label>
+                  <MultiSelect
+                    options={userOption}
+                    value={userOption?.filter(
+                      (option) =>
+                        TaskformData && TaskformData.ChangeAssignTo && TaskformData.ChangeAssignTo.split(',').includes(option.value)
+                    )}
+                    onChange={handleChangeAssignedUserFilter}
+                    overrideStrings={{
+                      selectSomeItems: 'Users'
+                    }}
+                    hasSelectAll={true}
+                  />
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Module Name</Form.Label>
+                  <Form.Label>Status</Form.Label>
                   <Form.Select
-                    name="ModuleId"
-                    value={TaskformData.ModuleId}
+                    name="Status"
+                    value={TaskformData.Status}
                     className="custom-form-select"
                     onChange={handleTaskChange}
-                    isInvalid={!!taskErrors.ModuleId}
+                    isInvalid={!!taskErrors.Status}
                   >
-                    <option value="">Select Module...</option>
-                    {moduleList?.Result?.map((item) => (
-                      <option value={item.ModuleId}>{item.ModuleName}</option>
+                    <option value="">Select Status...</option>
+                    {statusDataList?.Result?.filter((item) => item.Status === '1')?.map((item) => (
+                      <option value={item.StatusId}>{item.StatusTitle}</option>
                     ))}
                   </Form.Select>
-                  <Form.Control.Feedback type="invalid">{taskErrors.ModuleId}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{taskErrors.Status}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Task</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="Task"
-                    placeholder="Enter..."
-                    value={TaskformData.Task}
-                    onChange={handleTaskChange}
-                    isInvalid={!!taskErrors.Task}
-                  />
-                  <Form.Control.Feedback type="invalid">{taskErrors.Task}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Task Description</Form.Label>
+                  <Form.Label>Remark</Form.Label>
                   <Form.Control
                     as="textarea"
-                    value={TaskformData.TaskDescription}
+                    value={TaskformData.Remark}
                     rows={1}
-                    name="TaskDescription"
+                    name="Remark"
                     placeholder="Enter text here.."
                     onChange={handleTaskChange}
-                    isInvalid={!!taskErrors.TaskDescription}
+                    isInvalid={!!taskErrors.Remark}
                   />
-                  <Form.Control.Feedback type="invalid">{taskErrors.TaskDescription}</Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">{taskErrors.Remark}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Assign</Form.Label>
-                  <MultiSelect
-                    options={userOption}
-                    value={userOption?.filter(
-                      (option) => TaskformData && TaskformData.UserId && TaskformData.UserId.split(',').includes(option.value)
-                    )}
-                    onChange={handleuserFilter}
-                    overrideStrings={{
-                      selectSomeItems: 'Users'
-                    }}
-                    hasSelectAll={true}
-                    disabled={selectedData}
-                  />
-                  <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              {selectedData && (
-                <Col md={12}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Change Assigned user</Form.Label>
-                    {console.log('TaskformData', TaskformData && TaskformData.ChangeAssignTo)}
-                    <MultiSelect
-                      options={userOption}
-                      value={userOption?.filter(
-                        (option) =>
-                          TaskformData && TaskformData.ChangeAssignTo && TaskformData.ChangeAssignTo.split(',').includes(option.value)
-                      )}
-                      onChange={handleChangeAssignedUserFilter}
-                      overrideStrings={{
-                        selectSomeItems: 'Users'
-                      }}
-                      hasSelectAll={true}
-                    />
-                  </Form.Group>
-                </Col>
-              )}
             </Row>
             <div className="d-flex justify-content-end mt-2">
               <Button variant="primary" type="submit">

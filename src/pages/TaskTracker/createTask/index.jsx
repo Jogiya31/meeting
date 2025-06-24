@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, CardSubtitle, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import api from '../../../api';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { moduleActions } from '../../../store/module/moduleSlice';
 import { taskActions } from '../../../store/task/taskSlice';
@@ -26,7 +25,8 @@ const CreateTask = () => {
     ProjectId: '',
     ModuleId: '',
     Task: '',
-    TaskDescription: ''
+    TaskDescription: '',
+    UserId: ''
   });
   const [resetTrigger, setResetTrigger] = useState(0);
   const [selectedData, setselectedData] = useState(null);
@@ -92,8 +92,7 @@ const CreateTask = () => {
         ModuleId: selectedData.ModuleId,
         Task: selectedData.Task,
         TaskDescription: selectedData.Description,
-        UserId: selectedData.UserId,
-        ChangeAssignTo: selectedData.ChangeAssignTo
+        UserId: selectedData.UserId
       };
       setTaskFormData(updatedFormData);
     }
@@ -103,10 +102,11 @@ const CreateTask = () => {
     setShowNewTask(false);
     setTaskErrors({});
     setTaskFormData({
-      projectName: '',
-      moduleName: '',
-      task: '',
-      taskDescription: ''
+      ProjectId: '',
+      ModuleId: '',
+      Task: '',
+      TaskDescription: '',
+      UserId: ''
     });
     setuserFilter([]);
     setChangeAssignedUserFilter([]);
@@ -133,20 +133,20 @@ const CreateTask = () => {
       ModuleId: TaskformData.ModuleId,
       Task: TaskformData.Task,
       TaskDescription: TaskformData.TaskDescription,
-      UserId: TaskformData.UserId
+      UserId: TaskformData.UserId || ''
     };
 
     if (selectedData) {
       finalPayload.DiscussionId = selectedData.DiscussionId;
       finalPayload.ModifyBy = user.UserName;
-      finalPayload.Status = '1';
+      finalPayload.Status = selectedData.Status;
       finalPayload.UserId = selectedData.UserId;
-      finalPayload.ChangeAssignTo = TaskformData.ChangeAssignTo;
-
-      console.log('finalPayload', finalPayload);
+      finalPayload.ChangeAssignTo = selectedData.ChangeAssignTo || '';
+      finalPayload.Remark = selectedData.Remark;
       dispatch(taskActions.updateTaskInfo(finalPayload));
     } else {
       finalPayload.CreatedBy = user.UserName;
+      finalPayload.Remark = selectedData.Remark;
       dispatch(taskActions.addTaskInfo(finalPayload));
     }
 
@@ -223,14 +223,6 @@ const CreateTask = () => {
       setuserFilter(newSelected);
     } else {
       setuserFilter([]);
-    }
-  };
-
-  const handleChangeAssignedUserFilter = (newSelected) => {
-    if (newSelected.length) {
-      setChangeAssignedUserFilter(newSelected);
-    } else {
-      setChangeAssignedUserFilter([]);
     }
   };
 
@@ -368,32 +360,12 @@ const CreateTask = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              {selectedData && (
-                <Col md={12}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Change Assigned user</Form.Label>
-                    {console.log('TaskformData', TaskformData && TaskformData.ChangeAssignTo)}
-                    <MultiSelect
-                      options={userOption}
-                      value={userOption?.filter(
-                        (option) =>
-                          TaskformData && TaskformData.ChangeAssignTo && TaskformData.ChangeAssignTo.split(',').includes(option.value)
-                      )}
-                      onChange={handleChangeAssignedUserFilter}
-                      overrideStrings={{
-                        selectSomeItems: 'Users'
-                      }}
-                      hasSelectAll={true}
-                    />
-                  </Form.Group>
-                </Col>
-              )}
             </Row>
             <div className="d-flex justify-content-end mt-2">
               <Button variant="primary" type="submit">
                 Submit
               </Button>
-              <Button variant="secondary" onClick={handleClose} className="ms-2">
+              <Button variant="secondary" onClick={() => handleClose()} className="ms-2">
                 Cancel
               </Button>
             </div>

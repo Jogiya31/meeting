@@ -298,8 +298,6 @@ const TaskList = () => {
         };
       });
 
-      console.log('data', updatedData);
-
       setTaskData(updatedData);
     } else {
       setTaskData([]);

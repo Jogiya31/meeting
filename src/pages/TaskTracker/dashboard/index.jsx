@@ -19,7 +19,7 @@ import { taskActions } from '../../../store/task/taskSlice';
 
 const DashDefault = () => {
   const { mode, theme } = useTheme();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const { filterWith } = useStore();
   const dispatch = useDispatch();
   const navigate = useNavigate();
