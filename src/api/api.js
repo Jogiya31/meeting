@@ -10,11 +10,11 @@ export const authInfo = (data) => {
 };
 
 /////////////// dashboard api ///////////////////////
-export const getdashboardinfo = () => {
+export const getdashboardinfo = (data) => {
   const url = `/Api`;
-  const payload = {
-    Key: 46
-  };
+  const payload = data.payload;
+  payload.Key = 46;
+
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
   });

@@ -45,7 +45,7 @@ const DashDefault = () => {
   const designationDataList = useSelector((state) => state.settings.designationData);
   const taskList = useSelector((state) => state.task.data);
   useEffect(() => {
-    dispatch(dashboardActions.getdashboardInfo());
+    dispatch(dashboardActions.getdashboardInfo({ UserId: '0' }));
     dispatch(meetingsActions.getMeetingsInfo());
     dispatch(userActions.getuserInfo());
     dispatch(settingsActions.getProjectInfo());
@@ -253,7 +253,7 @@ const DashDefault = () => {
           // Update progress stats
           allAssignedUserIds.forEach((userId) => {
             const user = userList.Result.find((u) => u.UserId?.trim() === userId);
-            const userName = user?.UserName || `User ID: ${userId}`;
+            const userName = user?.UserName;
 
             if (!progressMap[userId]) {
               progressMap[userId] = {
@@ -314,6 +314,7 @@ const DashDefault = () => {
                       <div className="row d-flex align-items-center">
                         <div className="col-9">
                           <h3 className="f-w-300 d-flex align-items-center m-b-0">
+                            {console.log('first', dashboardCountInfo)}
                             <i className={`text-c-brown f-40 m-r-5`}>{dashboardCountInfo?.Result?.[0]?.TotalUser}</i>
                           </h3>
                         </div>
@@ -515,7 +516,7 @@ const DashDefault = () => {
           </div>
         </div>
         <Row>
-          <Col md={6}>
+          {/* <Col md={6}>
             <Card className="mt-3">
               <Card.Body className="p-0">
                 <div className="dashboard-barchart">
@@ -523,7 +524,7 @@ const DashDefault = () => {
                 </div>
               </Card.Body>
             </Card>
-          </Col>
+          </Col> */}
           <Col md={6}>
             <Card className="mt-3">
               <Card.Body className="p-0">
@@ -533,14 +534,13 @@ const DashDefault = () => {
               </Card.Body>
             </Card>
           </Col>
-        </Row>
-        <Row>
-          <Col md={12}>
+          <Col md={6}>
             <Card className="calander-card p-3 mt-3 mb-1">
               <TaskCalendar extra="dashboard-cal" eventsData={events} handleEvets={handleEvents} handleSelectedEvent={setSelectedEvents} />
             </Card>
           </Col>
         </Row>
+        <Row></Row>
       </div>
 
       <Modal size="xl" show={showInfoDetails} animation={true} backdrop="static" keyboard={false}>

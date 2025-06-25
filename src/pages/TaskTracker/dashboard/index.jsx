@@ -45,7 +45,7 @@ const DashDefault = () => {
         GroupIdMulti: ''
       })
     );
-    dispatch(dashboardActions.getdashboardInfo());
+    dispatch(dashboardActions.getdashboardInfo({ UserId: role === 'user' ? user.UserId : 0 }));
     dispatch(meetingsActions.getMeetingsInfo());
     dispatch(userActions.getuserInfo());
     dispatch(settingsActions.getProjectInfo());
@@ -393,7 +393,7 @@ const DashDefault = () => {
         </div>
         {role !== 'user' && (
           <Row>
-            <Col md={6}>
+            {/* <Col md={6}>
               <Card className="mt-3">
                 <Card.Body className="p-0">
                   <div className="dashboard-barchart">
@@ -401,7 +401,7 @@ const DashDefault = () => {
                   </div>
                 </Card.Body>
               </Card>
-            </Col>
+            </Col> */}
             <Col md={6}>
               <Card className="mt-3">
                 <Card.Body className="p-0">

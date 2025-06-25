@@ -362,7 +362,7 @@ const NewPoint = () => {
               MeetingId: meetingId,
               Description: item.task,
               StartDate: currentDate,
-              EndDate: item.endDate,
+              EndDate: moment(item.endDate, 'DD-MM-YYYY HH:mm:ss').toISOString(),
               UserId: item.officer,
               Reason: selectedMeeting ? item.reason || '' : '',
               Status: selectedMeeting ? 1 : '', // set status pending by default for new record
@@ -372,7 +372,7 @@ const NewPoint = () => {
               return dispatch(meetingsActions.addDiscussionInfo({ ...requestPayload, CreatedBy: user.UserName }));
             } else {
               return dispatch(
-                meetingsActions.addDiscussionInfo({
+                meetingsActions.updateDiscussionInfo({
                   ...requestPayload,
                   ModifyBy: user.UserName,
                   DiscussionId: item.id
@@ -799,7 +799,7 @@ const NewPoint = () => {
                                     <tr key={`${idx}-${idx}-${Math.random()}`}>
                                       <td>{idx + 1}</td>
                                       <td style={{ wordBreak: 'break-word', whiteSpace: 'normal', maxWidth: '300px' }}>{item.task}</td>
-                                      <td>{moment(item.endDate).format('DD-MM-YYYY')}</td>
+                                      <td>{item.endDate && item.endDate.split(' ')[0]}</td>
                                       <td>
                                         {projectList?.Result?.map(
                                           (proj) => proj.ProjectId === item.projectId && <span>{proj.ProjectTitle}</span>

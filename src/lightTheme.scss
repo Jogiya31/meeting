@@ -171,6 +171,10 @@
   .form-control {
     background-color: transparent !important;
   }
+  .form-control:disabled {
+    background-color: $disable-color !important;
+    opacity: 1;
+}
 
   .form-control[type='file'] {
     height: auto;

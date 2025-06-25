@@ -116,7 +116,7 @@ const TaskAssigment = () => {
         const allAssignedUserIds = Array.from(new Set([...assignedIds, ...changeAssignIds]));
 
         if (allAssignedUserIds.length === 0) {
-          unAssignedTasks.push(item);
+          unAssignedTasks.push({ ...item, StartDate: item?.StartDate?.split(' ')[0] });
         } else {
           // Get distinct user names
           const userNames = allAssignedUserIds
@@ -125,7 +125,8 @@ const TaskAssigment = () => {
 
           assignedTasks.push({
             ...item,
-            AssignedToUsers: userNames.join(', ')
+            AssignedToUsers: userNames.join(', '),
+            StartDate: item?.StartDate?.split(' ')[0]
           });
 
           // Update progress stats
@@ -150,17 +151,17 @@ const TaskAssigment = () => {
                 progressMap[userId].taskAssigned += 1;
 
                 const status = item.Status?.toLowerCase() || '';
-                if (status === 'pending' || status === 'inprogress') {
+                if (status === '1' || status === '2') {
                   progressMap[userId].taskpending += 1;
-                } else if (status === 'completed') {
+                } else if (status === '3') {
                   progressMap[userId].taskComplete += 1;
                 }
                 progressMap[userId].taskProgress = (progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100 + '%';
               });
           } else {
-            allAssignedUserIds.forEach((userId) => {
+            allAssignedUserIds.forEach((userId, index) => {
               const user = userList.Result.find((u) => u.UserId?.trim() === userId);
-              const userName = user?.UserName || `User ID: ${userId}`;
+              const userName = user?.UserName;
 
               if (!progressMap[userId]) {
                 progressMap[userId] = {
@@ -172,13 +173,13 @@ const TaskAssigment = () => {
                   taskProgress: 0
                 };
               }
-
+            
               progressMap[userId].taskAssigned += 1;
 
               const status = item.Status?.toLowerCase() || '';
-              if (status === 'pending' || status === 'inprogress') {
+              if (status === '1' || status === '2') {
                 progressMap[userId].taskpending += 1;
-              } else if (status === 'completed') {
+              } else if (status === '3') {
                 progressMap[userId].taskComplete += 1;
               }
               progressMap[userId].taskProgress = (progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100 + '%';
@@ -198,7 +199,7 @@ const TaskAssigment = () => {
     { id: 'ModuleName', label: 'Module Name', class: '' },
     { id: 'Task', label: 'Task Name', class: '' },
     { id: 'Description', label: 'Task Description', class: '' },
-    { id: 'AssignedToUsers', label: 'Assig To', class: '' },
+    { id: 'AssignedToUsers', label: 'Assigned Users', class: '' },
     { id: 'StartDate', label: 'Created At', class: '' }
   ];
   const unAssignedHeaders = [
@@ -225,7 +226,9 @@ const TaskAssigment = () => {
       ProjectId: '',
       ModuleId: '',
       Task: '',
-      TaskDescription: ''
+      TaskDescription: '',
+      Remark: '',
+      UserId: ''
     });
     setuserFilter([]);
     setChangeAssignedUserFilter([]);
@@ -548,7 +551,7 @@ const TaskAssigment = () => {
           </Form>
         </Modal.Body>
       </Modal>
-      <Modal size="md" show={showUnAssignedTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+      <Modal size="lg" show={showUnAssignedTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>Assign Task</h5>
@@ -561,7 +564,7 @@ const TaskAssigment = () => {
         <Modal.Body className={mode}>
           <Form noValidate onSubmit={handleSubmitTask}>
             <Row>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Project Name</Form.Label>
                   <Form.Select
@@ -589,7 +592,7 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.ProjectId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Module Name</Form.Label>
                   <Form.Select
@@ -607,7 +610,7 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.ModuleId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Task</Form.Label>
                   <Form.Control
@@ -621,7 +624,7 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.Task}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Task Description</Form.Label>
                   <Form.Control
@@ -636,7 +639,7 @@ const TaskAssigment = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.TaskDescription}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Assign</Form.Label>
                   <MultiSelect
@@ -651,6 +654,21 @@ const TaskAssigment = () => {
                     hasSelectAll={true}
                   />
                   <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Remark</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    value={TaskformData.Remark}
+                    rows={1}
+                    name="Remark"
+                    placeholder="Enter text here.."
+                    onChange={handleTaskChange}
+                    isInvalid={!!taskErrors.Remark}
+                  />
+                  <Form.Control.Feedback type="invalid">{taskErrors.Remark}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>

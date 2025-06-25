@@ -26,7 +26,8 @@ const CreateTask = () => {
     ModuleId: '',
     Task: '',
     TaskDescription: '',
-    UserId: ''
+    UserId: '',
+    Remark: ''
   });
   const [resetTrigger, setResetTrigger] = useState(0);
   const [selectedData, setselectedData] = useState(null);
@@ -92,7 +93,8 @@ const CreateTask = () => {
         ModuleId: selectedData.ModuleId,
         Task: selectedData.Task,
         TaskDescription: selectedData.Description,
-        UserId: selectedData.UserId
+        UserId: selectedData.UserId,
+        Remark: selectedData.Remark
       };
       setTaskFormData(updatedFormData);
     }
@@ -106,7 +108,8 @@ const CreateTask = () => {
       ModuleId: '',
       Task: '',
       TaskDescription: '',
-      UserId: ''
+      UserId: '',
+      Remark: ''
     });
     setuserFilter([]);
     setChangeAssignedUserFilter([]);
@@ -119,6 +122,7 @@ const CreateTask = () => {
   const validateTasks = () => {
     let newErrors = {};
     if (!TaskformData.ProjectId) newErrors.ProjectId = 'Required field.';
+    if (!TaskformData.ModuleId) newErrors.ModuleId = 'Required field.';
     if (!TaskformData.Task) newErrors.Task = 'Required field.';
     if (!TaskformData.TaskDescription) newErrors.TaskDescription = 'Required field.';
     setTaskErrors(newErrors);
@@ -133,20 +137,19 @@ const CreateTask = () => {
       ModuleId: TaskformData.ModuleId,
       Task: TaskformData.Task,
       TaskDescription: TaskformData.TaskDescription,
-      UserId: TaskformData.UserId || ''
+      UserId: TaskformData.UserId || selectedData.UserId,
+      Remark: TaskformData.Remark
     };
 
     if (selectedData) {
       finalPayload.DiscussionId = selectedData.DiscussionId;
       finalPayload.ModifyBy = user.UserName;
       finalPayload.Status = selectedData.Status;
-      finalPayload.UserId = selectedData.UserId;
-      finalPayload.ChangeAssignTo = selectedData.ChangeAssignTo || '';
-      finalPayload.Remark = selectedData.Remark;
+      finalPayload.ChangeAssignTo = TaskformData.ChangeAssignTo || selectedData.ChangeAssignTo || '';
+      finalPayload.Remark = TaskformData.Remark || selectedData.Remark;
       dispatch(taskActions.updateTaskInfo(finalPayload));
     } else {
       finalPayload.CreatedBy = user.UserName;
-      finalPayload.Remark = selectedData.Remark;
       dispatch(taskActions.addTaskInfo(finalPayload));
     }
 
@@ -257,7 +260,7 @@ const CreateTask = () => {
           />
         </Card.Body>
       </Card>
-      <Modal size="md" show={showNewTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+      <Modal size="lg" show={showNewTask} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>{selectedData ? <h5>Update Task</h5> : <h5>Add New Task</h5>}</Modal.Title>
           <span className="pointer" onClick={handleClose}>
@@ -268,7 +271,7 @@ const CreateTask = () => {
         <Modal.Body className={mode}>
           <Form noValidate onSubmit={handleSubmitTask}>
             <Row>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Project Name</Form.Label>
                   <Form.Select
@@ -296,7 +299,7 @@ const CreateTask = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.ProjectId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Module Name</Form.Label>
                   <Form.Select
@@ -314,7 +317,7 @@ const CreateTask = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.ModuleId}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Task</Form.Label>
                   <Form.Control
@@ -328,7 +331,7 @@ const CreateTask = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.Task}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Task Description</Form.Label>
                   <Form.Control
@@ -343,7 +346,7 @@ const CreateTask = () => {
                   <Form.Control.Feedback type="invalid">{taskErrors.TaskDescription}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-              <Col md={12}>
+              <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Assign</Form.Label>
                   <MultiSelect
@@ -358,6 +361,21 @@ const CreateTask = () => {
                     hasSelectAll={true}
                   />
                   <Form.Control.Feedback type="invalid">{taskErrors.UserId}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Remark</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    value={TaskformData.Remark}
+                    rows={1}
+                    name="Remark"
+                    placeholder="Enter text here.."
+                    onChange={handleTaskChange}
+                    isInvalid={!!taskErrors.Remark}
+                  />
+                  <Form.Control.Feedback type="invalid">{taskErrors.Remark}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
             </Row>

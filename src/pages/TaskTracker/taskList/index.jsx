@@ -259,9 +259,9 @@ const TaskList = () => {
     { field: 'Task', sortable: true, filter: true, flex: 1 },
     { field: 'Description', sortable: true, filter: true, flex: 1 },
     { field: 'StartDate', sortable: true, filter: true, flex: 1 },
-    { field: 'Status', sortable: true, filter: true, flex: 1 },
+    { field: 'StatusTitle', headerName: 'Status', sortable: true, filter: true, flex: 1 },
     { field: 'AssignTo', sortable: true, filter: true, flex: 1 },
-    { field: 'Reason', headerName: 'Remark', flex: 1 }
+    { field: 'Remark', flex: 1 }
   ]);
 
   useEffect(() => {
@@ -282,6 +282,7 @@ const TaskList = () => {
 
         collectIds(item.UserId);
         collectIds(item.ChangeAssignTo);
+        const activeStatus = statusLists?.Result?.filter((stat) => String(stat.StatusId) === String(item.Status));
 
         // Map user IDs to user names
         const userNames = Array.from(userIdSet)
@@ -290,9 +291,9 @@ const TaskList = () => {
             return user?.UserName || null;
           })
           .filter(Boolean); // Remove nulls
-
         return {
           ...item,
+          StatusTitle: activeStatus?.[0]?.StatusTitle,
           UserNames: userNames.join(', '),
           AssignTo: userNames.join(', ')
         };
