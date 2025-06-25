@@ -1,11 +1,12 @@
 .donut-container {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 20px;
 }
 
 .chart-area {
-  flex: 1;
+  display: flex;
   min-width: 300px;
 }
 

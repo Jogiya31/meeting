@@ -13,10 +13,7 @@ const DonutChart = ({ title, data }) => {
       {
         label: title,
         data: data.map((d) => d.tasks),
-        backgroundColor: [
-          '#00c4cc', '#ff7c87', '#2b2c2c', '#c4a400', '#4ac1ff',
-          '#c288d8', '#ffa66c', '#777777', '#87ceeb', '#d2691e'
-        ],
+        backgroundColor: ['#00c4cc', '#ff7c87', '#2b2c2c', '#c4a400', '#4ac1ff', '#c288d8', '#ffa66c', '#777777', '#87ceeb', '#d2691e'],
         borderWidth: 1
       }
     ]
@@ -50,11 +47,10 @@ const DonutChart = ({ title, data }) => {
         <div className="legend-scroll">
           {data.map((d, index) => (
             <div key={index} className="legend-item">
-              <span
-                className="legend-color"
-                style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
-              ></span>
-              <span className="legend-label">{d.name} ({d.tasks})</span>
+              <span className="legend-color" style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}></span>
+              <span className="legend-label">
+                {d.name} ({d.tasks})
+              </span>
             </div>
           ))}
         </div>

@@ -43,3 +43,13 @@ export const exportJsonToExcel = (jsonData, fileName) => {
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
   XLSX.writeFile(workbook, fileName || 'data.xlsx');
 };
+
+
+export const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};

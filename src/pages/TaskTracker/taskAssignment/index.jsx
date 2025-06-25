@@ -173,7 +173,7 @@ const TaskAssigment = () => {
                   taskProgress: 0
                 };
               }
-            
+
               progressMap[userId].taskAssigned += 1;
 
               const status = item.Status?.toLowerCase() || '';
@@ -476,6 +476,7 @@ const TaskAssigment = () => {
                   <Form.Label>Assign</Form.Label>
                   <MultiSelect
                     options={userOption}
+                    className={`${selectedData ? 'disabled' : ''}`}
                     value={userOption?.filter(
                       (option) => TaskformData && TaskformData.UserId && TaskformData.UserId.split(',').includes(option.value)
                     )}

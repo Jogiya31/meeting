@@ -343,9 +343,6 @@ button.sortBtn.btn.btn-info,
   border: $dark-color !important;
 }
 
-
-
-
 .attendance {
   width: 45px !important;
   height: 45px !important;
@@ -704,6 +701,9 @@ button.sortBtn.btn.btn-info,
 .isInvalid .dropdown-container {
   border: 0 !important;
 }
+.disabled .dropdown-container{
+  background-color: $disable-color !important;
+}
 
 .preset-btn {
   display: flex;
@@ -967,4 +967,10 @@ button.sortBtn.btn.btn-info,
 
 .h-full {
   height: 100% !important;
+}
+
+.chartCardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #727272;
 }

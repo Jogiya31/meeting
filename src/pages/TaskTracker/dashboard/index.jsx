@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Row, Col, Card, Modal } from 'react-bootstrap';
+import { Row, Col, Card, Modal, Accordion, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { dashboardActions } from '../../../store/dashboard/dashboardSlice';
+import pdf_i from '../../../assets/images/pdf_i.svg';
 import './style.scss';
 import { useNavigate } from 'react-router-dom';
 import { meetingsActions } from '../../../store/mom/momSlice';
@@ -16,23 +17,37 @@ import GroupedColumnChart from '../../../components/charts/GroupedColumnChart';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useStore } from '../../../contexts/DataContext';
 import { taskActions } from '../../../store/task/taskSlice';
+import { getRandomColor } from '../../../utils/utils';
+import TaskCalendar from '../../../components/TaskCalander';
+import moment from 'moment';
 
 const DashDefault = () => {
   const { mode, theme } = useTheme();
   const { role, user } = useAuth();
   const { filterWith } = useStore();
+  const pdfContent = useRef();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showInfo, setshowInfo] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const [assignedTask, setAssignedTasks] = useState([]);
-  const [UnAssignedTasks, setUnAssignedTasks] = useState([]);
-  const [taskProgress, setTaskProgress] = useState([]);
+  const [showInfoDetails, setshowInfoDetails] = useState(false);
+  const [selectedEvents, setSelectedEvents] = useState([]);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [chartLabels, setChartLabels] = useState([]);
+  const [chartGroupData, setChartGroupData] = useState([]);
+  const [events, setEvents] = useState([]);
   const [pendingTasksData, setPendingTasksData] = useState([]);
+
+  const MeetingLists = useSelector((state) => state.meetings.data);
+  const divisionDataList = useSelector((state) => state.settings.divisionData);
   const dashboardCountInfo = useSelector((state) => state.dashboard.data);
   const projectDataList = useSelector((state) => state.settings.projectData);
+  const designationDataList = useSelector((state) => state.settings.designationData);
   const statusDataList = useSelector((state) => state.settings.statusData);
   const taskList = useSelector((state) => state.task.data);
   const userList = useSelector((state) => state.users.data);
+
   useEffect(() => {
     dispatch(
       taskActions.getTaskInfo({
@@ -46,12 +61,57 @@ const DashDefault = () => {
       })
     );
     dispatch(dashboardActions.getdashboardInfo({ UserId: role === 'user' ? user.UserId : 0 }));
+    dispatch(settingsActions.getDivisionInfo());
     dispatch(meetingsActions.getMeetingsInfo());
     dispatch(userActions.getuserInfo());
     dispatch(settingsActions.getProjectInfo());
     dispatch(settingsActions.getDesignationInfo());
     dispatch(settingsActions.getStatusInfo());
   }, []);
+
+  useEffect(() => {
+    if (Array.isArray(MeetingLists?.MeetingDetails) && MeetingLists.MeetingDetails.length > 0) {
+      const groupedEvents = MeetingLists.MeetingDetails.reduce((acc, row) => {
+        if (Number(row.Draft) === 4) {
+          const formattedDate = moment(row?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD');
+
+          if (!acc[formattedDate]) {
+            acc[formattedDate] = [];
+          }
+
+          acc[formattedDate].push({
+            id: row.MeetingId,
+            title: row.MeetingTitle,
+            start: row.MeetingDate,
+            description: row.MeetingDescription
+          });
+        }
+
+        return acc;
+      }, {});
+
+      // Only convert groups that have events
+      setEvents(
+        Object.entries(groupedEvents).map(([date, eventsForDate]) => ({
+          id: eventsForDate[0].id,
+          title: eventsForDate.length === 1 ? eventsForDate[0].title : `${eventsForDate.length} Events`,
+          start: date,
+          backgroundColor: '#5EB562',
+          events: eventsForDate
+        }))
+      );
+    }
+  }, [MeetingLists]);
+  useEffect(() => {
+    if (selectedEventId) {
+      setSelectedMeeting(MeetingLists?.MeetingDetails.filter((item) => item.MeetingId === selectedEventId.id));
+      setshowInfoDetails(true);
+    }
+  }, [selectedEventId]);
+  useEffect(() => {
+    if (selectedEvents.length) setshowInfo(true);
+  }, [selectedEvents]);
+
   const calculatePercentage = (part, total) => (total > 0 ? (part / total) * 100 : 0);
 
   const stats = dashboardCountInfo?.Result?.[0];
@@ -65,52 +125,79 @@ const DashDefault = () => {
   };
 
   const handleClose = () => {
+    setshowInfo(false);
+    setshowInfoDetails(false);
     setShowProjects(false);
+    setSelectedEventId(null);
+    setSelectedMeeting(null);
+    setSelectedEvents([]);
   };
-  const labels = ['CCBS', 'DAID', 'PRAYAS', 'TEJAS'];
 
-  const groupsData = [
-    {
-      label: 'CCBS - Total Tasks',
-      data: [40, 0, 0, 0],
-      backgroundColor: '#00C9A7'
-    },
-    {
-      label: 'CCBS - Pending Task',
-      data: [12, 0, 0, 0],
-      backgroundColor: '#333'
-    },
-    {
-      label: 'DAID - Total Tasks',
-      data: [0, 10, 0, 0],
-      backgroundColor: '#ff5b5b'
-    },
-    {
-      label: 'DAID - Pending Task',
-      data: [0, 5, 0, 0],
-      backgroundColor: '#f5c518'
-    },
-    {
-      label: 'PRAYAS - Total Tasks',
-      data: [0, 0, 25, 0],
-      backgroundColor: '#444'
-    },
-    {
-      label: 'PRAYAS - Pending Task',
-      data: [0, 0, 90, 0],
-      backgroundColor: '#8ed6fb'
-    },
-    {
-      label: 'TEJAS - Total Tasks',
-      data: [0, 0, 0, 45],
-      backgroundColor: '#ff9c6e'
-    },
-    {
-      label: 'TEJAS - Pending Task',
-      data: [0, 0, 0, 3],
-      backgroundColor: '#b478c2'
+  const generateGraphData = () => {
+    if (divisionDataList) {
+      const divisionMap = divisionDataList?.Result.reduce((acc, div) => {
+        acc[div.DivisionId] = div.DivisionTitle;
+        return acc;
+      }, {});
+
+      // Step 2: Generate Labels Dynamically
+      const labels = divisionDataList?.Result.map((div) => div.DivisionTitle);
+
+      // Step 3: Count Total and Pending Tasks per Division
+      const taskCounts = {};
+
+      taskList.Result.forEach((task) => {
+        const title = divisionMap[task.DivisionId];
+        if (!title) return; // Skip if DivisionId is not found in division list
+
+        if (!taskCounts[title]) {
+          taskCounts[title] = { total: 0, pending: 0 };
+        }
+
+        taskCounts[title].total += 1;
+
+        // Define pending criteria: Status is empty or Status is "2"
+        if (task.Status === '' || task.Status === '2') {
+          taskCounts[title].pending += 1;
+        }
+      });
+
+      // Step 4: Prepare groupsData for Chart
+      const groupsData = [];
+
+      labels.forEach((title, index) => {
+        const counts = taskCounts[title] || { total: 0, pending: 0 };
+
+        const totalData = Array(labels.length).fill(0);
+        const pendingData = Array(labels.length).fill(0);
+
+        totalData[index] = counts.total;
+        pendingData[index] = counts.pending;
+        const totalColor = getRandomColor();
+        const pendingColor = getRandomColor();
+        groupsData.push({
+          label: `${title} - Total Tasks`,
+          data: totalData,
+          backgroundColor: totalColor
+        });
+
+        groupsData.push({
+          label: `${title} - Pending Task`,
+          data: pendingData,
+          backgroundColor: pendingColor
+        });
+      });
+
+      setChartLabels(labels);
+      setChartGroupData(groupsData);
     }
-  ];
+  };
+
+  const getDesignation = (val) => {
+    const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
+    const found = data.find((item) => item.DesignationId === val);
+    return found ? found.DesignationTitle : '';
+  };
 
   useEffect(() => {
     if (taskList?.Result && userList?.Result) {
@@ -185,14 +272,30 @@ const DashDefault = () => {
           tasks: user.taskAssigned
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
-
-      // Set all states
-      setAssignedTasks(assignedTasks);
-      setUnAssignedTasks(unAssignedTasks);
-      setTaskProgress(Object.values(progressMap));
       setPendingTasksData(pending);
+      generateGraphData();
     }
   }, [taskList, userList]);
+
+  const handleEvents = (data) => {
+    setEvents(data);
+  };
+
+  const exportPdf = () => {
+    if (!pdfContent.current) return;
+
+    html2canvas(pdfContent.current, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`Meeting_Details_${moment(selectedMeeting?.[0]?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}.pdf`);
+    });
+    setshowInfo(false);
+  };
+
   return (
     <React.Fragment>
       <div className="dashboard-cards grid-wrapper">
@@ -393,28 +496,197 @@ const DashDefault = () => {
         </div>
         {role !== 'user' && (
           <Row>
-            {/* <Col md={6}>
+            <Col md={6}>
               <Card className="mt-3">
                 <Card.Body className="p-0">
                   <div className="dashboard-barchart">
-                    <GroupedColumnChart data={groupsData} labels={labels} title="Total Tasks/Pending Tasks By group" />
+                    <GroupedColumnChart data={chartGroupData} labels={chartLabels} title="Total Tasks/Pending Tasks By group" />
                   </div>
                 </Card.Body>
               </Card>
-            </Col> */}
+            </Col>
             <Col md={6}>
               <Card className="mt-3">
                 <Card.Body className="p-0">
                   <div className="dashboard-donut">
-                    <DonutChart2 title="Pending Tasks By Team Members" data={pendingTasksData} />;
+                    <DonutChart2 title="Pending Tasks By Team Members" data={pendingTasksData} />
                   </div>
                 </Card.Body>
+              </Card>
+            </Col>
+            <Col md={12}>
+              <Card className="calander-card p-3 mt-3 mb-1">
+                <TaskCalendar
+                  extra="dashboard-cal"
+                  eventsData={events}
+                  handleEvets={handleEvents}
+                  handleSelectedEvent={setSelectedEvents}
+                />
               </Card>
             </Col>
           </Row>
         )}
       </div>
+      <Modal size="xl" show={showInfoDetails} animation={true} backdrop="static" keyboard={false}>
+        <Modal.Header className={mode}>
+          <Modal.Title className="dashboardModalHeader">
+            <h5>Meeting Details</h5>
+            <img src={pdf_i} width={30} className="mr-1 pointer" alt="" onClick={exportPdf} />
+          </Modal.Title>
+          <span className="pointer" onClick={handleClose}>
+            {' '}
+            X{' '}
+          </span>
+        </Modal.Header>
+        <Modal.Body ref={pdfContent} className={`p-4 ${mode}`}>
+          <Row>
+            <Col md={12}>
+              <div className="d-flex">
+                <span className="report-label mr-1" style={{ width: '50px' }}>
+                  Title :{' '}
+                </span>
+                <span>{selectedMeeting?.[0]?.MeetingTitle}</span>
+              </div>
+              <div className="d-flex">
+                <span className="report-label mr-1" style={{ width: '50px' }}>
+                  Date :{' '}
+                </span>
+                <span>{moment(selectedMeeting?.[0]?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</span>
+              </div>
+              <div className="d-flex">
+                <span className="report-label mr-1" style={{ width: '50px' }}>
+                  Time :{' '}
+                </span>
+                <span>{moment(selectedMeeting?.[0]?.currentTime).format('h:mm a')}</span>
+              </div>
+            </Col>
 
+            <Col md={12} className="mt-3">
+              <Accordion defaultActiveKey="0">
+                <Accordion.Item eventKey="1">
+                  <Accordion.Header className="mb-3">
+                    <label className="fs-6 m-0 report-label pointer">Attendance List</label>
+                  </Accordion.Header>
+                  <Accordion.Body className="p-0 dark-table">
+                    <Table responsive hover>
+                      <thead>
+                        <tr className="">
+                          <th className="" style={{ width: '50px' }}>
+                            Sno
+                          </th>
+                          <th className="w-60">Name</th>
+                          <th className="w-20">Designation</th>
+                          <th className="w-20">Division</th>
+                          <th className="w-20">Company</th>
+                          <th className="w-20">Mobile</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedMeeting?.[0]?.Attendance.map((item, idx) => {
+                          const user = userList?.Result?.find((u) => u.UserId === item.userId);
+                          if (item.userId !== '') {
+                            return (
+                              <tr key={`${item.userId}-${idx}_${Math.random()}`}>
+                                <td>{idx + 1}</td>
+                                <td>{item.UserName}</td>
+                                <td>
+                                  {item?.DesignationId?.split(',')
+                                    .map((id) => getDesignation(id))
+                                    .join('/ ')}
+                                </td>
+                                <td>{item.DivisionTitle}</td>
+                                <td>{item.OrganisationTitle}</td>
+                                <td>{item.Mobile}</td>
+                              </tr>
+                            );
+                          }
+                          return;
+                        })}
+                      </tbody>
+                    </Table>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+              <div></div>
+            </Col>
+
+            <Col md={12} className="mt-3">
+              <Accordion defaultActiveKey="1">
+                <Accordion.Item eventKey="1">
+                  <Accordion.Header className="mb-3">
+                    <label className="fs-6 m-0 report-label pointer">Discussion Points</label>
+                  </Accordion.Header>
+                  <Accordion.Body className="p-0 inner-table">
+                    <Table responsive hover>
+                      <thead>
+                        <tr>
+                          <th className="" style={{ width: '50px' }}>
+                            Sno
+                          </th>
+                          <th className="w-60">Discussion Points</th>
+                          <th className="w-20">End date</th>
+                          <th className="w-20">Assign To</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedMeeting?.[0]?.DiscussionsPoint.map((item, idx) => {
+                          const userIds = Array.isArray(item.UserId) ? item.UserId : item.UserId.split(',');
+                          return (
+                            <tr key={`${idx}-${idx}-${Math.random()}`}>
+                              <td>{idx + 1}</td>
+                              <td>{item.Description}</td>
+                              <td>{moment(item.EndDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</td>
+                              <td>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                                  {userIds.map((id, index) => {
+                                    const user = userList?.Result?.find((u) => Number(u.UserId) === Number(id));
+                                    return user ? (
+                                      <span key={`${index}__${Math.random()}`} className="label-user" onClick={() => handleUserInfo(user)}>
+                                        {user.UserName}
+                                      </span>
+                                    ) : null;
+                                  })}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </Table>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </Col>
+          </Row>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showInfo} animation={true} backdrop="static" keyboard={false}>
+        <Modal.Header className={mode}>
+          <Modal.Title className="dashboardModalHeader">
+            <h5>Events for this day </h5>
+          </Modal.Title>
+          <span className="pointer" onClick={handleClose}>
+            X
+          </span>
+        </Modal.Header>
+        <Modal.Body className={`p-4 ${mode}`} ref={pdfContent}>
+          {selectedEvents.length > 0 && (
+            <div className="events">
+              <ul className="event-list p-0">
+                {selectedEvents.map((event, index) => (
+                  <li key={event.id} className="item pointer" onClick={() => setSelectedEventId(event)}>
+                    <div className="d-flex align-items-center">
+                      <span>{index + 1}.</span>
+                      <p className="m-0 p-1">{event.title}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Modal.Body>
+      </Modal>
       <Modal show={showProjects} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title className="dashboardModalHeader">

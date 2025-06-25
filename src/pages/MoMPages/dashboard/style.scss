@@ -259,6 +259,7 @@
 .dashboard-donut {
   display: flex;
   justify-content: center;
+  flex-direction: column;
   min-height: '300px';
   height: 370px;
   position: 'relative';
