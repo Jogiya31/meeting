@@ -19,6 +19,8 @@ import DonutChart2 from '../../../components/charts/DonutChat2';
 import GroupedColumnChart from '../../../components/charts/GroupedColumnChart';
 import { taskActions } from '../../../store/task/taskSlice';
 import { getRandomColor } from './../../../utils/utils';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 const DashDefault = () => {
   const { mode, theme } = useTheme();
   const dispatch = useDispatch();
