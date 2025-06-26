@@ -15,10 +15,13 @@ import { taskActions } from '../../../store/task/taskSlice';
 import { useStore } from '../../../contexts/DataContext';
 import { exportJsonToExcel } from '../../../utils/utils';
 import { useAuth } from '../../../contexts/AuthContext';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const TaskList = () => {
   const dispatch = useDispatch();
   const gridRef = useRef();
+  const gridWrapperRef = useRef();
   const { user, role } = useAuth();
   const { filterValue, filterWith } = useStore();
   const [filterPayload, setFilterPayload] = useState({
@@ -354,6 +357,24 @@ const TaskList = () => {
     e.preventDefault();
     dispatch(taskActions.getTaskInfo(filterPayload));
   };
+  // const exportPdf = () => {
+  //   if (!gridWrapperRef.current) return;
+  //   if (!document.body.contains(gridWrapperRef.current)) {
+  //     console.warn('Grid container no longer in the DOM');
+  //     return;
+  //   }
+
+  //   html2canvas(gridWrapperRef.current, { scale: 2 }).then((canvas) => {
+  //     const imgData = canvas.toDataURL('image/png');
+  //     const pdf = new jsPDF('p', 'mm', 'a4');
+  //     const imgWidth = 210;
+  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  //     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+  //     pdf.save(`Task_List.pdf`);
+  //   });
+  // };
+
   const onExport = () => {
     if (!gridRef.current?.api) return;
 
@@ -466,8 +487,8 @@ const TaskList = () => {
               </div>
               <div className="filter-col">
                 <div className="d-flex align-items-center justify-content-center">
-                  {/* <img src={print_i} alt="" className="img-fluid ml-2 pointer" title="Print" width={30} /> */}
-                  <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={() => onExport()} title="Export PDF" />
+                  {/* {<img src={print_i} alt="" className="img-fluid ml-2 pointer" title="Print" width={30} onClick={exportPdf} />} */}
+                  <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={onExport} title="Export PDF" />
                   <img
                     src={refresh}
                     alt=""
@@ -482,16 +503,19 @@ const TaskList = () => {
           </Form>
         </Card.Header>
         <Card.Body className="p-3 pt-0 dark-table">
-          <AdvanceTable
-            reference={gridRef}
-            rowData={taskData || []}
-            columnDefs={columnDefs}
-            pagination={true}
-            paginationPageSize={15}
-            paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
-            resetTrigger={resetTrigger}
-            tablethemes="blue"
-          />
+          <div>
+            <AdvanceTable
+              reference={gridRef}
+              gridWrapperRef={gridWrapperRef}
+              rowData={taskData || []}
+              columnDefs={columnDefs}
+              pagination={true}
+              paginationPageSize={15}
+              paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
+              resetTrigger={resetTrigger}
+              tablethemes="blue"
+            />
+          </div>
         </Card.Body>
       </Card>
     </div>

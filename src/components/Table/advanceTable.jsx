@@ -18,7 +18,8 @@ const AdvanceTable = ({
   pagination,
   paginationPageSize,
   paginationPageSizeSelector,
-  reference
+  reference,
+  gridWrapperRef
 }) => {
   const { mode } = useTheme();
   const [gridKey, setGridKey] = useState(0);
@@ -32,7 +33,7 @@ const AdvanceTable = ({
   }, [resetTrigger]);
 
   return (
-    <div className={`AG-table ${mode === 'dark' ? 'ag-theme-material-dark' : 'ag-theme-material'}`} style={{ width: '100%' }}>
+    <div ref={gridWrapperRef} className={`AG-table ${mode === 'dark' ? 'ag-theme-material-dark' : 'ag-theme-material'}`} style={{ width: '100%' }}>
       <AgGridReact
         ref={reference}
         className={tablethemes}

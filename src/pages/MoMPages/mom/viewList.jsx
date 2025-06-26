@@ -523,7 +523,7 @@ export default function CollapsibleTable() {
           <Modal.Title className="w-100">
             <div className="d-flex justify-content-between ">
               <h5 className="m-0">Attendance List</h5>
-              <img src={excelImg} className="mr-1 pointer" width={25} onClick={exportToExcel} alt="" />
+              <img src={excelImg} className="mr-1 pointer" width={25} onClick={exportToExcel} alt="" title='Export Excel' />
             </div>
           </Modal.Title>
           <span className="pointer" onClick={handleCloseAttendanceList}>
