@@ -24,7 +24,6 @@ const NavItem = ({ item }) => {
 
   const handleLogoutClick = async (e) => {
     e.preventDefault(); // prevent default link behavior
-    console.log('item.url', item.url)
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: 'Do you want to log out?',

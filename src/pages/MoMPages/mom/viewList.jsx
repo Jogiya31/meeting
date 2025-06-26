@@ -259,8 +259,6 @@ export default function CollapsibleTable() {
   };
 
   const handleSaveClick = () => {
-    console.log('selectedParentRow', selectedParentRow);
-    console.log('selectedRow', selectedRow);
     const payload = {
       MeetingId: Number(selectedParentRow.MeetingId),
       Description: selectedRow.Description,

@@ -213,7 +213,6 @@ const TaskReport = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateTasks()) return;
-    console.log('TaskformData', TaskformData);
   };
   const [columnDefs] = useState([
     { field: 'projectName', sortable: true, filter: true, flex: 1 },
