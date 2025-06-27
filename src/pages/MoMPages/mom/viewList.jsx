@@ -337,7 +337,9 @@ export default function CollapsibleTable() {
             <Table responsive hover>
               <thead>
                 <tr className="bg-light ">
-                  <th className="" style={{ width: '50px' }}></th>
+                  <th className="" style={{ width: '50px' }}>
+                    Sno.
+                  </th>
                   {parentHeaders.map((headCell, idx) => (
                     <th className={headCell.class} key={`${headCell}_${idx}`}>
                       <Button variant="link" onClick={() => handleRequestSort(headCell.id)} className="pl-0 pr-0">
@@ -357,12 +359,17 @@ export default function CollapsibleTable() {
                   return (
                     <Fragment key={`${parent_row}__${parent_row.id}_${Math.random()}`}>
                       <tr key={`${parent_row}__${parent_row.id}_${Math.random()}`}>
-                        <td className="text-center">
-                          <span variant="link" onClick={() => toggleRow(parent_row.MeetingId)}>
+                        <td className="text-center pointer">
+                          <span
+                            variant="link"
+                            className="d-flex  justify-content-center align-items-center pointer"
+                            onClick={() => toggleRow(parent_row.MeetingId)}
+                          >
+                            <span> {idx + 1} </span>
                             {expandedRows[parent_row.MeetingId] ? (
-                              <i className="feather icon-chevron-down list-toggle-direction" />
+                              <i className="feather icon-chevron-down pointer" />
                             ) : (
-                              <i className="feather icon-chevron-right list-toggle-direction" />
+                              <i className="feather icon-chevron-right pointer" />
                             )}
                           </span>
                         </td>
@@ -521,7 +528,7 @@ export default function CollapsibleTable() {
           <Modal.Title className="w-100">
             <div className="d-flex justify-content-between ">
               <h5 className="m-0">Attendance List</h5>
-              <img src={excelImg} className="mr-1 pointer" width={25} onClick={exportToExcel} alt="" title='Export Excel' />
+              <img src={excelImg} className="mr-1 pointer" width={25} onClick={exportToExcel} alt="" title="Export Excel" />
             </div>
           </Modal.Title>
           <span className="pointer" onClick={handleCloseAttendanceList}>

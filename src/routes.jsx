@@ -46,10 +46,8 @@ const Settings = lazy(() => import('./pages/MoMPages/settings'));
 const userDashboard = lazy(() => import('./pages/TaskTracker/dashboard'));
 const TaskList = lazy(() => import('./pages/TaskTracker/taskList'));
 const userList = lazy(() => import('./pages/TaskTracker/users'));
-const createDependencies = lazy(() => import('./pages/TaskTracker/createDependencies'));
 const CreateTask = lazy(() => import('./pages/TaskTracker/createTask'));
 const TaskAssignment = lazy(() => import('./pages/TaskTracker/taskAssignment'));
-const TaskReport = lazy(() => import('./pages/TaskTracker/taskReport'));
 
 //Auth
 const Login = lazy(() => import('./pages/auth/SignIn'));
@@ -138,11 +136,6 @@ const routes = [
       },
       {
         exact: true,
-        path: '/tasktracker/Create-Dependancies',
-        element: createDependencies
-      },
-      {
-        exact: true,
         path: '/tasktracker/Create-Task',
         element: CreateTask
       },
@@ -150,11 +143,6 @@ const routes = [
         exact: true,
         path: '/tasktracker/Task-Assignment',
         element: TaskAssignment
-      },
-      {
-        exact: true,
-        path: '/tasktracker/Task-Report',
-        element: TaskReport
       },
       {
         path: '*',

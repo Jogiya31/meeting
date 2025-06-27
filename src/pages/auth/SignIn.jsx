@@ -1,10 +1,8 @@
 import React from 'react';
-import { Card, Tab, Tabs } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import AuthLogin from './JWTLogin';
 import logo from '../../assets/images/logo.png';
-import { useTheme } from '../../contexts/themeContext';
 const Signin1 = () => {
-  const { mode } = useTheme();
   return (
     <React.Fragment>
       <div className="auth-wrapper">
@@ -19,6 +17,7 @@ const Signin1 = () => {
             <Card.Body>
               <div className="mb-4 mt-3">
                 <img src={logo} alt="" width={70} />
+                <h4>Tracker Login</h4>
               </div>
               <AuthLogin />
             </Card.Body>

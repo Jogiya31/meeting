@@ -159,7 +159,7 @@ function EnhancedTable({
                 />
               </th>
             )}
-            {enableSno && <th className={`${headerCss || 'grey-bg'}`}>Sno</th>}
+            {enableSno && <th className={`${headerCss || 'grey-bg'}`}>#</th>}
             {headers.map((headCell) => (
               <th key={headCell.id} className={`${headerCss || 'grey-bg'} ${headCell.class}`}>
                 <Button variant="link" onClick={() => handleRequestSort(headCell.id)} className="pl-0 pr-0">

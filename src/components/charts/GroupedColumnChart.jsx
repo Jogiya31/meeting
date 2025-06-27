@@ -12,38 +12,42 @@ const GroupedColumnChart = ({ data, title, labels }) => {
   };
 
   const options = {
-    responsive: true,
-    plugins: {
-      // Explicitly disable datalabels plugin if present
-      datalabels: {
-        display: false
-      },
-      legend: {
-        position: 'top',
-        labels: {
-          boxWidth: 12
-        }
-      },
-      title: {
-        display: true,
-        text: title,
-        font: {
-          size: 18
-        },
-         padding: {
-          top: 20,
-        }
-      },
-      tooltip: {
-        enabled: true
+  responsive: true,
+  plugins: {
+    datalabels: {
+      display: false
+    },
+    legend: {
+      position: 'top',
+      labels: {
+        boxWidth: 12
       }
     },
-    scales: {
-      y: {
-        beginAtZero: true
+    title: {
+      display: true,
+      text: title,
+      font: {
+        size: 18
+      },
+      padding: {
+        top: 20
+      }
+    },
+    tooltip: {
+      enabled: true
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        stepSize: 1,   // Ensure only whole number steps
+        precision: 0   // Remove decimal points from labels
       }
     }
-  };
+  }
+};
+
 
   return (
     <div className="w-100" style={{ minHeight: '300px' }}>

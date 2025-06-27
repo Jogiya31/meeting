@@ -344,6 +344,7 @@ const TaskAssigment = () => {
             <Tabs defaultActiveKey="assignedTask">
               <Tab eventKey="assignedTask" title="Assigned Tasks">
                 <EnhancedTable
+                  enableSno
                   data={assignedTask}
                   headers={GroupHeaders}
                   headerCss="success"
@@ -359,6 +360,7 @@ const TaskAssigment = () => {
               {role !== 'user' && (
                 <Tab eventKey="UnAssignedTasks" title="UnAssigned Tasks">
                   <EnhancedTable
+                    enableSno
                     data={UnAssignedTasks}
                     headers={unAssignedHeaders}
                     headerCss="info"
@@ -373,7 +375,14 @@ const TaskAssigment = () => {
                 </Tab>
               )}
               <Tab eventKey="taskProgress" title="Task Progress">
-                <EnhancedTable data={taskProgress} headers={progressHeaders} headerCss="warning" enablePagination PerPagelimit={15} />
+                <EnhancedTable
+                  enableSno
+                  data={taskProgress}
+                  headers={progressHeaders}
+                  headerCss="warning"
+                  enablePagination
+                  PerPagelimit={15}
+                />
               </Tab>
             </Tabs>
           </Col>

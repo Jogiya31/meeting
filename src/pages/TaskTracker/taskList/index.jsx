@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import excel_i from '../../../assets/images/excel_i.svg';
-import print_i from '../../../assets/images/print_i.svg';
 import refresh from '../../../assets/images/refresh-arrow.png';
 import DatePicker from 'react-datepicker';
 import { useSelector, useDispatch } from 'react-redux';
@@ -15,8 +14,6 @@ import { taskActions } from '../../../store/task/taskSlice';
 import { useStore } from '../../../contexts/DataContext';
 import { exportJsonToExcel } from '../../../utils/utils';
 import { useAuth } from '../../../contexts/AuthContext';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 const TaskList = () => {
   const dispatch = useDispatch();
@@ -257,6 +254,17 @@ const TaskList = () => {
     }
   };
   const [columnDefs] = useState([
+    {
+      headerName: '#',
+      valueGetter: (params) => params.node.rowIndex + 1,
+      width: 80,
+      pinned: 'left',
+      suppressMovable: true,
+      cellStyle: { textAlign: 'center' },
+      sortable: false,
+      filter: false,
+      flex: 1
+    },
     { field: 'ProjectTitle', sortable: true, filter: true, flex: 1 },
     { field: 'ModuleName', sortable: true, filter: true, flex: 1 },
     { field: 'Task', sortable: true, filter: true, flex: 1 },
@@ -357,23 +365,6 @@ const TaskList = () => {
     e.preventDefault();
     dispatch(taskActions.getTaskInfo(filterPayload));
   };
-  // const exportPdf = () => {
-  //   if (!gridWrapperRef.current) return;
-  //   if (!document.body.contains(gridWrapperRef.current)) {
-  //     console.warn('Grid container no longer in the DOM');
-  //     return;
-  //   }
-
-  //   html2canvas(gridWrapperRef.current, { scale: 2 }).then((canvas) => {
-  //     const imgData = canvas.toDataURL('image/png');
-  //     const pdf = new jsPDF('p', 'mm', 'a4');
-  //     const imgWidth = 210;
-  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  //     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-  //     pdf.save(`Task_List.pdf`);
-  //   });
-  // };
 
   const onExport = () => {
     if (!gridRef.current?.api) return;
@@ -487,7 +478,6 @@ const TaskList = () => {
               </div>
               <div className="filter-col">
                 <div className="d-flex align-items-center justify-content-center">
-                  {/* {<img src={print_i} alt="" className="img-fluid ml-2 pointer" title="Print" width={30} onClick={exportPdf} />} */}
                   <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={onExport} title="Export PDF" />
                   <img
                     src={refresh}

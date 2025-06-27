@@ -8,6 +8,7 @@ import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { useTheme } from '../../../contexts/themeContext';
 import DatePicker from 'react-datepicker';
 import { useAuth } from '../../../contexts/AuthContext';
+import { moduleActions } from '../../../store/module/moduleSlice';
 
 const Index = () => {
   const dispatch = useDispatch();
@@ -34,12 +35,29 @@ const Index = () => {
     HodName: '',
     Technology: '',
     ProjectStartDate: null,
-    CompletionDate: null,
-    CreatedBy: user.UserName
+    CompletionDate: null
   });
   const [projectErrors, setProjectErrors] = useState({});
   const [projectstartDateError, setProjectStartDateError] = useState(false);
   const [projectCompletionDateError, setProjectCompletionDateError] = useState(false);
+
+  const [showModule, setShowModule] = useState(false);
+  const [moduleErrors, setModuleErrors] = useState({});
+  const [ModuleformData, setModuleFormData] = useState({
+    ModuleName: '',
+    ProjectId: '',
+    ModuleDescription: ''
+  });
+
+  const [showDivision, setShowDivision] = useState(false);
+  const [divisionErrors, setDivisionErrors] = useState({});
+  const [DivisionformData, setDivisionFormData] = useState({
+    DivisionTitle: '',
+    Description: '',
+    Status: '1'
+  });
+
+  const [currSelectedData, setCurrSelectedData] = useState('');
 
   const designationDataList = useSelector((state) => state.settings.designationData);
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -50,6 +68,7 @@ const Index = () => {
   const salutationDataList = useSelector((state) => state.settings.salutationData);
   const priorityDataList = useSelector((state) => state.settings.priorityData);
   const userList = useSelector((state) => state.users.data);
+  const moduleList = useSelector((state) => state.module.data);
 
   useEffect(() => {
     dispatch(settingsActions.getDesignationInfo());
@@ -60,6 +79,7 @@ const Index = () => {
     dispatch(settingsActions.getProjectInfo());
     dispatch(settingsActions.getSalutationInfo());
     dispatch(settingsActions.getPriorityInfo());
+    dispatch(moduleActions.getModuleInfo());
   }, []);
 
   useEffect(() => {
@@ -183,7 +203,6 @@ const Index = () => {
     const found = data.find((item) => item.DesignationId === val);
     return found ? found.DesignationTitle : '';
   };
-
   const handleEdit = (list, setList, id) => {
     Swal.fire({
       title: 'Update',
@@ -200,11 +219,9 @@ const Index = () => {
       }
     });
   };
-
   const handleChange = (list, setList, id, newValue) => {
     setList(list.map((item) => (item.id === id ? { ...item, title: newValue } : item)));
   };
-
   const handleSaveChange = async (list, setList, updateAction, id, fieldName) => {
     const updatedItem = list.find((item) => item.id === id);
     if (!updatedItem) return;
@@ -226,7 +243,6 @@ const Index = () => {
       setList(list.map((item) => (item.id === id ? { ...item, isEditing: false } : item)));
     } catch (error) {}
   };
-
   const handleDelete = async (list, setList, updateAction, id, fieldName) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -271,7 +287,6 @@ const Index = () => {
       }
     });
   };
-
   const handleProjectDelete = (item) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -311,7 +326,6 @@ const Index = () => {
       }
     });
   };
-
   const handleAddItem = async (newItem, setNewItem, apiAction, fetchAction, fieldName) => {
     if (!newItem.trim()) return; // Prevent empty input
 
@@ -335,7 +349,6 @@ const Index = () => {
       setNewItem('');
     } catch (error) {}
   };
-
   const RenderList = ({ list, setList, apiAction, fetchAction, updateAction, fieldName, enableAddNew }) => {
     const [newItem, setNewItem] = useState('');
 
@@ -380,7 +393,7 @@ const Index = () => {
                   )}
                   {item.status ? (
                     <span
-                      title="Visible"
+                      title="Active"
                       className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
                       onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
                     >
@@ -388,7 +401,7 @@ const Index = () => {
                     </span>
                   ) : (
                     <span
-                      title="Not Visible"
+                      title="Not Active"
                       className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
                       onClick={() => handleDelete(list, setList, updateAction, item.id, fieldName)}
                     >
@@ -419,28 +432,184 @@ const Index = () => {
     );
   };
 
-  const handleClose = () => {
-    setShowProject(false);
-    setProjectFormData({
-      ProjectTitle: '',
-      ProjectDescription: '',
-      GroupId: '',
-      HogName: '',
-      HodName: '',
-      Technology: '',
-      ProjectStartDate: null,
-      CompletionDate: null,
-      CreatedBy: user.UserName
+  useEffect(() => {
+    if (currSelectedData === 'division') {
+      const updatedFormData = {
+        DivisionId: selectedData.DivisionId,
+        DivisionTitle: selectedData.DivisionTitle,
+        ModifyBy: user.UserName,
+        Description: selectedData.Description,
+        Status: selectedData.Status
+      };
+      setDivisionFormData(updatedFormData);
+      setShowDivision(true);
+    }
+    if (currSelectedData === 'project') {
+      const updatedFormData = {
+        ProjectId: selectedData.ProjectId,
+        ProjectTitle: selectedData.ProjectTitle,
+        ProjectDescription: selectedData.ProjectDescription,
+        GroupId: selectedData.DivisionId,
+        HogName: selectedData.HOGId,
+        HodName: selectedData.HODId,
+        Technology: selectedData.Technology,
+        ProjectStartDate: selectedData.ProjectStartDate,
+        CompletionDate: selectedData.CompletionDate,
+        Status: selectedData.Status
+      };
+      setProjectFormData(updatedFormData);
+      setShowProject(true);
+    }
+    if (currSelectedData === 'module') {
+      const updatedData = {
+        ModuleId: selectedData.ModuleId,
+        ModuleName: selectedData.ModuleName,
+        ProjectId: selectedData.ProjectId,
+        ModuleDescription: selectedData.ModuleDescription,
+        ModifyBy: user.UserName,
+        Status: selectedData.Status
+      };
+      setModuleFormData(updatedData);
+      setShowModule(true);
+    }
+  }, [selectedData]);
+
+  const handleModuleDelete = (item) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to change status for this item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!',
+      theme: mode
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const payload = {
+          ModuleId: item.ModuleId,
+          ModuleName: item.ModuleName,
+          ProjectId: item.ProjectId,
+          ModuleDescription: item.ModuleDescription,
+          ModifyBy: user.UserName,
+          Status: item.Status === '1' ? '0' : '1'
+        };
+        try {
+          dispatch(moduleActions.updateModuleInfo(payload));
+        } catch (error) {}
+        Swal.fire({
+          title: 'Updated!',
+          text: 'Selected item status has been updated.',
+          icon: 'success',
+          theme: mode
+        }).then((result) => {
+          dispatch(moduleActions.getModuleInfo());
+        });
+      }
     });
-    setSelectedData(null);
-    dispatch(settingsActions.getProjectInfo());
+  };
+  const handleModuleChange = (e) => {
+    const { name, value } = e.target;
+    setModuleFormData({ ...ModuleformData, [name]: value });
+  };
+  const validateModule = () => {
+    let newErrors = {};
+    if (!ModuleformData.ModuleName) newErrors.ModuleName = 'Required field.';
+    if (!ModuleformData.ModuleDescription) newErrors.ModuleDescription = 'Required field.';
+    if (!ModuleformData.ProjectId) newErrors.ProjectId = 'Required field.';
+    setModuleErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  const handleSubmitModule = (e) => {
+    e.preventDefault();
+    if (!validateModule()) return;
+
+    const payload = { ...ModuleformData };
+
+    if (selectedData) {
+      payload.Status = selectedData.Status;
+      payload.ModuleId = selectedData.ModuleId;
+      payload.ModifyBy = user.UserName;
+      dispatch(moduleActions.updateModuleInfo(payload));
+    } else {
+      payload.CreatedBy = user.UserName;
+      dispatch(moduleActions.addModuleInfo(payload));
+    }
+
+    setTimeout(() => {
+      dispatch(moduleActions.getModuleInfo());
+    }, 300);
+
+    handleClose();
+  };
+
+  const handleDivisionDelete = (item) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to change status for this item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!',
+      theme: mode
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const payload = {
+          DivisionId: item.DivisionId,
+          DivisionTitle: item.DivisionTitle,
+          Description: item.Description,
+          ModifyBy: user.UserName,
+          Status: item.Status === '1' ? '0' : '1'
+        };
+        try {
+          dispatch(settingsActions.updateDivisionInfo(payload));
+        } catch (error) {}
+        Swal.fire({
+          title: 'Updated!',
+          text: 'Selected item status has been updated.',
+          icon: 'success',
+          theme: mode
+        }).then((result) => {
+          dispatch(settingsActions.getDivisionInfo());
+        });
+      }
+    });
+  };
+  const handleDivisionChange = (e) => {
+    const { name, value } = e.target;
+    setDivisionFormData({ ...DivisionformData, [name]: value });
+  };
+  const validateDivision = () => {
+    let newErrors = {};
+    if (!DivisionformData.DivisionTitle) newErrors.DivisionTitle = 'Required field.';
+    if (!DivisionformData.Description) newErrors.Description = 'Required field.';
+    setDivisionErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  const handleSubmitDivision = (e) => {
+    e.preventDefault();
+    if (!validateDivision()) return;
+
+    const payload = { ...DivisionformData };
+
+    if (selectedData) {
+      payload.DivisionId = selectedData.DivisionId;
+      payload.ModifyBy = user.UserName;
+
+      dispatch(settingsActions.updateDivisionInfo(payload));
+    } else {
+      payload.CreatedBy = user.UserName;
+      dispatch(settingsActions.addDivisionInfo(payload));
+    }
+
+    handleClose();
   };
 
   const handleProjectChange = (e) => {
     const { name, value } = e.target;
     setProjectFormData({ ...ProjectformData, [name]: value });
   };
-
   const validateProject = () => {
     let newErrors = {};
     if (!ProjectformData.ProjectTitle) newErrors.ProjectTitle = 'Required field.';
@@ -460,7 +629,6 @@ const Index = () => {
     setProjectErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleProjectStartDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectStartDateError(false);
@@ -470,7 +638,6 @@ const Index = () => {
       setProjectFormData({ ...ProjectformData, ProjectStartDate: '' });
     }
   };
-
   const handleProjectEndDate = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       setProjectCompletionDateError(false);
@@ -480,7 +647,6 @@ const Index = () => {
       setProjectFormData({ ...ProjectformData, CompletionDate: '' });
     }
   };
-
   const handleSubmitProject = (e) => {
     e.preventDefault();
     if (!validateProject()) return;
@@ -488,50 +654,107 @@ const Index = () => {
     const Payload = { ...ProjectformData };
 
     if (selectedData) {
+      Payload.ModifyBy = user.UserName;
       dispatch(settingsActions.updateProjectInfo(Payload));
     } else {
+      Payload.CreatedBy = user.UserName;
       dispatch(settingsActions.addProjectInfo(Payload));
     }
     handleClose();
-    setTimeout(() => {
-      dispatch(settingsActions.getProjectInfo());
-    }, 300);
   };
 
-  useEffect(() => {
-    if (selectedData) {
-      const updatedFormData = {
-        ProjectId: selectedData.ProjectId,
-        ProjectTitle: selectedData.ProjectTitle,
-        ProjectDescription: selectedData.ProjectDescription,
-        GroupId: selectedData.DivisionId,
-        HogName: selectedData.HogName,
-        HodName: selectedData.HodName,
-        Technology: selectedData.Technology,
-        ProjectStartDate: selectedData.ProjectStartDate,
-        CompletionDate: selectedData.CompletionDate,
-        Status: selectedData.Status,
-        ModifyBy: selectedData.ModifyBy
-      };
-      setProjectFormData(updatedFormData);
-      setShowProject(true);
-    }
-  }, [selectedData]);
+  const handleClose = () => {
+    setShowDivision(false);
+    setShowProject(false);
+    setShowModule(false);
+    setProjectFormData({
+      ProjectTitle: '',
+      ProjectDescription: '',
+      GroupId: '',
+      HogName: '',
+      HodName: '',
+      Technology: '',
+      ProjectStartDate: '',
+      CompletionDate: ''
+    });
+    setDivisionFormData({
+      DivisionTitle: '',
+      Description: '',
+      Status: '1'
+    });
+    setModuleFormData({
+      ModuleName: '',
+      ProjectId: '',
+      ModuleDescription: ''
+    });
+    setProjectErrors({});
+    setDivisionErrors({});
+    setModuleErrors({});
+    dispatch(settingsActions.getProjectInfo());
+    dispatch(moduleActions.getModuleInfo());
+    dispatch(settingsActions.getDivisionInfo());
+    setSelectedData(null);
+    setCurrSelectedData('');
+  };
 
   return (
     <div>
       <Row>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Division List" cardClass="info default-shadow">
-            <RenderList
-              list={divisionList}
-              setList={setDivisionList}
-              apiAction={settingsActions.addDivisionInfo}
-              fetchAction={settingsActions.getDivisionInfo}
-              updateAction={settingsActions.updateDivisionInfo}
-              fieldName={'Division'}
-              enableAddNew
-            />
+          <MainCard title="Division Lists" cardClass="info default-shadow">
+            <div className="px-4 py-2 c-card-body">
+              <div className="d-flex justify-content-between">
+                {/* <h6>Title</h6> */}
+                <h6>Action</h6>
+              </div>
+              {divisionDataList?.Result?.map((item) => (
+                <Row key={item.id}>
+                  <Col md={9} sm={9}>
+                    <div className={`d-flex justify-content-between custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
+                      <span>{item.DivisionTitle}</span>
+                    </div>
+                  </Col>
+                  <Col md={2} sm={2} className="d-flex align-items-center">
+                    <div className="d-flex justify-content-between">
+                      <span
+                        title="Edit"
+                        className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
+                        onClick={() => {
+                          setSelectedData(item), setCurrSelectedData('division');
+                        }}
+                      />
+                      {item.Status === '1' ? (
+                        <span
+                          title="Active"
+                          className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                          onClick={() => {
+                            handleDivisionDelete(item);
+                          }}
+                        >
+                          <FaCheckCircle />
+                        </span>
+                      ) : (
+                        <span
+                          title="Not Active"
+                          className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                          onClick={() => {
+                            handleDivisionDelete(item);
+                          }}
+                        >
+                          <FaTimesCircle />
+                        </span>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+            <hr />
+            <div className="footer d-flex justify-content-end px-4">
+              <Button className="m-0" onClick={() => setShowDivision(true)}>
+                Add
+              </Button>
+            </div>
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
@@ -631,11 +854,14 @@ const Index = () => {
                       <span
                         title="Edit"
                         className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
-                        onClick={() => setSelectedData(item)}
+                        onClick={() => {
+                          setSelectedData(item);
+                          setCurrSelectedData('Project');
+                        }}
                       />
                       {item.status ? (
                         <span
-                          title="Visible"
+                          title="Active"
                           className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
                           onClick={() => {
                             handleProjectDelete(item);
@@ -645,7 +871,7 @@ const Index = () => {
                         </span>
                       ) : (
                         <span
-                          title="Not Visible"
+                          title="Not Active"
                           className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
                           onClick={() => {
                             handleProjectDelete(item);
@@ -662,6 +888,63 @@ const Index = () => {
             <hr />
             <div className="footer d-flex justify-content-end px-4">
               <Button className="m-0" onClick={() => setShowProject(true)}>
+                Add
+              </Button>
+            </div>
+          </MainCard>
+        </Col>
+        <Col sm={12} md={12} xl={6} xxl={4}>
+          <MainCard title="Module Lists" cardClass="success default-shadow">
+            <div className="px-4 py-2 c-card-body">
+              <div className="d-flex justify-content-between">
+                {/* <h6>Title</h6> */}
+                <h6>Action</h6>
+              </div>
+              {moduleList?.Result?.map((item) => (
+                <Row key={item.id}>
+                  <Col md={9} sm={9}>
+                    <div className={`d-flex justify-content-between custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
+                      <span>{item.ModuleName}</span>
+                    </div>
+                  </Col>
+                  <Col md={2} sm={2} className="d-flex align-items-center">
+                    <div className="d-flex justify-content-between">
+                      <span
+                        title="Edit"
+                        className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
+                        onClick={() => {
+                          setSelectedData(item), setCurrSelectedData('module');
+                        }}
+                      />
+                      {item.Status === '1' ? (
+                        <span
+                          title="Active"
+                          className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                          onClick={() => {
+                            handleModuleDelete(item);
+                          }}
+                        >
+                          <FaCheckCircle />
+                        </span>
+                      ) : (
+                        <span
+                          title="Not Active"
+                          className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                          onClick={() => {
+                            handleModuleDelete(item);
+                          }}
+                        >
+                          <FaTimesCircle />
+                        </span>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+            <hr />
+            <div className="footer d-flex justify-content-end px-4">
+              <Button className="m-0" onClick={() => setShowModule(true)}>
                 Add
               </Button>
             </div>
@@ -829,6 +1112,139 @@ const Index = () => {
                 Submit
               </Button>
               <Button variant="secondary" onClick={handleClose} className="ms-2">
+                Cancel
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      <Modal size="md" show={showModule} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+        <Modal.Header className={mode}>
+          <Modal.Title>{selectedData ? <h5>Update Module</h5> : <h5>Add Module</h5>}</Modal.Title>
+          <span className="pointer" onClick={handleClose}>
+            {' '}
+            X{' '}
+          </span>
+        </Modal.Header>
+        <Modal.Body className={mode}>
+          <Form noValidate onSubmit={handleSubmitModule}>
+            <Row>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Project Name</Form.Label>
+                  <Form.Select
+                    name="ProjectId"
+                    value={ModuleformData.ProjectId}
+                    className="custom-form-select"
+                    onChange={handleModuleChange}
+                    isInvalid={!!moduleErrors.ProjectId}
+                  >
+                    <option value="">Select project...</option>
+                    {Array.isArray(projectDataList?.Result)
+                      ? projectDataList.Result.filter((item) => item.Status === '1').map((item) => (
+                          <option key={item.ProjectId} value={item.ProjectId}>
+                            {item.ProjectTitle}
+                          </option>
+                        ))
+                      : Object.values(projectDataList?.Result || {})
+                          .filter((item) => item.Status === '1')
+                          .map((item) => (
+                            <option key={item.ProjectId} value={item.ProjectId}>
+                              {item.ProjectTitle}
+                            </option>
+                          ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">{moduleErrors.ProjectId}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Module Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="ModuleName"
+                    placeholder="Enter..."
+                    value={ModuleformData.ModuleName}
+                    onChange={handleModuleChange}
+                    isInvalid={!!moduleErrors.ModuleName}
+                  />
+                  <Form.Control.Feedback type="invalid">{moduleErrors.ModuleName}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Module Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    value={ModuleformData.ModuleDescription}
+                    rows={3}
+                    name="ModuleDescription"
+                    placeholder="Enter text here.."
+                    onChange={handleModuleChange}
+                    isInvalid={!!moduleErrors.ModuleDescription}
+                  />
+                  <Form.Control.Feedback type="invalid">{moduleErrors.ModuleDescription}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+            <div className="d-flex justify-content-end mt-2">
+              <Button variant="primary" type="submit">
+                Submit
+              </Button>
+              <Button variant="secondary" onClick={() => handleClose()} className="ms-2">
+                Cancel
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      <Modal size="md" show={showDivision} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+        <Modal.Header className={mode}>
+          <Modal.Title>{selectedData ? <h5>Update Division</h5> : <h5>Add Division</h5>}</Modal.Title>
+          <span className="pointer" onClick={() => handleClose()}>
+            {' '}
+            X{' '}
+          </span>
+        </Modal.Header>
+        <Modal.Body className={mode}>
+          <Form noValidate onSubmit={handleSubmitDivision}>
+            <Row>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Division Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="DivisionTitle"
+                    placeholder="Enter..."
+                    value={DivisionformData.DivisionTitle}
+                    onChange={handleDivisionChange}
+                    isInvalid={!!divisionErrors.DivisionTitle}
+                  />
+                  <Form.Control.Feedback type="invalid">{divisionErrors.DivisionTitle}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    value={DivisionformData.Description}
+                    rows={1}
+                    name="Description"
+                    placeholder="Enter text here.."
+                    onChange={handleDivisionChange}
+                    isInvalid={!!divisionErrors.Description}
+                  />
+                  <Form.Control.Feedback type="invalid">{divisionErrors.Description}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <div className="d-flex justify-content-end mt-2">
+              <Button variant="primary" type="submit">
+                Submit
+              </Button>
+              <Button variant="secondary" onClick={() => handleClose()} className="ms-2">
                 Cancel
               </Button>
             </div>

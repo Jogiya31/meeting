@@ -62,6 +62,8 @@ const JWTLogin = () => {
       }
     }
   }, [loginDetails]);
+  
+
 
   return (
     <Form noValidate onSubmit={handleSubmit} className="login-form">

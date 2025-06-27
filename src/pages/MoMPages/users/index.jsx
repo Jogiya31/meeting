@@ -160,6 +160,17 @@ const UserList = () => {
   };
 
   const [columnDefs] = useState([
+    {
+      headerName: '#',
+      valueGetter: (params) => params.node.rowIndex + 1,
+      width: 80,
+      pinned: 'left',
+      suppressMovable: true,
+      cellStyle: { textAlign: 'center' },
+      sortable: false,
+      filter: false,
+      flex: 1
+    },
     { field: 'UserName', sortable: true, filter: true, flex: 1, cellRenderer: UserNameCellRenderer },
     { field: 'DesignationTitle', sortable: true, filter: true, flex: 1 },
     { field: 'EmployeeDivisionTitle', sortable: true, filter: true, flex: 1 },

@@ -110,26 +110,12 @@ const menuItems = {
               display: true
             },
             {
-              id: 'create_taskDependencies',
-              title: 'Create Dependancies',
-              type: 'item',
-              url: '/tasktracker/create-Dependancies',
-              display: true
-            },
-            {
               id: 'Create_tasks',
               title: 'Create Task',
               type: 'item',
               url: '/tasktracker/create-Task',
               display: true
             },
-            // {
-            //   id: 'tasks_Approval',
-            //   title: 'Task Approval',
-            //   type: 'item',
-            //   url: '/tasktracker/Task-Approval',
-            //   display: true
-            // },
             {
               id: 'tasks_Assginment',
               title: 'Task Assignment',
@@ -137,13 +123,6 @@ const menuItems = {
               url: '/tasktracker/Task-Assignment',
               display: true
             },
-            // {
-            //   id: 'create_report',
-            //   title: 'Report',
-            //   type: 'item',
-            //   url: '/tasktracker/Task-Report',
-            //   display: true
-            // }
           ]
         }
       ]
@@ -223,26 +202,12 @@ const menuItems = {
               display: true
             },
             {
-              id: 'create_taskDependencies',
-              title: 'Create Dependancies',
-              type: 'item',
-              url: '/tasktracker/create-Dependancies',
-              display: true
-            },
-            {
               id: 'Create_tasks',
               title: 'Create Task',
               type: 'item',
               url: '/tasktracker/create-Task',
               display: true
             },
-            // {
-            //   id: 'tasks_Approval',
-            //   title: 'Task Approval',
-            //   type: 'item',
-            //   url: '/tasktracker/Task-Approval',
-            //   display: true
-            // },
             {
               id: 'tasks_Assginment',
               title: 'Task Assignment',
@@ -250,13 +215,6 @@ const menuItems = {
               url: '/tasktracker/Task-Assignment',
               display: true
             },
-            // {
-            //   id: 'create_report',
-            //   title: 'Report',
-            //   type: 'item',
-            //   url: '/tasktracker/Task-Report',
-            //   display: true
-            // }
           ]
         }
       ]
@@ -324,13 +282,6 @@ const menuItems = {
               url: '/tasktracker/Task-Assignment',
               display: true
             },
-            // {
-            //   id: 'create_report',
-            //   title: 'Report',
-            //   type: 'item',
-            //   url: '/tasktracker/Task-Report',
-            //   display: true
-            // }
           ]
         }
       ]

@@ -72,6 +72,17 @@ const CreateTask = () => {
     );
   };
   const [columnDefs] = useState([
+    {
+      headerName: '#',
+      valueGetter: (params) => params.node.rowIndex + 1,
+      width: 80,
+      pinned: 'left',
+      suppressMovable: true,
+      cellStyle: { textAlign: 'center' },
+      sortable: false,
+      filter: false,
+      flex: 1
+    },
     { field: 'ProjectTitle', sortable: true, filter: true, flex: 1 },
     { field: 'ModuleName', sortable: true, filter: true, flex: 1 },
     { field: 'Task', sortable: true, filter: true, flex: 1 },
