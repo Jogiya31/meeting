@@ -355,14 +355,15 @@ const Index = () => {
     return (
       <>
         <div className="px-4 py-2 c-card-body">
-          <div className="d-flex justify-content-between">
-            <h6>Title</h6>
+          <div className="d-flex justify-content-end">
+            {/* <h6>Title</h6> */}
             <h6>Action</h6>
           </div>
-          {list?.map((item) => (
+          {list?.map((item, idx) => (
             <Row key={item.id}>
               <Col md={9} sm={9}>
-                <div className={`d-flex justify-content-between custom-cards ${item.status ? '' : 'op-5'}`}>
+                <div className={`d-flex justify-content-start custom-cards ${item.status ? '' : 'op-5'}`}>
+                  <span className="mr-1">{idx + 1} </span>
                   {item.isEditing ? (
                     <input
                       type="text"
@@ -703,14 +704,15 @@ const Index = () => {
         <Col sm={12} md={12} xl={6} xxl={4}>
           <MainCard title="Division Lists" cardClass="info default-shadow">
             <div className="px-4 py-2 c-card-body">
-              <div className="d-flex justify-content-between">
+              <div className="d-flex justify-content-end">
                 {/* <h6>Title</h6> */}
                 <h6>Action</h6>
               </div>
-              {divisionDataList?.Result?.map((item) => (
+              {divisionDataList?.Result?.map((item, idx) => (
                 <Row key={item.id}>
                   <Col md={9} sm={9}>
-                    <div className={`d-flex justify-content-between custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
+                    <div className={`d-flex justify-content-start custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
+                      <span className="mr-1">{idx + 1}</span>
                       <span>{item.DivisionTitle}</span>
                     </div>
                   </Col>
@@ -842,10 +844,11 @@ const Index = () => {
                 <h6>Title</h6>
                 <h6>Action</h6>
               </div>
-              {projectList?.map((item) => (
+              {projectList?.map((item, idx) => (
                 <Row key={item.id}>
                   <Col md={9} sm={9}>
-                    <div className={`d-flex justify-content-between custom-cards ${item.status ? '' : 'op-5'}`}>
+                    <div className={`d-flex justify-content-start custom-cards ${item.status ? '' : 'op-5'}`}>
+                      <span className="mr-1">{idx + 1}</span>
                       <span>{item.title}</span>
                     </div>
                   </Col>
@@ -900,10 +903,11 @@ const Index = () => {
                 {/* <h6>Title</h6> */}
                 <h6>Action</h6>
               </div>
-              {moduleList?.Result?.map((item) => (
+              {moduleList?.Result?.map((item, idx) => (
                 <Row key={item.id}>
                   <Col md={9} sm={9}>
-                    <div className={`d-flex justify-content-between custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
+                    <div className={`d-flex justify-content-start custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
+                      <span className="mr-1">{idx + 1}</span>
                       <span>{item.ModuleName}</span>
                     </div>
                   </Col>

@@ -238,6 +238,10 @@ const DashDefault = () => {
           const userName = userMap[trimmedId];
           if (!userName) return;
 
+          // Pending or In Progress Tasks
+          if (task.Status === '1' || task.Status === '2' || task.Status === '') {
+            userPendingCountMap[userName] = (userPendingCountMap[userName] || 0) + 1;
+          }
           // Overdue Tasks
           if (task.Status === '3' || !task.EndDate) return;
 
@@ -247,11 +251,6 @@ const DashDefault = () => {
 
           if (endDate.toString() !== 'Invalid Date' && endDate < today) {
             userOverdueCountMap[userName] = (userOverdueCountMap[userName] || 0) + 1;
-          }
-
-          // Pending or In Progress Tasks
-          if (task.Status === '1' || task.Status === '2' || task.Status === '') {
-            userPendingCountMap[userName] = (userPendingCountMap[userName] || 0) + 1;
           }
         });
       });
@@ -523,7 +522,7 @@ const DashDefault = () => {
               </Card>
             </Col>
 
-            <Col md={6}>
+            {/* <Col md={6}>
               <Card className="mt-3">
                 <Card.Body className="p-0">
                   <div className="dashboard-donut d-block">
@@ -534,7 +533,7 @@ const DashDefault = () => {
                   </div>
                 </Card.Body>
               </Card>
-            </Col>
+            </Col> */}
             <Col md={6}>
               <Card className="mt-3">
                 <Card.Body className="p-0">
@@ -544,7 +543,7 @@ const DashDefault = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={12}>
+            <Col md={6}>
               <Card className="calander-card p-3 mt-3 mb-1">
                 <TaskCalendar
                   extra="dashboard-cal"
