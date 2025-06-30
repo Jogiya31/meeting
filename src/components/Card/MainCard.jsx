@@ -48,10 +48,10 @@ const MainCard = (props) => {
               <i className="feather icon-refresh-cw" />
               <Link to="#"> Reload </Link>
             </Dropdown.Item>
-            <Dropdown.Item as="li" className="dropdown-item" onClick={cardRemoveHandler}>
+            {/* <Dropdown.Item as="li" className="dropdown-item" onClick={cardRemoveHandler}>
               <i className="feather icon-trash" />
               <Link to="#"> Remove </Link>
-            </Dropdown.Item>
+            </Dropdown.Item> */}
           </Dropdown.Menu>
         </Dropdown>
       </div>

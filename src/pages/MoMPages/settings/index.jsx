@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MainCard from '../../../components/Card/MainCard';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +16,6 @@ const Index = () => {
   const { user } = useAuth();
   const Role = localStorage.getItem('role');
 
-  const [divisionList, setDivisionList] = useState([]);
   const [employmentTypeList, setEmploymentTypeList] = useState([]);
   const [organisationList, setOrganisationList] = useState([]);
   const [designationList, setDesignationList] = useState([]);
@@ -58,6 +57,8 @@ const Index = () => {
   });
 
   const [currSelectedData, setCurrSelectedData] = useState('');
+  const [divisionSearchTerm, setDivisionSearchTerm] = useState('');
+  const [filteredDivisionList, setFilteredDivisionList] = useState([]);
 
   const designationDataList = useSelector((state) => state.settings.designationData);
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -67,7 +68,6 @@ const Index = () => {
   const projectDataList = useSelector((state) => state.settings.projectData);
   const salutationDataList = useSelector((state) => state.settings.salutationData);
   const priorityDataList = useSelector((state) => state.settings.priorityData);
-  const userList = useSelector((state) => state.users.data);
   const moduleList = useSelector((state) => state.module.data);
 
   useEffect(() => {
@@ -91,15 +91,6 @@ const Index = () => {
         isEditing: false
       }));
       setDesignationList(list);
-    }
-    if (Array.isArray(divisionDataList?.Result)) {
-      const list = divisionDataList?.Result?.map((item) => ({
-        id: item.DivisionId,
-        title: item.DivisionTitle,
-        status: Number(item.Status),
-        isEditing: false
-      }));
-      setDivisionList(list);
     }
     if (Array.isArray(employeementDataList?.Result)) {
       const list = employeementDataList?.Result?.map((item) => ({
@@ -170,7 +161,6 @@ const Index = () => {
     }
   }, [
     designationDataList,
-    divisionDataList,
     employeementDataList,
     organizationDataList,
     statusDataList,
@@ -180,23 +170,12 @@ const Index = () => {
   ]);
 
   useEffect(() => {
-    if (userList && Array.isArray(userList.Result)) {
-      const updatedData = userList.Result.map((item) => {
-        const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
-        const desc = item?.DesignationId?.split(',')
-          .map((id) => getDesignation(id))
-          .join('/ ');
-        return {
-          ...item,
-          AssociatedOfficer: officer ? officer.UserName : '',
-          DesignationTitle: desc
-        };
-      });
-      setUserData(updatedData);
-    } else {
-      setUserData([]); // optional fallback
+    if (divisionDataList?.Result) {
+      const lowercasedSearch = divisionSearchTerm?.toLowerCase() || '';
+      const results = divisionDataList.Result.filter((item) => item.DivisionTitle?.toLowerCase().includes(lowercasedSearch));
+      setFilteredDivisionList(results);
     }
-  }, [userList]);
+  }, [divisionDataList, divisionSearchTerm]);
 
   const getDesignation = (val) => {
     const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
@@ -349,21 +328,46 @@ const Index = () => {
       setNewItem('');
     } catch (error) {}
   };
+
   const RenderList = ({ list, setList, apiAction, fetchAction, updateAction, fieldName, enableAddNew }) => {
     const [newItem, setNewItem] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredList, setFilteredList] = useState([]);
+
+    // Effect to filter the list whenever the list or searchTerm changes
+    useEffect(() => {
+      if (list) {
+        const lowercasedSearchTerm = searchTerm.toLowerCase();
+        const results = list.filter((item) => item.title && item.title.toLowerCase().includes(lowercasedSearchTerm));
+        setFilteredList(results);
+      }
+    }, [list, searchTerm]);
 
     return (
       <>
+        <div className="px-4 py-2">
+          <Row>
+            {/* Search Input Field */}
+            <Col md={9} sm={9}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder={`Search ${fieldName}...`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </Col>
+            <Col md={2} sm={2} className="d-flex align-items-center justify-content-end ">
+              <h6>Action</h6>
+            </Col>
+          </Row>
+        </div>
         <div className="px-4 py-2 c-card-body">
-          <div className="d-flex justify-content-end">
-            {/* <h6>Title</h6> */}
-            <h6>Action</h6>
-          </div>
-          {list?.map((item, idx) => (
+          {filteredList?.map((item, idx) => (
             <Row key={item.id}>
               <Col md={9} sm={9}>
                 <div className={`d-flex justify-content-start custom-cards ${item.status ? '' : 'op-5'}`}>
-                  <span className="mr-1">{idx + 1} </span>
+                  <span className="mr-1">{idx + 1}. </span>
                   {item.isEditing ? (
                     <input
                       type="text"
@@ -413,6 +417,7 @@ const Index = () => {
               </Col>
             </Row>
           ))}
+          {filteredList.length === 0 && searchTerm !== '' && <div className="text-center py-3">No results found for "{searchTerm}"</div>}
         </div>
         <hr />
         {enableAddNew && (
@@ -433,8 +438,252 @@ const Index = () => {
     );
   };
 
+  const DivisionList = ({ divisionDataList, setSelectedData, setCurrSelectedData, handleDivisionDelete, setShowDivision }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredList = useMemo(() => {
+      const lowerSearch = searchTerm.toLowerCase();
+      return divisionDataList?.Result?.filter((item) => item.DivisionTitle?.toLowerCase().includes(lowerSearch)) || [];
+    }, [divisionDataList, searchTerm]);
+
+    return (
+      <>
+        <div className="px-4 py-2">
+          <Row>
+            <Col md={9} sm={9}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search Division..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </Col>
+            <Col md={2} sm={2} className="d-flex align-items-center justify-content-end">
+              <h6>Action</h6>
+            </Col>
+          </Row>
+        </div>
+
+        <div className="px-4 py-2 c-card-body">
+          {filteredList.map((item, idx) => (
+            <Row key={item.id}>
+              <Col md={9} sm={9}>
+                <div className={`d-flex justify-content-start custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
+                  <span className="mr-1">{idx + 1}.</span>
+                  <span>{item.DivisionTitle}</span>
+                </div>
+              </Col>
+              <Col md={2} sm={2} className="d-flex align-items-center">
+                <div className="d-flex justify-content-between">
+                  <span
+                    title="Edit"
+                    className="feather icon-edit theme-bg2 text-white f-14 p-2 pointer"
+                    onClick={() => {
+                      setSelectedData(item);
+                      setCurrSelectedData('division');
+                    }}
+                  />
+                  {item.Status === '1' ? (
+                    <span
+                      title="Active"
+                      className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                      onClick={() => handleDivisionDelete(item)}
+                    >
+                      <FaCheckCircle />
+                    </span>
+                  ) : (
+                    <span
+                      title="Not Active"
+                      className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                      onClick={() => handleDivisionDelete(item)}
+                    >
+                      <FaTimesCircle />
+                    </span>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          ))}
+
+          {filteredList.length === 0 && searchTerm && <div className="text-center py-3">No results found for "{searchTerm}"</div>}
+        </div>
+
+        <hr />
+
+        <div className="footer d-flex justify-content-end px-4">
+          <Button className="m-0" onClick={() => setShowDivision(true)}>
+            Add
+          </Button>
+        </div>
+      </>
+    );
+  };
+  const ProjectList = ({ projectList, setSelectedData, setCurrSelectedData, handleProjectDelete, setShowProject }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredList = useMemo(() => {
+      const lowerSearch = searchTerm.toLowerCase();
+      return projectList?.filter((item) => item.title?.toLowerCase().includes(lowerSearch)) || [];
+    }, [projectList, searchTerm]);
+
+    return (
+      <>
+        <div className="px-4 py-2">
+          <Row>
+            <Col md={9} sm={9}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search Project..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </Col>
+            <Col md={2} sm={2} className="d-flex align-items-center justify-content-end">
+              <h6>Action</h6>
+            </Col>
+          </Row>
+        </div>
+
+        <div className="px-4 py-2 c-card-body">
+          {filteredList.map((item, idx) => (
+            <Row key={item.id}>
+              <Col md={9} sm={9}>
+                <div className={`d-flex justify-content-start custom-cards ${item.status ? '' : 'op-5'}`}>
+                  <span className="mr-1">{idx + 1}.</span>
+                  <span>{item.title}</span>
+                </div>
+              </Col>
+              <Col md={2} sm={2} className="d-flex align-items-center">
+                <div className="d-flex justify-content-between">
+                  <span
+                    title="Edit"
+                    className="feather icon-edit theme-bg2 text-white f-14 p-2 pointer"
+                    onClick={() => {
+                      setSelectedData(item);
+                      setCurrSelectedData('project');
+                    }}
+                  />
+                  {item.status ? (
+                    <span
+                      title="Active"
+                      className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                      onClick={() => handleProjectDelete(item)}
+                    >
+                      <FaCheckCircle />
+                    </span>
+                  ) : (
+                    <span
+                      title="Not Active"
+                      className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                      onClick={() => handleProjectDelete(item)}
+                    >
+                      <FaTimesCircle />
+                    </span>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          ))}
+
+          {filteredList.length === 0 && searchTerm && <div className="text-center py-3">No results found for "{searchTerm}"</div>}
+        </div>
+
+        <hr />
+
+        <div className="footer d-flex justify-content-end px-4">
+          <Button className="m-0" onClick={() => setShowProject(true)}>
+            Add
+          </Button>
+        </div>
+      </>
+    );
+  };
+  const ModuleList = ({ moduleList, setSelectedData, setCurrSelectedData, handleModuleDelete, setShowModule }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredList = useMemo(() => {
+      const lowerSearch = searchTerm.toLowerCase();
+      return moduleList?.Result?.filter((item) => item.ModuleName?.toLowerCase().includes(lowerSearch)) || [];
+    }, [moduleList, searchTerm]);
+
+    return (
+      <>
+        <div className="px-4 py-2">
+          <Row>
+            <Col md={9} sm={9}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search Module..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </Col>
+            <Col md={2} sm={2} className="d-flex align-items-center justify-content-end">
+              <h6>Action</h6>
+            </Col>
+          </Row>
+        </div>
+
+        <div className="px-4 py-2 c-card-body">
+          {filteredList.map((item, idx) => (
+            <Row key={item.id}>
+              <Col md={9} sm={9}>
+                <div className={`d-flex justify-content-start custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
+                  <span className="mr-1">{idx + 1}.</span>
+                  <span>{item.ModuleName}</span>
+                </div>
+              </Col>
+              <Col md={2} sm={2} className="d-flex align-items-center">
+                <div className="d-flex justify-content-between">
+                  <span
+                    title="Edit"
+                    className="feather icon-edit theme-bg2 text-white f-14 p-2 pointer"
+                    onClick={() => {
+                      setSelectedData(item);
+                      setCurrSelectedData('module');
+                    }}
+                  />
+                  {item.Status === '1' ? (
+                    <span
+                      title="Active"
+                      className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                      onClick={() => handleModuleDelete(item)}
+                    >
+                      <FaCheckCircle />
+                    </span>
+                  ) : (
+                    <span
+                      title="Not Active"
+                      className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
+                      onClick={() => handleModuleDelete(item)}
+                    >
+                      <FaTimesCircle />
+                    </span>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          ))}
+
+          {filteredList.length === 0 && searchTerm && <div className="text-center py-3">No results found for "{searchTerm}"</div>}
+        </div>
+
+        <hr />
+
+        <div className="footer d-flex justify-content-end px-4">
+          <Button className="m-0" onClick={() => setShowModule(true)}>
+            Add
+          </Button>
+        </div>
+      </>
+    );
+  };
+
   useEffect(() => {
-    if (currSelectedData === 'division') {
+    if (currSelectedData === 'division' && selectedData) {
       const updatedFormData = {
         DivisionId: selectedData.DivisionId,
         DivisionTitle: selectedData.DivisionTitle,
@@ -445,7 +694,7 @@ const Index = () => {
       setDivisionFormData(updatedFormData);
       setShowDivision(true);
     }
-    if (currSelectedData === 'project') {
+    if (currSelectedData === 'project' && selectedData) {
       const updatedFormData = {
         ProjectId: selectedData.ProjectId,
         ProjectTitle: selectedData.ProjectTitle,
@@ -461,7 +710,7 @@ const Index = () => {
       setProjectFormData(updatedFormData);
       setShowProject(true);
     }
-    if (currSelectedData === 'module') {
+    if (currSelectedData === 'module' && selectedData) {
       const updatedData = {
         ModuleId: selectedData.ModuleId,
         ModuleName: selectedData.ModuleName,
@@ -473,7 +722,7 @@ const Index = () => {
       setModuleFormData(updatedData);
       setShowModule(true);
     }
-  }, [selectedData]);
+  }, [currSelectedData]);
 
   const handleModuleDelete = (item) => {
     Swal.fire({
@@ -665,6 +914,8 @@ const Index = () => {
   };
 
   const handleClose = () => {
+    setSelectedData(null);
+    setCurrSelectedData('');
     setShowDivision(false);
     setShowProject(false);
     setShowModule(false);
@@ -694,73 +945,24 @@ const Index = () => {
     dispatch(settingsActions.getProjectInfo());
     dispatch(moduleActions.getModuleInfo());
     dispatch(settingsActions.getDivisionInfo());
-    setSelectedData(null);
-    setCurrSelectedData('');
   };
 
   return (
     <div>
       <Row>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Division Lists" cardClass="info default-shadow">
-            <div className="px-4 py-2 c-card-body">
-              <div className="d-flex justify-content-end">
-                {/* <h6>Title</h6> */}
-                <h6>Action</h6>
-              </div>
-              {divisionDataList?.Result?.map((item, idx) => (
-                <Row key={item.id}>
-                  <Col md={9} sm={9}>
-                    <div className={`d-flex justify-content-start custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
-                      <span className="mr-1">{idx + 1}</span>
-                      <span>{item.DivisionTitle}</span>
-                    </div>
-                  </Col>
-                  <Col md={2} sm={2} className="d-flex align-items-center">
-                    <div className="d-flex justify-content-between">
-                      <span
-                        title="Edit"
-                        className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
-                        onClick={() => {
-                          setSelectedData(item), setCurrSelectedData('division');
-                        }}
-                      />
-                      {item.Status === '1' ? (
-                        <span
-                          title="Active"
-                          className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
-                          onClick={() => {
-                            handleDivisionDelete(item);
-                          }}
-                        >
-                          <FaCheckCircle />
-                        </span>
-                      ) : (
-                        <span
-                          title="Not Active"
-                          className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
-                          onClick={() => {
-                            handleDivisionDelete(item);
-                          }}
-                        >
-                          <FaTimesCircle />
-                        </span>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              ))}
-            </div>
-            <hr />
-            <div className="footer d-flex justify-content-end px-4">
-              <Button className="m-0" onClick={() => setShowDivision(true)}>
-                Add
-              </Button>
-            </div>
+          <MainCard title="Division Lists" cardClass="info default-shadow" isOption>
+            <DivisionList
+              divisionDataList={divisionDataList}
+              setSelectedData={setSelectedData}
+              setCurrSelectedData={setCurrSelectedData}
+              handleDivisionDelete={handleDivisionDelete}
+              setShowDivision={setShowDivision}
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Employment Type" cardClass="warning default-shadow">
+          <MainCard title="Employment Type" cardClass="warning default-shadow" isOption>
             <RenderList
               list={employmentTypeList}
               setList={setEmploymentTypeList}
@@ -773,7 +975,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Designation List" cardClass="success default-shadow">
+          <MainCard title="Designation List" cardClass="success default-shadow" isOption>
             <RenderList
               list={designationList}
               setList={setDesignationList}
@@ -786,7 +988,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Company List" cardClass="purple default-shadow">
+          <MainCard title="Company List" cardClass="purple default-shadow" isOption>
             <RenderList
               list={organisationList}
               setList={setOrganisationList}
@@ -799,7 +1001,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Task Status" cardClass="brown default-shadow">
+          <MainCard title="Task Status" cardClass="brown default-shadow" isOption>
             <RenderList
               list={statusList}
               setList={setStatusList}
@@ -812,7 +1014,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Salutation List" cardClass="info default-shadow">
+          <MainCard title="Salutation List" cardClass="info default-shadow" isOption>
             <RenderList
               list={salutationList}
               setList={setSalutationList}
@@ -825,7 +1027,7 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Priority Order List" cardClass="warning default-shadow">
+          <MainCard title="Priority Order List" cardClass="warning default-shadow" isOption>
             <RenderList
               list={priorityList}
               setList={setPriorityList}
@@ -838,120 +1040,25 @@ const Index = () => {
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Available Projects" cardClass="secondary default-shadow">
-            <div className="px-4 py-2 c-card-body">
-              <div className="d-flex justify-content-between">
-                <h6>Title</h6>
-                <h6>Action</h6>
-              </div>
-              {projectList?.map((item, idx) => (
-                <Row key={item.id}>
-                  <Col md={9} sm={9}>
-                    <div className={`d-flex justify-content-start custom-cards ${item.status ? '' : 'op-5'}`}>
-                      <span className="mr-1">{idx + 1}</span>
-                      <span>{item.title}</span>
-                    </div>
-                  </Col>
-                  <Col md={2} sm={2} className="d-flex align-items-center">
-                    <div className="d-flex justify-content-between">
-                      <span
-                        title="Edit"
-                        className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
-                        onClick={() => {
-                          setSelectedData(item);
-                          setCurrSelectedData('Project');
-                        }}
-                      />
-                      {item.status ? (
-                        <span
-                          title="Active"
-                          className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
-                          onClick={() => {
-                            handleProjectDelete(item);
-                          }}
-                        >
-                          <FaCheckCircle />
-                        </span>
-                      ) : (
-                        <span
-                          title="Not Active"
-                          className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
-                          onClick={() => {
-                            handleProjectDelete(item);
-                          }}
-                        >
-                          <FaTimesCircle />
-                        </span>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              ))}
-            </div>
-            <hr />
-            <div className="footer d-flex justify-content-end px-4">
-              <Button className="m-0" onClick={() => setShowProject(true)}>
-                Add
-              </Button>
-            </div>
+          <MainCard title="Available Projects" cardClass="secondary default-shadow" isOption>
+            <ProjectList
+              projectList={projectList}
+              setSelectedData={setSelectedData}
+              setCurrSelectedData={setCurrSelectedData}
+              handleProjectDelete={handleProjectDelete}
+              setShowProject={setShowProject}
+            />
           </MainCard>
         </Col>
         <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Module Lists" cardClass="success default-shadow">
-            <div className="px-4 py-2 c-card-body">
-              <div className="d-flex justify-content-between">
-                {/* <h6>Title</h6> */}
-                <h6>Action</h6>
-              </div>
-              {moduleList?.Result?.map((item, idx) => (
-                <Row key={item.id}>
-                  <Col md={9} sm={9}>
-                    <div className={`d-flex justify-content-start custom-cards ${item.Status === '1' ? '' : 'op-5'}`}>
-                      <span className="mr-1">{idx + 1}</span>
-                      <span>{item.ModuleName}</span>
-                    </div>
-                  </Col>
-                  <Col md={2} sm={2} className="d-flex align-items-center">
-                    <div className="d-flex justify-content-between">
-                      <span
-                        title="Edit"
-                        className={`feather icon-edit theme-bg2 text-white f-14 p-2 pointer`}
-                        onClick={() => {
-                          setSelectedData(item), setCurrSelectedData('module');
-                        }}
-                      />
-                      {item.Status === '1' ? (
-                        <span
-                          title="Active"
-                          className="d-flex theme-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
-                          onClick={() => {
-                            handleModuleDelete(item);
-                          }}
-                        >
-                          <FaCheckCircle />
-                        </span>
-                      ) : (
-                        <span
-                          title="Not Active"
-                          className="d-flex hold-bg text-white f-16 fw-bolder p-2 ml-1 pointer"
-                          onClick={() => {
-                            handleModuleDelete(item);
-                          }}
-                        >
-                          <FaTimesCircle />
-                        </span>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              ))}
-            </div>
-            <hr />
-            <div className="footer d-flex justify-content-end px-4">
-              <Button className="m-0" onClick={() => setShowModule(true)}>
-                Add
-              </Button>
-            </div>
+          <MainCard title="Module Lists" cardClass="success default-shadow" isOption>
+            <ModuleList
+              moduleList={moduleList}
+              setSelectedData={setSelectedData}
+              setCurrSelectedData={setCurrSelectedData}
+              handleModuleDelete={handleModuleDelete}
+              setShowModule={setShowModule}
+            />
           </MainCard>
         </Col>
       </Row>

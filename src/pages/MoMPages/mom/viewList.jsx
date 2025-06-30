@@ -477,11 +477,16 @@ export default function CollapsibleTable() {
         <Modal.Body className={mode}>
           <div className="userModalBody">
             <div className="info">
-              <div className="d-flex align-items-center mb-3">
-                <h6 className="bold-text mb-0 p-0 mr-1">Expected End Date : </h6> {selectedRow.EndDate}
+              <div className="d-flex justify-content-between mb-3 w-full">
+                <h6 className="bold-text mb-0 p-0 mr-1 w-30">Task Assign To : </h6>
+                <span className="w-70"> {selectedRow.UserName}</span>
               </div>
-              <div className="d-flex align-items-center mb-3">
-                <h6 className="bold-text  mb-0 p-0 mr-1">Task Discription : </h6> {selectedRow.Description}
+              <div className="d-flex justify-content-between mb-3  w-full">
+                <h6 className="bold-text mb-0 p-0 mr-1 w-30">Expected End Date : </h6> <span className="w-70"> {selectedRow.EndDate}</span>
+              </div>
+              <div className="d-flex justify-content-between mb-3  w-full">
+                <h6 className="bold-text  mb-0 p-0 mr-1 w-30 ">Task Discription : </h6>{' '}
+                <span className="w-70">{selectedRow.Description}</span>
               </div>
             </div>
             <Form.Group>
