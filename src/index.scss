@@ -701,7 +701,7 @@ button.sortBtn.btn.btn-info,
 .isInvalid .dropdown-container {
   border: 0 !important;
 }
-.disabled .dropdown-container{
+.disabled .dropdown-container {
   background-color: $disable-color !important;
 }
 
@@ -747,6 +747,19 @@ button.sortBtn.btn.btn-info,
     }
     .btn-close {
       color: $dark-layout-font !important;
+    }
+  }
+  .light.modal-body {
+    .table {
+      tr {
+        th {
+          background-color: $success-color;
+          color: $light-color;
+          &:hover {
+            color: $light-color;
+          }
+        }
+      }
     }
   }
   .dark.modal-header {
@@ -977,4 +990,13 @@ button.sortBtn.btn.btn-info,
   font-size: 18px;
   font-weight: 600;
   color: #727272;
+}
+.rmsc {
+  .dropdown-container {
+    .dropdown-heading {
+      .clear-selected-button {
+        display: none;
+      }
+    }
+  }
 }

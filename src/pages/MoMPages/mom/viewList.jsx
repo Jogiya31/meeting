@@ -12,7 +12,7 @@ import { userActions } from '../../../store/user/userSlice';
 import { settingsActions } from 'store/settings/settingSlice';
 import { useStore } from '../../../contexts/DataContext';
 import { useTheme } from '../../../contexts/themeContext';
-import { exportcustomJsonToExcel } from '../../../utils/utils';
+import { exportcustomJsonToExcel, exportcustomJsonToExcelwithHeader } from '../../../utils/utils';
 
 export default function CollapsibleTable() {
   const Role = localStorage.getItem('role');
@@ -21,7 +21,7 @@ export default function CollapsibleTable() {
   const { filterWith } = useStore();
   const { filterValue } = useStore();
   const [data, setData] = useState([]);
-  const [expandedRows, setExpandedRows] = useState({});
+  const [expandedRow, setExpandedRow] = useState({});
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('');
   const [page, setPage] = useState(0);
@@ -36,6 +36,8 @@ export default function CollapsibleTable() {
     Status: '',
     Reason: ''
   });
+  const [currentMeeting, setcurrentMeeting] = useState(null);
+
   const MeetingLists = useSelector((state) => state.meetings.data);
   const userLists = useSelector((state) => state.users.data);
   const statusLists = useSelector((state) => state.settings.statusData);
@@ -53,8 +55,8 @@ export default function CollapsibleTable() {
     }
   }, [MeetingLists]);
 
-  const toggleRow = (id) => {
-    setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggleRow = (meetingId) => {
+    setExpandedRow((prev) => (prev === meetingId ? null : meetingId));
   };
 
   const handleClose = () => {
@@ -204,11 +206,16 @@ export default function CollapsibleTable() {
       { id: 'Mobile', label: 'Mobile' }
     ];
 
-    if (!attendanceData || attendanceData.length === 0) {
-      console.warn('No attendance data available for export.');
-      return;
-    }
-    exportcustomJsonToExcel(attendanceData, 'Attendance List', headerMapping);
+    if (!attendanceData || attendanceData.length === 0) return;
+
+    exportcustomJsonToExcelwithHeader(attendanceData, 'Attendance List', headerMapping, {
+      headerLines: [
+        `Meeting Title : ${currentMeeting.MeetingTitle}`,
+        `Meeting Date : ${moment(currentMeeting?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}`,
+        `Meeting Time : ${currentMeeting?.MeetingTime}`
+      ],
+      footerLines: [`Exported On : ${moment().format('DD-MM-YYYY hh:mm A')}`]
+    });
   };
 
   const handleStatusChangeFilter = (e) => {
@@ -362,11 +369,11 @@ export default function CollapsibleTable() {
                         <td className="text-center pointer">
                           <span
                             variant="link"
-                            className="d-flex  justify-content-center align-items-center pointer"
+                            className="d-flex justify-content-center align-items-center pointer"
                             onClick={() => toggleRow(parent_row.MeetingId)}
                           >
                             <span> {idx + 1} </span>
-                            {expandedRows[parent_row.MeetingId] ? (
+                            {expandedRow === parent_row.MeetingId ? (
                               <i className="feather icon-chevron-down pointer" />
                             ) : (
                               <i className="feather icon-chevron-right pointer" />
@@ -405,14 +412,18 @@ export default function CollapsibleTable() {
                             title="Attendance"
                             src={attendanceImg}
                             className="attendance pointer"
-                            onClick={() => handleSeletedAttendance(parent_row.Attendance)}
+                            onClick={() => {
+                              handleSeletedAttendance(parent_row.Attendance);
+                              setcurrentMeeting(parent_row);
+                            }}
                             alt=""
                           />
                         </td>
                       </tr>
+
                       <tr>
                         <td colSpan={parentHeaders.length + 2} className="p-0">
-                          <Collapse in={expandedRows[parent_row.MeetingId]}>
+                          <Collapse in={expandedRow === parent_row.MeetingId}>
                             <div className="p-3 bg-light border transition-all duration-300 ease-in-out inner-table view-Meetings">
                               {userLists?.Result ? (
                                 <EnhancedTable
@@ -540,8 +551,25 @@ export default function CollapsibleTable() {
             X
           </span>
         </Modal.Header>
-        <Modal.Body className={` inner-table ${mode}`}>
-          <Table responsive hover className="">
+        <Modal.Body className={`inner-table ${mode}`}>
+          <div>
+            <label className="text-dark">
+              <span className="fw-bolder"> Meeting Title :</span> <span>{currentMeeting?.MeetingTitle}</span>
+            </label>
+          </div>
+          <div>
+            <label className="text-dark">
+              <span className="fw-bolder"> Meeting Date:</span>{' '}
+              <span>{moment(currentMeeting?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</span>{' '}
+            </label>
+          </div>
+          <div>
+            <label className="text-dark">
+              <span className="fw-bolder"> Meeting Time:</span> <span>{currentMeeting?.MeetingTime}</span>
+            </label>
+          </div>
+
+          <Table responsive hover className=" ">
             <thead>
               <tr className="" style={{ height: '45px' }}>
                 <th className="" style={{ width: '50px' }}>

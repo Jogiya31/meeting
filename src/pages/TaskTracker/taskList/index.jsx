@@ -14,6 +14,7 @@ import { taskActions } from '../../../store/task/taskSlice';
 import { useStore } from '../../../contexts/DataContext';
 import { exportJsonToExcel } from '../../../utils/utils';
 import { useAuth } from '../../../contexts/AuthContext';
+import moment from 'moment';
 
 const TaskList = () => {
   const dispatch = useDispatch();
@@ -365,12 +366,13 @@ const TaskList = () => {
     e.preventDefault();
     dispatch(taskActions.getTaskInfo(filterPayload));
   };
-
   const onExport = () => {
     if (!gridRef.current?.api) return;
 
     const visibleColumns = gridRef.current.api.getAllDisplayedColumns();
-    const visibleColKeys = visibleColumns.map((col) => col.getColId());
+    const visibleColKeys = visibleColumns
+      .filter((col) => !!col.getColDef().field) // Only columns with valid field
+      .map((col) => col.getColId());
 
     const rowData = [];
     gridRef.current.api.forEachNodeAfterFilterAndSort((node) => {
@@ -381,8 +383,13 @@ const TaskList = () => {
       rowData.push(filteredRow);
     });
 
-    exportJsonToExcel(rowData, 'Task_List.xlsx');
+    const headerLines = ['Total Task List'];
+
+    const footerLines = [`Exported On: ${moment().format('DD-MM-YYYY hh:mm A')}`];
+
+    exportJsonToExcel(rowData, 'Task_List', headerLines, footerLines);
   };
+
   return (
     <div>
       <Card className="Recent-Users widget-focus-lg header-info default-shadow">

@@ -562,7 +562,9 @@ const UserList = () => {
     if (!gridRef.current?.api) return;
 
     const visibleColumns = gridRef.current.api.getAllDisplayedColumns();
-    const visibleColKeys = visibleColumns.map((col) => col.getColId());
+    const visibleColKeys = visibleColumns
+      .filter((col) => !!col.getColDef().field) // Only columns with valid field
+      .map((col) => col.getColId());
 
     const rowData = [];
     gridRef.current.api.forEachNodeAfterFilterAndSort((node) => {
@@ -573,7 +575,11 @@ const UserList = () => {
       rowData.push(filteredRow);
     });
 
-    exportJsonToExcel(rowData, 'User_List.xlsx');
+    const headerLines = ['Total User List'];
+
+    const footerLines = [`Exported On: ${moment().format('DD-MM-YYYY hh:mm A')}`];
+
+    exportJsonToExcel(rowData, 'Task_List', headerLines, footerLines);
   };
 
   return (
