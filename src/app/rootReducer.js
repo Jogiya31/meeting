@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import userReducer from '../store/user/userSlice';
 import settingsReducer from '../store/settings/settingSlice';
-import authReducer from '../store/auth/authrSlice';
+import authReducer from '../store/auth/authSlice';
 import meetingsReducer from '../store/mom/momSlice';
 import dashboardReducer from '../store/dashboard/dashboardSlice';
 import moduleReducer from '../store/module/moduleSlice';

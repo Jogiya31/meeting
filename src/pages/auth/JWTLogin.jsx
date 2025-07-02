@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Alert, Button, Form, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { authActions } from '../../store/auth/authrSlice';
+import { authActions } from '../../store/auth/authSlice';
 import { useAuth } from '../../contexts/AuthContext';
+import { settingsActions } from 'store/settings/settingSlice';
 
 const JWTLogin = () => {
   const dispatch = useDispatch();
@@ -15,9 +16,15 @@ const JWTLogin = () => {
   const [saveCredentials, setSaveCredentials] = useState(false);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
+  const [processed, setProcessed] = useState(false);
 
   const loginDetails = useSelector((state) => state.auth.data);
+  const roleDetails = useSelector((state) => state.settings.roleData);
   const loader = useSelector((state) => state.auth.loader);
+
+  useEffect(() => {
+    dispatch(settingsActions.getRoleInfo());
+  }, [dispatch]);
 
   const validate = () => {
     const newErrors = {};
@@ -35,35 +42,53 @@ const JWTLogin = () => {
     }
     setErrors({});
     setSubmitError('');
-
-    dispatch(authActions.getauthInfo({ UsernameMobile: username, Password: password, Key: '20' }));
+    dispatch(authActions.getauthInfo({ UsernameMobile: username, Password: password }));
   };
 
+  // Map roleTitle to loginDetails when both are available
+  useEffect(() => {
+    if (
+      loginDetails?.Result &&
+      loginDetails.Result.length > 0 &&
+      roleDetails?.Result &&
+      !processed
+    ) {
+      const roleMap = roleDetails.Result.reduce((acc, role) => {
+        acc[role.RoleId] = role.Title;
+        return acc;
+      }, {});
+
+      const updatedUser = {
+        ...loginDetails.Result[0],
+        Role: roleMap[loginDetails.Result[0].Role] || loginDetails.Result[0].Role
+      };
+
+      localStorage.setItem('loggedIn', true);
+      localStorage.setItem('role', updatedUser.Role);
+      localStorage.setItem('userDetails', JSON.stringify(updatedUser));
+
+      login(updatedUser);
+      setProcessed(true); // prevent this logic from running again
+
+      if (updatedUser.Role === 'superadmin') {
+        navigate('/meetings/dashboard');
+      } else {
+        navigate('/tasktracker/dashboard');
+      }
+    }
+  }, [loginDetails, roleDetails, login, navigate, processed]);
+
+  // Redirect if already logged in
   useEffect(() => {
     if (loggedIn || localStorage.getItem('loggedIn')) {
-      if (role === 'superadmin' || localStorage.getItem('role') === 'superadmin') {
+      const storedRole = localStorage.getItem('role');
+      if (storedRole === 'superadmin') {
         navigate('/meetings/dashboard');
       } else {
         navigate('/tasktracker/dashboard');
       }
     }
   }, [loggedIn, navigate]);
-
-  useEffect(() => {
-    if (loginDetails?.Result && loginDetails.Result.length > 0) {
-      localStorage.setItem('loggedIn', true);
-      localStorage.setItem('role', loginDetails?.Result[0].Role);
-      localStorage.setItem('userDetails', JSON.stringify(loginDetails?.Result[0]));
-      login(loginDetails?.Result[0]);
-      if (loginDetails?.Result?.[0]?.Role === 'superadmin') {
-        navigate('/meetings/dashboard');
-      } else {
-        navigate('/tasktracker/dashboard');
-      }
-    }
-  }, [loginDetails]);
-  
-
 
   return (
     <Form noValidate onSubmit={handleSubmit} className="login-form">
@@ -76,7 +101,9 @@ const JWTLogin = () => {
           onChange={(e) => setUsername(e.target.value)}
           isInvalid={!!errors.username}
         />
-        <Form.Control.Feedback type="invalid">{errors.username}</Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">
+          {errors.username}
+        </Form.Control.Feedback>
       </Form.Group>
 
       <Form.Group className="mb-4" controlId="password">
@@ -88,7 +115,9 @@ const JWTLogin = () => {
           onChange={(e) => setPassword(e.target.value)}
           isInvalid={!!errors.password}
         />
-        <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">
+          {errors.password}
+        </Form.Control.Feedback>
       </Form.Group>
 
       <Form.Group className="mb-4 mt-2" controlId="saveCredentials">
@@ -111,7 +140,14 @@ const JWTLogin = () => {
           <Button type="submit" variant="primary" className="w-100">
             {loader ? (
               <>
-                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  className="me-2"
+                />
                 Logging in...
               </>
             ) : (

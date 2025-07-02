@@ -590,7 +590,6 @@ const UserList = () => {
             <Button onClick={() => handleShowRegister()} className="m-0 fw-bolder">
               <i className="feather icon-plus"> Add </i>
             </Button>
-            <img src={print_i} alt="" className="img-fluid ml-2 pointer" title="Print" width={30} />
             <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={() => onExport()} title="Export PDF" />
             <img src={refresh} alt="" className="img-fluid ml-1 pointer" title="Reset Table" width={30} onClick={() => triggerReset()} />
           </CardSubtitle>

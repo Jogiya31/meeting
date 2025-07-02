@@ -9,6 +9,7 @@ import { useTheme } from '../../../contexts/themeContext';
 import DatePicker from 'react-datepicker';
 import { useAuth } from '../../../contexts/AuthContext';
 import { moduleActions } from '../../../store/module/moduleSlice';
+import { userActions } from 'store/user/userSlice';
 
 const Index = () => {
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ const Index = () => {
   const salutationDataList = useSelector((state) => state.settings.salutationData);
   const priorityDataList = useSelector((state) => state.settings.priorityData);
   const moduleList = useSelector((state) => state.module.data);
+  const userList = useSelector((state) => state.users.data);
 
   useEffect(() => {
     dispatch(settingsActions.getDesignationInfo());
@@ -80,6 +82,7 @@ const Index = () => {
     dispatch(settingsActions.getSalutationInfo());
     dispatch(settingsActions.getPriorityInfo());
     dispatch(moduleActions.getModuleInfo());
+    dispatch(userActions.getuserInfo());
   }, []);
 
   useEffect(() => {
@@ -176,6 +179,27 @@ const Index = () => {
       setFilteredDivisionList(results);
     }
   }, [divisionDataList, divisionSearchTerm]);
+
+  useEffect(() => {
+    if (userList && Array.isArray(userList.Result)) {
+      const updatedData = userList.Result.map((item) => {
+        const officer = userList.Result.find((user) => user.UserId === item.AssociatedOfficerId);
+        const StatusTitle = item.Status === '1' ? 'In Service' : 'Not In Service';
+        const desc = item?.DesignationId?.split(',')
+          .map((id) => getDesignation(id))
+          .join('/ ');
+        return {
+          ...item,
+          AssociatedOfficer: officer ? officer.UserName : '',
+          DesignationTitle: desc,
+          StatusTitle: StatusTitle
+        };
+      });
+      setUserData(updatedData);
+    } else {
+      setUserData([]); // optional fallback
+    }
+  }, [userList, designationDataList]);
 
   const getDesignation = (val) => {
     const data = Array.isArray(designationDataList?.Result) ? designationDataList.Result : Object.values(designationDataList?.Result || {});
@@ -314,6 +338,9 @@ const Index = () => {
         CreatedBy: user.UserName,
         Status: '1'
       };
+      if (fieldName === 'PriorityOrder') {
+        payload.UserId = '1';
+      }
 
       // Dispatch action to add new item
       await dispatch(apiAction(payload));
@@ -700,8 +727,8 @@ const Index = () => {
         ProjectTitle: selectedData.ProjectTitle,
         ProjectDescription: selectedData.ProjectDescription,
         GroupId: selectedData.DivisionId,
-        HogName: selectedData.HOGId,
-        HodName: selectedData.HODId,
+        HogName: selectedData.HogName,
+        HodName: selectedData.HodName,
         Technology: selectedData.Technology,
         ProjectStartDate: selectedData.ProjectStartDate,
         CompletionDate: selectedData.CompletionDate,

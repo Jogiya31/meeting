@@ -1,5 +1,5 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { authActions } from './authrSlice';
+import { authActions } from './authSlice';
 import { authInfo } from '../../api/api';
 import { toast } from 'react-toastify';
 

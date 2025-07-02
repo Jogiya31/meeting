@@ -125,6 +125,17 @@ const CreateTask = () => {
     setuserFilter([]);
     setChangeAssignedUserFilter([]);
     setselectedData(null);
+    dispatch(
+      taskActions.getTaskInfo({
+        ProjectId: '',
+        ModuleId: '',
+        StatusMulti: '',
+        UserId: role === 'user' ? user.UserId : '',
+        StartDate: '',
+        EndDate: '',
+        GroupIdMulti: ''
+      })
+    );
   };
   const handleTaskChange = (e) => {
     const { name, value } = e.target;

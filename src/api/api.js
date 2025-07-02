@@ -3,6 +3,7 @@ import axiosClient from './axiosClient';
 ////////////////// login api /////////////////////////
 export const authInfo = (data) => {
   const payload = data.payload;
+   payload.key = 20;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'

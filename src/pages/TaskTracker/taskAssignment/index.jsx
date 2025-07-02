@@ -34,6 +34,7 @@ const TaskAssigment = () => {
   const [userOption, setuserOption] = useState([]);
   const [userFilter, setuserFilter] = useState([]);
   const [changeAssignedUserFilter, setChangeAssignedUserFilter] = useState([]);
+  const [unAssignedUserOption, setUnAssignedUserOption] = useState([]);
 
   const projectDataList = useSelector((state) => state.settings.projectData);
   const moduleList = useSelector((state) => state.module.data);
@@ -87,15 +88,43 @@ const TaskAssigment = () => {
   }, [selectedData]);
 
   useEffect(() => {
-    if (userList) {
-      const options = userList?.Result?.filter((item) => item.Status === '1')?.map((item) => ({
-        label: item.UserName,
-        value: item.UserId
+    if (!selectedData || !userList?.Result?.length) return;
+
+    const userIdSet = new Set();
+
+    const collectIds = (idString) => {
+      if (!idString) return;
+      idString.split(',').forEach((id) => {
+        const trimmedId = id.trim();
+        if (trimmedId && trimmedId !== '0') {
+          userIdSet.add(trimmedId);
+        }
+      });
+    };
+
+    collectIds(selectedData.UserId);
+    collectIds(selectedData.ChangeAssignTo);
+
+    const filteredOptions = userList.Result.filter((user) => user.Status === '1' && userIdSet.has(user.UserId)).map((user) => ({
+      label: user.UserName,
+      value: user.UserId
+    }));
+
+    setuserOption(filteredOptions);
+  }, [selectedData, userList]);
+
+  useEffect(() => {
+    if (showUnAssignedTask && userList?.Result?.length) {
+      const options = userList.Result.filter((user) => user.Status === '1').map((user) => ({
+        label: user.UserName,
+        value: user.UserId
       }));
 
-      setuserOption(options || []);
+      setUnAssignedUserOption(options);
     }
+  }, [showUnAssignedTask, userList]);
 
+  useEffect(() => {
     if (taskList?.Result && userList?.Result) {
       const assignedTasks = [];
       const unAssignedTasks = [];
@@ -653,8 +682,8 @@ const TaskAssigment = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>Assign</Form.Label>
                   <MultiSelect
-                    options={userOption}
-                    value={userOption?.filter(
+                    options={unAssignedUserOption}
+                    value={unAssignedUserOption?.filter(
                       (option) => TaskformData && TaskformData.UserId && TaskformData.UserId.split(',').includes(option.value)
                     )}
                     onChange={handleuserFilter}

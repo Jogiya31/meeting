@@ -431,7 +431,13 @@ const UserList = () => {
       SalutationId: formData.SalutationId || '0',
       PriorityOrderId: formData.PriorityOrderId || '',
       DisplayOrderId: formData.DisplayOrderId || '999',
-      Email: formData.Email
+      Group_id: formData.EmployeementDivisionId,
+      Email: formData.Email,
+      Team_id: '',
+      TeamName: '',
+      Dept_id: '',
+      Ministry_id: '',
+      Assigneddept: ''
     };
 
     if (selectedUser) {
@@ -465,8 +471,8 @@ const UserList = () => {
         DesignationId: selectedUser.DesignationId,
         EmployeementDivisionId: selectedUser.EmployeementDivisionId,
         OrganizationId: selectedUser.OrganisationId,
-        AssociatedOfficerId: selectedUser.AssociatedOfficerId,
-        ServiceDate: selectedUser.ServiceDate || '',
+        AssociatedOfficerId: selectedUser.AssociatedOfficerId | '',
+        ServiceDate: moment(selectedUser.ServiceDate, 'DD-MM-YYYY HH:mm:ss').toDate() || '',
         Mobile: selectedUser.Mobile,
         Status: selectedUser.Status || 1,
         Role: selectedUser.Role,

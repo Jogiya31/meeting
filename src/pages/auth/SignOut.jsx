@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { authActions } from '../../store/auth/authrSlice';
+import { authActions } from '../../store/auth/authSlice';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Signout = () => {

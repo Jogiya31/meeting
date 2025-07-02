@@ -31,7 +31,6 @@ const TaskList = () => {
     EndDate: '',
     GroupIdMulti: ''
   });
-  const [groupOption, setGroupOption] = useState([]);
   const [projectOption, setProjectOption] = useState([]);
   const [moduleOption, setModuleOption] = useState([]);
   const [statusOption, setStatusOption] = useState([]);
@@ -62,53 +61,69 @@ const TaskList = () => {
   useEffect(() => {
     let options = [];
 
-    if (divisionDataList) {
-      options = [];
-      divisionDataList?.Result?.forEach((item) => {
-        if (item.DivisionTitle) {
-          options.push({ label: item.DivisionTitle, value: item.DivisionId });
-        }
-      });
-      setGroupOption([...options]);
-    }
-    if (projectDataList) {
+    if (projectDataList && taskList?.Result?.length) {
+      const projectIdSet = new Set(taskList.Result.map((item) => item.ProjectId));
+
       options = [];
       projectDataList?.Result?.forEach((item) => {
-        if (item.ProjectTitle) {
+        if (item.ProjectTitle && projectIdSet.has(item.ProjectId)) {
           options.push({ label: item.ProjectTitle, value: item.ProjectId });
         }
       });
       setProjectOption([...options]);
     }
-    if (moduleList) {
+
+    if (moduleList && taskList?.Result?.length) {
+      const moduleIdSet = new Set(taskList.Result.map((item) => item.ModuleId));
+
       options = [];
       moduleList?.Result?.forEach((item) => {
-        if (item.ModuleName) {
+        if (item.ModuleName && moduleIdSet.has(item.ModuleId)) {
           options.push({ label: item.ModuleName, value: item.ModuleId });
         }
       });
       setModuleOption([...options]);
     }
-    if (statusLists) {
+
+    if (statusLists && taskList?.Result?.length) {
+      const statusIdSet = new Set(taskList.Result.map((item) => item.Status));
+
       options = [];
       statusLists?.Result?.forEach((item) => {
-        if (item.StatusTitle) {
+        if (item.StatusTitle && statusIdSet.has(String(item.StatusId))) {
           options.push({ label: item.StatusTitle, value: item.StatusId });
         }
       });
       setStatusOption([...options]);
     }
-    if (userList) {
-      options = [];
-      userList?.Result?.forEach((item) => {
-        if (item.Status === '1') {
-          options.push({ label: item.UserName, value: item.UserId });
-        }
+
+    if (userList && taskList?.Result?.length) {
+      const taskUserIdSet = new Set();
+
+      taskList.Result.forEach((item) => {
+        const collectIds = (idString) => {
+          if (!idString) return;
+          idString.split(',').forEach((id) => {
+            const trimmedId = id.trim();
+            if (trimmedId && trimmedId !== '0') {
+              taskUserIdSet.add(trimmedId);
+            }
+          });
+        };
+
+        collectIds(item.UserId);
+        collectIds(item.ChangeAssignTo);
       });
 
+      options = [];
+      userList?.Result?.forEach((user) => {
+        if (user.Status === '1' && taskUserIdSet.has(user.UserId)) {
+          options.push({ label: user.UserName, value: user.UserId });
+        }
+      });
       setuserOption([...options]);
     }
-  }, [divisionDataList, projectDataList, statusLists, userList, moduleList]);
+  }, [taskList, projectDataList, moduleList, statusLists, userList]);
 
   useEffect(() => {
     let filterParams = { ...filterPayload };
@@ -209,7 +224,7 @@ const TaskList = () => {
     }
 
     setFilterPayload(filterParams);
-  }, [groupFilter, projectFilter, moduleFilter, userFilter, statusFilter]);
+  }, [projectFilter, moduleFilter, userFilter, statusFilter]);
 
   useEffect(() => {
     if (filterValue) {
@@ -401,17 +416,6 @@ const TaskList = () => {
               </div>
               <div className="filter-col">
                 <MultiSelect
-                  options={groupOption}
-                  value={groupFilter}
-                  onChange={handleGroupFilter}
-                  overrideStrings={{
-                    selectSomeItems: 'Groups'
-                  }}
-                  hasSelectAll={true}
-                />
-              </div>
-              <div className="filter-col">
-                <MultiSelect
                   options={projectOption}
                   value={projectFilter}
                   onChange={handleProjectFilter}
@@ -464,7 +468,7 @@ const TaskList = () => {
                   onChange={handleStartDate}
                   placeholderText="Start Date"
                   dateFormat="dd-MM-yyyy"
-                  name="startDate"
+                  name="startDate"                  
                 />
               </div>
               <div className="filter-col">
