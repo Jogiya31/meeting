@@ -159,7 +159,7 @@ const CreateTask = () => {
       ModuleId: TaskformData.ModuleId,
       Task: TaskformData.Task,
       TaskDescription: TaskformData.TaskDescription,
-      UserId: TaskformData.UserId || selectedData.UserId,
+      UserId: TaskformData.UserId,
       Remark: TaskformData.Remark
     };
 

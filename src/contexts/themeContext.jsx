@@ -8,12 +8,6 @@ export const ThemeProvider = ({ children }) => {
   const [navColor, setNavColor] = useState('');
   const [logoColor, setLogoColor] = useState('');
 
-  useEffect(() => {
-    setMode(localStorage.getItem('mode') || 'light');
-    setTheme(localStorage.getItem('theme') || 'static');
-    setTheme(localStorage.getItem('navColor') || '');
-    setTheme(localStorage.getItem('logoColor') || '');
-  }, []);
 
   const changeMode = (val) => {
     setMode(val);

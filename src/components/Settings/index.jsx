@@ -8,23 +8,23 @@ const Settings = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [currentMode, setCurrentMode] = useState(mode || localStorage.getItem('mode'));
-  const [currentTheme, setCurrentTheme] = useState(mode || localStorage.getItem('theme'));
+  const [currentMode, setCurrentMode] = useState(mode);
+  const [currentTheme, setCurrentTheme] = useState(theme);
+
+  useEffect(() => {
+    setCurrentMode(mode);
+    setCurrentTheme(theme);
+  }, [mode, theme]);
 
   const ModeChange = (val) => {
-    localStorage.setItem('mode', val);
     changeMode(val);
+    setCurrentMode(val);
   };
 
   const ThemeChange = (val) => {
-    localStorage.setItem('theme', val);
     changeThemeMode(val);
+    setCurrentTheme(val);
   };
-
-  useEffect(() => {
-    setCurrentMode(localStorage.getItem('mode'));
-    setCurrentTheme(localStorage.getItem('theme'));
-  }, [localStorage.getItem('mode'), localStorage.getItem('theme')]);
 
   const handleReset = () => {
     ModeChange('light');
@@ -67,14 +67,14 @@ const Settings = () => {
                 <div
                   className={`preset-btn pointer ${mode === 'light' ? 'active' : ''} bg-transparent`}
                   title="Light"
-                  onClick={() => ModeChange('light')}
+                  onClick={() => changeMode('light')}
                 >
                   <span className="fas fa-sun text-warning f-20"></span>
                 </div>
                 <div
                   className={`preset-btn pointer ${mode === 'dark' ? 'active' : ''}  bg-transparent`}
                   title="Dark"
-                  onClick={() => ModeChange('dark')}
+                  onClick={() => changeMode('dark')}
                 >
                   <span className="fas fa-moon text-secondary f-20"></span>
                 </div>
@@ -87,14 +87,14 @@ const Settings = () => {
               </div>
               <div className="d-flex">
                 <div
-                  className={`preset-btn default-bg  pointer ${theme === 'static' ? 'active' : ''}`}
+                  className={`preset-btn default-bg  pointer ${currentTheme === 'static' ? 'active' : ''}`}
                   title="Static"
-                  onClick={() => ThemeChange('static')}
+                  onClick={() => changeThemeMode('static')}
                 ></div>
                 <div
-                  className={`preset-btn grd-bg-color-8 pointer ${theme === 'gradient' ? 'active' : ''}`}
+                  className={`preset-btn grd-bg-color-8 pointer ${currentTheme === 'gradient' ? 'active' : ''}`}
                   title="Gradient"
-                  onClick={() => ThemeChange('gradient')}
+                  onClick={() => changeThemeMode('gradient')}
                 ></div>
               </div>
             </div>

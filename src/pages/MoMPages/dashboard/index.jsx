@@ -130,7 +130,7 @@ const DashDefault = () => {
       navigate('/meetings/users');
     } else if (card === 'meeting') {
       filterWith(null);
-      navigate('/meetings/view');
+      navigate('/tasktracker/Task-List');
     } else if (card === 'panding') {
       filterWith(1);
       navigate('/meetings/view');
