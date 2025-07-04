@@ -162,7 +162,7 @@ const NewPoint = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: 'Yes, remove it!',
       theme: mode
     }).then((result) => {
       if (result.isConfirmed) {
@@ -174,8 +174,8 @@ const NewPoint = () => {
           );
         }
         Swal.fire({
-          title: 'Deleted!',
-          text: 'Your file has been deleted.',
+          title: 'Removed!',
+          text: 'This record has been removed.',
           icon: 'success',
           theme: mode
         });
@@ -683,11 +683,15 @@ const NewPoint = () => {
                             </div>
                             <div className="w-10 ml-1">
                               <div className="lineForm d-flex justify-content-end">
-                                {index === formFields.length - 1 && (
-                                  <Button onClick={handleAddField} variant="info" className="sortBtn">
-                                    <i className="feather icon-plus m-0" />
-                                  </Button>
-                                )}
+                                {index === formFields.length - 1 &&
+                                  field.task?.trim() &&
+                                  field.endDate &&
+                                  field.projectId &&
+                                  field.officer && (
+                                    <Button onClick={handleAddField} variant="info" className="sortBtn">
+                                      <i className="feather icon-plus m-0" />
+                                    </Button>
+                                  )}
                                 {formFields.length !== 1 && (
                                   <Button variant="danger" onClick={() => handleDeleteField(field.discussionId, index)} className="sortBtn">
                                     <i className="feather icon-x m-0" />
@@ -843,7 +847,7 @@ const NewPoint = () => {
           )}
         </Col>
       </Row>
-      <Modal show={showInfo} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+      <Modal size="xl" show={showInfo} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>
           <Modal.Title>
             <h5>User Details</h5>

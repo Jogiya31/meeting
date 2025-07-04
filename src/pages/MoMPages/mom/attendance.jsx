@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { meetingsActions } from '../../../store/mom/momSlice';
 import { useTheme } from '../../../contexts/themeContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { FaUserCircle } from 'react-icons/fa';
 
 const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => {
   const dispatch = useDispatch();
@@ -133,7 +134,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonText: 'Yes, remove it!',
       theme: mode
     }).then((result) => {
       if (result.isConfirmed) {
@@ -366,7 +367,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
               <Row>
                 <Col>
                   <div className="lineForm-header">
-                    <h5 className="p-0">Employee</h5>
+                    <h5 className="p-0">Name</h5>
                     <h5>Designation</h5>
                     <h5>Division</h5>
                     <h5>Company</h5>
@@ -384,7 +385,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                         value={field.userId}
                         onChange={(e) => handleOfficerChange(index, e.target.value)}
                       >
-                        <option value="">Select an employee</option>
+                        <option value="">Select...</option>
                         {userList?.Result?.map((item) => (
                           <option
                             key={item.UserId}
@@ -395,7 +396,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
                             {item.UserName}
                           </option>
                         ))}
-                        <option value="other">Other</option>
+                        <option value="other">Add new</option>
                       </Form.Select>
                       <Form.Control
                         type="text"
@@ -430,13 +431,13 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
         </Col>
       </Row>
 
-      <Modal show={showregister} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
-        <Modal.Header closeButton>
+      <Modal size="xl" show={showregister} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+        <Modal.Header className={mode} closeButton>
           <Modal.Title>
-            <h4>Add Employee</h4>
+            <h4><FaUserCircle className="f-26 text-primary mr-1" />Add new user</h4>
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className={mode}>
           <Form noValidate onSubmit={handleSaveOther}>
             <Row>
               <Col>

@@ -18,6 +18,7 @@ import { useTheme } from '../../../contexts/themeContext';
 import AdvanceTable from '../../../components/Table/advanceTable';
 import { capitalizeWords, exportJsonToExcel } from '../../../utils/utils';
 import { useAuth } from '../../../contexts/AuthContext';
+import { updateuserInfo } from 'api/api';
 
 const UserList = () => {
   const dispatch = useDispatch();
@@ -94,22 +95,10 @@ const UserList = () => {
       setselectedUser(data);
       setShowregister(true);
     };
-
-    const handleDelete = () => {
-      handleToggleStatus(data);
-    };
-
     return (
       <div className="action-column">
         <Button variant="" size="sm" onClick={handleEdit} title="Edit User">
           <img src={edit} width={20} alt="" />
-        </Button>
-        <Button
-          variant={data.Status === '1' || data.Status === 1 ? 'outline-success' : 'outline-danger'}
-          onClick={handleDelete}
-          className="c-btn-sm"
-        >
-          {data.Status === '1' || data.Status === 1 ? 'Activate' : 'Deactivate'}
         </Button>
       </div>
     );
@@ -531,7 +520,7 @@ const UserList = () => {
 
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Do you want to change status for this item?',
+      text: `Do you want to ${user.Status === '1' ? 'deactivate' : 'activate'} this user?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -540,9 +529,11 @@ const UserList = () => {
       theme: mode
     }).then(async (result) => {
       if (result.isConfirmed) {
-        api.post('/Update_User', updatedData).then(() => {
+        dispatch(userActions.updateuserInfo(updatedData));
+
+        setTimeout(() => {
           getUserList();
-        });
+        }, 300);
       }
     });
   };
