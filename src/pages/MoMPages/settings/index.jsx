@@ -9,7 +9,7 @@ import { useTheme } from '../../../contexts/themeContext';
 import DatePicker from 'react-datepicker';
 import { useAuth } from '../../../contexts/AuthContext';
 import { moduleActions } from '../../../store/module/moduleSlice';
-import { userActions } from 'store/user/userSlice';
+import { userActions } from '../../../store/user/userSlice';
 
 const Index = () => {
   const dispatch = useDispatch();

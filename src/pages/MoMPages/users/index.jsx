@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Row, Col, Card, Table, Image, Modal, Button, CardSubtitle, Form, Pagination, InputGroup } from 'react-bootstrap';
+import React, { useEffect, useRef, useState } from 'react';
+import { Row, Col, Card, Modal, Button, CardSubtitle, Form } from 'react-bootstrap';
 import female_i from '../../../assets/images/user/female.jpg';
 import excel_i from '../../../assets/images/excel_i.svg';
 import male_i from '../../../assets/images/user/male.jpg';
@@ -17,6 +17,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import { useTheme } from '../../../contexts/themeContext';
 import AdvanceTable from '../../../components/Table/advanceTable';
 import { capitalizeWords, exportJsonToExcel } from '../../../utils/utils';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const UserList = () => {
   const dispatch = useDispatch();
