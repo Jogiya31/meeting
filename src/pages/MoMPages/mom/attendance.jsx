@@ -8,11 +8,12 @@ import { settingsActions } from '../../../store/settings/settingSlice';
 import Swal from 'sweetalert2';
 import { meetingsActions } from '../../../store/mom/momSlice';
 import { useTheme } from '../../../contexts/themeContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => {
-  const Role = localStorage.getItem('role');
   const dispatch = useDispatch();
   const { mode } = useTheme();
+  const { user } = useAuth();
   const userList = useSelector((state) => state.users.data);
   const designationDataList = useSelector((state) => state.settings.designationData);
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -217,9 +218,10 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       const selectedUser = userList?.Result?.find((user) => user.UserId.toString() === userId);
       return {
         userId: userId,
-        designation: selectedUser?.DesignationId?.split(',')
-        .map((id) => getDesignation(id))
-        .join('/ ') || '',
+        designation:
+          selectedUser?.DesignationId?.split(',')
+            .map((id) => getDesignation(id))
+            .join('/ ') || '',
         division: selectedUser?.EmployeeDivisionTitle || '',
         organization: selectedUser?.OrganisationTitle || '',
         mobile: selectedUser?.Mobile || '',
@@ -313,7 +315,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       Mobile: formData.Mobile,
       Status: formData.Status,
       ImgPath: formData.ImgPath || '',
-      CreatedBy: Role
+      CreatedBy: user.UserName
     };
 
     dispatch(userActions.adduserInfo(payload));
@@ -428,7 +430,7 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
         </Col>
       </Row>
 
-      <Modal show={showregister} onHide={handleClose} animation={true}  backdrop="static" keyboard={false}>
+      <Modal show={showregister} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header closeButton>
           <Modal.Title>
             <h4>Add Employee</h4>

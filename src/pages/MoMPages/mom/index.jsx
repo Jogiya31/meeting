@@ -26,8 +26,6 @@ const NewPoint = () => {
   const { mode } = useTheme();
   const { user } = useAuth();
   const { store, currentMeetingId } = useStore();
-  const API_URL = import.meta.env.VITE_APP_API_BASE_URL;
-  const Role = localStorage.getItem('role');
   const [currentDate, setcurrentDate] = useState(null);
   const [currentTime, setcurrentTime] = useState(null);
   const [meetingTitle, setmeetingTitle] = useState('');
@@ -198,7 +196,7 @@ const NewPoint = () => {
         MeetingDate: currentDate,
         MeetingTime: currentTime,
         Draft: 4,
-        ModifyBy: Role
+        ModifyBy: user.UserName
       })
     );
     // Navigate after all API calls complete
@@ -473,7 +471,7 @@ const NewPoint = () => {
             MeetingDate: moment(currentDate).format('DD-MM-YYYY'),
             MeetingTime: moment(currentTime).format('hh:mm A'),
             Draft: 1,
-            ModifyBy: Role
+            ModifyBy: user.UserName
           })
         );
       }

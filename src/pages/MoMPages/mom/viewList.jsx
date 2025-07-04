@@ -12,11 +12,12 @@ import { userActions } from '../../../store/user/userSlice';
 import { settingsActions } from 'store/settings/settingSlice';
 import { useStore } from '../../../contexts/DataContext';
 import { useTheme } from '../../../contexts/themeContext';
-import { exportcustomJsonToExcel, exportcustomJsonToExcelwithHeader } from '../../../utils/utils';
+import { exportcustomJsonToExcelwithHeader } from '../../../utils/utils';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function CollapsibleTable() {
-  const Role = localStorage.getItem('role');
   const { mode } = useTheme();
+  const { user } = useAuth();
   const dispatch = useDispatch();
   const { filterWith } = useStore();
   const { filterValue } = useStore();
@@ -276,7 +277,7 @@ export default function CollapsibleTable() {
       Status: Number(formData.Status),
       ProjectId: Number(selectedRow.ProjectId),
       DiscussionId: Number(selectedRow.DiscussionId),
-      ModifyBy: Role
+      ModifyBy: user.UserName
     };
     dispatch(meetingsActions.updateDiscussionInfo(payload));
     setTimeout(() => {

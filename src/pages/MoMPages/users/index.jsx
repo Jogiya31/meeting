@@ -21,8 +21,8 @@ import { capitalizeWords, exportJsonToExcel } from '../../../utils/utils';
 const UserList = () => {
   const dispatch = useDispatch();
   const { mode } = useTheme();
+  const { user } = useAuth();
   const gridRef = useRef();
-  const Role = localStorage.getItem('role');
   const [selectedUser, setselectedUser] = useState(null);
   const [currentDate, setcurrentDate] = useState(null);
   const [errors, setErrors] = useState({});
@@ -66,7 +66,7 @@ const UserList = () => {
     Role: 3,
     Gender: '',
     ImgPath: male_i,
-    CreatedBy: Role,
+    CreatedBy: user.UserName,
     PriorityOrderId: '',
     DisplayOrderId: '',
     Group_id: '',
@@ -304,7 +304,7 @@ const UserList = () => {
       Role: 3,
       Gender: '',
       ImgPath: male_i,
-      CreatedBy: Role,
+      CreatedBy: user.UserName,
       PriorityOrderId: '',
       DisplayOrderId: '',
       Group_id: '',
@@ -335,7 +335,7 @@ const UserList = () => {
       Role: '3',
       Gender: '',
       ImgPath: male_i,
-      CreatedBy: Role,
+      CreatedBy: user.UserName,
       PriorityOrderId: '',
       DisplayOrderId: '',
       Group_id: '',
@@ -415,6 +415,8 @@ const UserList = () => {
     e.preventDefault();
     if (!validate()) return;
 
+    const customPassword = formData.UserName.split(' ')[0] + '@123';
+
     const updatedData = {
       UserName: formData.UserName,
       DesignationId: formData.DesignationId,
@@ -432,6 +434,7 @@ const UserList = () => {
       PriorityOrderId: formData.PriorityOrderId || '',
       DisplayOrderId: formData.DisplayOrderId || '999',
       Group_id: formData.EmployeementDivisionId,
+      Password: customPassword,
       Email: formData.Email,
       Team_id: '',
       TeamName: '',
@@ -443,23 +446,20 @@ const UserList = () => {
     if (selectedUser) {
       // Update User Payload
       updatedData.UserId = selectedUser.UserId;
-      updatedData.ModifyBy = Role;
-      updatedData.key = '3';
+      updatedData.ModifyBy = user.UserName;
+      dispatch(userActions.updateuserInfo(updatedData));
     } else {
       // Save New User Payload
-      updatedData.CreatedBy = Role;
+      updatedData.CreatedBy = user.UserName;
       updatedData.Password = formData.Password;
-      updatedData.key = '2';
+      dispatch(userActions.adduserInfo(updatedData));
     }
 
-    api
-      .post('/Api', updatedData)
-      .then(() => {
-        getUserList();
-        handleClose();
-        setShowregister(false);
-      })
-      .catch((err) => console.error('Error saving user:', err));
+    setTimeout(() => {
+      getUserList();
+      handleClose();
+      setShowregister(false);
+    }, 300);
   };
 
   useEffect(() => {
@@ -478,7 +478,7 @@ const UserList = () => {
         Role: selectedUser.Role,
         Gender: selectedUser.Gender,
         ImgPath: selectedUser.ImgPath || '',
-        CreatedBy: Role,
+        CreatedBy: user.UserName,
         PriorityOrderId: selectedUser.PriorityOrderId,
         DisplayOrderId: selectedUser.DisplayOrderId,
         Group_id: selectedUser.EmployeementDivisionId,
@@ -516,7 +516,7 @@ const UserList = () => {
       Role: user.Role,
       ImgPath: user.ImgPath,
       UserId: user.UserId,
-      ModifyBy: Role,
+      ModifyBy: user.UserName,
       PriorityOrderId: user.PriorityOrderId || '',
       DisplayOrderId: user.DisplayOrderId || '',
       Group_id: user.EmployeementDivisionId,

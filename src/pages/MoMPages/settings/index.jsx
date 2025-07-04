@@ -15,7 +15,6 @@ const Index = () => {
   const dispatch = useDispatch();
   const { mode } = useTheme();
   const { user } = useAuth();
-  const Role = localStorage.getItem('role');
 
   const [employmentTypeList, setEmploymentTypeList] = useState([]);
   const [organisationList, setOrganisationList] = useState([]);
@@ -264,7 +263,7 @@ const Index = () => {
         const payload = {
           [fieldName + 'Id']: updatedItem.id,
           [fieldName + 'Title']: updatedItem.title,
-          ModifyBy: Role,
+          ModifyBy: user.UserName,
           Status: updatedItem.status === 1 ? '0' : '1' // Ensure it's a string
         };
 
