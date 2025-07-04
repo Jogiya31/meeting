@@ -530,7 +530,7 @@ export default function CollapsibleTable() {
             </Form.Group>
           </div>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className={mode}>
           <Button className="btn-info" onClick={() => handleSaveClick()}>
             Save
           </Button>

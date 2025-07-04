@@ -63,9 +63,9 @@ const JWTLogin = () => {
         Role: roleMap[loginDetails.Result[0].Role] || loginDetails.Result[0].Role
       };
 
-      localStorage.setItem('loggedIn', true);
-      localStorage.setItem('role', updatedUser.Role);
-      localStorage.setItem('userDetails', JSON.stringify(updatedUser));
+      // localStorage.setItem('loggedIn', true);
+      // localStorage.setItem('role', updatedUser.Role);
+      // localStorage.setItem('userDetails', JSON.stringify(updatedUser));
 
       login(updatedUser);
       setProcessed(true); // prevent this logic from running again
@@ -80,9 +80,8 @@ const JWTLogin = () => {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (loggedIn || localStorage.getItem('loggedIn')) {
-      const storedRole = localStorage.getItem('role');
-      if (storedRole === 'superadmin') {
+    if (loggedIn) {
+      if (role === 'superadmin') {
         navigate('/meetings/dashboard');
       } else {
         navigate('/tasktracker/dashboard');
