@@ -18,6 +18,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import { useTheme } from '../../../contexts/themeContext';
 import AdvanceTable from '../../../components/Table/advanceTable';
 import { capitalizeWords, exportJsonToExcel } from '../../../utils/utils';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const UserList = () => {
   const dispatch = useDispatch();
