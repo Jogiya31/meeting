@@ -801,7 +801,7 @@ const NewPoint = () => {
                                     <tr key={`${idx}-${idx}-${Math.random()}`}>
                                       <td>{idx + 1}</td>
                                       <td style={{ wordBreak: 'break-word', whiteSpace: 'normal', maxWidth: '300px' }}>{item.task}</td>
-                                      <td>{item.endDate && item.endDate.split(' ')[0]}</td>
+                                      <td>{moment(item.endDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}</td>
                                       <td>
                                         {projectList?.Result?.map(
                                           (proj) => proj.ProjectId === item.projectId && <span>{proj.ProjectTitle}</span>

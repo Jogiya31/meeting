@@ -10,6 +10,7 @@ import DatePicker from 'react-datepicker';
 import { useAuth } from '../../../contexts/AuthContext';
 import { moduleActions } from '../../../store/module/moduleSlice';
 import { userActions } from '../../../store/user/userSlice';
+import './style.scss';
 
 const Index = () => {
   const dispatch = useDispatch();
@@ -59,6 +60,8 @@ const Index = () => {
   const [currSelectedData, setCurrSelectedData] = useState('');
   const [divisionSearchTerm, setDivisionSearchTerm] = useState('');
   const [filteredDivisionList, setFilteredDivisionList] = useState([]);
+
+  const [globalSearch, setGlobalSearch] = useState('');
 
   const designationDataList = useSelector((state) => state.settings.designationData);
   const divisionDataList = useSelector((state) => state.settings.divisionData);
@@ -972,121 +975,160 @@ const Index = () => {
     dispatch(moduleActions.getModuleInfo());
     dispatch(settingsActions.getDivisionInfo());
   };
+  const matchesSearch = (text) => text?.toLowerCase().includes(globalSearch.toLowerCase()) || globalSearch.trim() === '';
 
   return (
     <div>
+      <Row className="mb-3">
+        <Col md={4} className="ml-auto">
+          <Form.Control
+            type="text"
+            placeholder="Global Search..."
+            className="globalSearch"
+            value={globalSearch}
+            onChange={(e) => setGlobalSearch(e.target.value)}
+          />
+        </Col>
+      </Row>
       <Row>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Division Lists" cardClass="info default-shadow" isOption>
-            <DivisionList
-              divisionDataList={divisionDataList}
-              setSelectedData={setSelectedData}
-              setCurrSelectedData={setCurrSelectedData}
-              handleDivisionDelete={handleDivisionDelete}
-              setShowDivision={setShowDivision}
-            />
-          </MainCard>
-        </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Employment Type" cardClass="warning default-shadow" isOption>
-            <RenderList
-              list={employmentTypeList}
-              setList={setEmploymentTypeList}
-              apiAction={settingsActions.addEmployeementInfo}
-              fetchAction={settingsActions.getEmployeementInfo}
-              updateAction={settingsActions.updateEmployeementInfo}
-              fieldName={'Employeement'}
-              enableAddNew
-            />
-          </MainCard>
-        </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Designation List" cardClass="success default-shadow" isOption>
-            <RenderList
-              list={designationList}
-              setList={setDesignationList}
-              apiAction={settingsActions.addDesignationInfo}
-              fetchAction={settingsActions.getDesignationInfo}
-              updateAction={settingsActions.updateDesignationInfo}
-              fieldName={'Designation'}
-              enableAddNew
-            />
-          </MainCard>
-        </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Company List" cardClass="purple default-shadow" isOption>
-            <RenderList
-              list={organisationList}
-              setList={setOrganisationList}
-              apiAction={settingsActions.addOrganizationInfo}
-              fetchAction={settingsActions.getOrganizationInfo}
-              updateAction={settingsActions.updateOrganizationInfo}
-              fieldName={'Organisation'}
-              enableAddNew
-            />
-          </MainCard>
-        </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Task Status" cardClass="brown default-shadow" isOption>
-            <RenderList
-              list={statusList}
-              setList={setStatusList}
-              apiAction={settingsActions.addStatusInfo}
-              fetchAction={settingsActions.getStatusInfo}
-              updateAction={settingsActions.updateStatusInfo}
-              fieldName={'Status'}
-              enableAddNew
-            />
-          </MainCard>
-        </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Salutation List" cardClass="info default-shadow" isOption>
-            <RenderList
-              list={salutationList}
-              setList={setSalutationList}
-              apiAction={settingsActions.addSalutationInfo}
-              fetchAction={settingsActions.getSalutationInfo}
-              updateAction={settingsActions.updateSalutationInfo}
-              fieldName={'Salutation'}
-              enableAddNew
-            />
-          </MainCard>
-        </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Priority Order List" cardClass="warning default-shadow" isOption>
-            <RenderList
-              list={priorityList}
-              setList={setPriorityList}
-              apiAction={settingsActions.addPriorityInfo}
-              fetchAction={settingsActions.getPriorityInfo}
-              updateAction={settingsActions.updatePriorityInfo}
-              fieldName={'PriorityOrder'}
-              enableAddNew
-            />
-          </MainCard>
-        </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Available Projects" cardClass="secondary default-shadow" isOption>
-            <ProjectList
-              projectList={projectList}
-              setSelectedData={setSelectedData}
-              setCurrSelectedData={setCurrSelectedData}
-              handleProjectDelete={handleProjectDelete}
-              setShowProject={setShowProject}
-            />
-          </MainCard>
-        </Col>
-        <Col sm={12} md={12} xl={6} xxl={4}>
-          <MainCard title="Module Lists" cardClass="success default-shadow" isOption>
-            <ModuleList
-              moduleList={moduleList}
-              setSelectedData={setSelectedData}
-              setCurrSelectedData={setCurrSelectedData}
-              handleModuleDelete={handleModuleDelete}
-              setShowModule={setShowModule}
-            />
-          </MainCard>
-        </Col>
+        {(matchesSearch('Division Lists') ||
+          divisionDataList?.Result?.some((item) => item.DivisionTitle?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Division Lists" cardClass="info default-shadow" isOption>
+              <DivisionList
+                divisionDataList={divisionDataList}
+                setSelectedData={setSelectedData}
+                setCurrSelectedData={setCurrSelectedData}
+                handleDivisionDelete={handleDivisionDelete}
+                setShowDivision={setShowDivision}
+              />
+            </MainCard>
+          </Col>
+        )}
+        {(matchesSearch('Employment Type') ||
+          employmentTypeList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Employment Type" cardClass="warning default-shadow" isOption>
+              <RenderList
+                list={employmentTypeList}
+                setList={setEmploymentTypeList}
+                apiAction={settingsActions.addEmployeementInfo}
+                fetchAction={settingsActions.getEmployeementInfo}
+                updateAction={settingsActions.updateEmployeementInfo}
+                fieldName={'Employeement'}
+                enableAddNew
+              />
+            </MainCard>
+          </Col>
+        )}
+        {(matchesSearch('Designation List') ||
+          designationList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Designation List" cardClass="success default-shadow" isOption>
+              <RenderList
+                list={designationList}
+                setList={setDesignationList}
+                apiAction={settingsActions.addDesignationInfo}
+                fetchAction={settingsActions.getDesignationInfo}
+                updateAction={settingsActions.updateDesignationInfo}
+                fieldName={'Designation'}
+                enableAddNew
+              />
+            </MainCard>
+          </Col>
+        )}
+        {(matchesSearch('Company List') ||
+          organisationList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Company List" cardClass="purple default-shadow" isOption>
+              <RenderList
+                list={organisationList}
+                setList={setOrganisationList}
+                apiAction={settingsActions.addOrganizationInfo}
+                fetchAction={settingsActions.getOrganizationInfo}
+                updateAction={settingsActions.updateOrganizationInfo}
+                fieldName={'Organisation'}
+                enableAddNew
+              />
+            </MainCard>
+          </Col>
+        )}
+        {(matchesSearch('Task Status') ||
+          statusList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Task Status" cardClass="brown default-shadow" isOption>
+              <RenderList
+                list={statusList}
+                setList={setStatusList}
+                apiAction={settingsActions.addStatusInfo}
+                fetchAction={settingsActions.getStatusInfo}
+                updateAction={settingsActions.updateStatusInfo}
+                fieldName={'Status'}
+                enableAddNew
+              />
+            </MainCard>
+          </Col>
+        )}
+        {(matchesSearch('Salutation List') ||
+          salutationList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Salutation List" cardClass="info default-shadow" isOption>
+              <RenderList
+                list={salutationList}
+                setList={setSalutationList}
+                apiAction={settingsActions.addSalutationInfo}
+                fetchAction={settingsActions.getSalutationInfo}
+                updateAction={settingsActions.updateSalutationInfo}
+                fieldName={'Salutation'}
+                enableAddNew
+              />
+            </MainCard>
+          </Col>
+        )}
+        {(matchesSearch('Priority Order List') ||
+          priorityList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Priority Order List" cardClass="warning default-shadow" isOption>
+              <RenderList
+                list={priorityList}
+                setList={setPriorityList}
+                apiAction={settingsActions.addPriorityInfo}
+                fetchAction={settingsActions.getPriorityInfo}
+                updateAction={settingsActions.updatePriorityInfo}
+                fieldName={'PriorityOrder'}
+                enableAddNew
+              />
+            </MainCard>
+          </Col>
+        )}
+        {(matchesSearch('Available Projects') ||
+          projectList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Available Projects" cardClass="secondary default-shadow" isOption>
+              <ProjectList
+                projectList={projectList}
+                setSelectedData={setSelectedData}
+                setCurrSelectedData={setCurrSelectedData}
+                handleProjectDelete={handleProjectDelete}
+                setShowProject={setShowProject}
+              />
+            </MainCard>
+          </Col>
+        )}
+        {(matchesSearch('Module Lists') ||
+          moduleList?.Result?.some((item) => item.ModuleName?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+          <Col sm={12} md={12} xl={6} xxl={4}>
+            <MainCard title="Module Lists" cardClass="success default-shadow" isOption>
+              <ModuleList
+                moduleList={moduleList}
+                setSelectedData={setSelectedData}
+                setCurrSelectedData={setCurrSelectedData}
+                handleModuleDelete={handleModuleDelete}
+                setShowModule={setShowModule}
+              />
+            </MainCard>
+          </Col>
+        )}
       </Row>
       <Modal size="lg" show={showProject} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode}>

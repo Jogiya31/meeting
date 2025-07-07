@@ -577,7 +577,7 @@ const UserList = () => {
 
     const footerLines = [`Exported On: ${moment().format('DD-MM-YYYY hh:mm A')}`];
 
-    exportJsonToExcel(rowData, 'Task_List', headerLines, footerLines);
+    exportJsonToExcel(rowData, 'User_List', headerLines, footerLines);
   };
 
   return (

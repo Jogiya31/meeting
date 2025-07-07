@@ -138,6 +138,8 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       theme: mode
     }).then((result) => {
       if (result.isConfirmed) {
+        const removedUserId = formFields[index]?.userId;
+
         if (attendanceId) {
           dispatch(
             meetingsActions.deleteAttendanceInfo({
@@ -145,13 +147,23 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
             })
           );
         }
+
         Swal.fire({
-          title: 'Deleted!',
-          text: 'Your file has been deleted.',
+          title: 'Removed!',
+          text: 'User has been removed.',
           icon: 'success',
           theme: mode
+        }).then(() => {
+          dispatch(meetingsActions.getMeetingsInfo());
         });
+
+        // Remove from formFields
         setFormFields((prevFields) => prevFields.filter((_, i) => i !== index));
+
+        // Remove from MultiSelect userFilter if userId exists
+        if (removedUserId) {
+          setuserFilter((prevSelected) => prevSelected.filter((user) => user.value.toString() !== removedUserId.toString()));
+        }
       }
     });
   };
@@ -434,7 +446,10 @@ const Attendance = ({ handleAttendanceFormData, formFields: initialFields }) => 
       <Modal size="xl" show={showregister} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
         <Modal.Header className={mode} closeButton>
           <Modal.Title>
-            <h4><FaUserCircle className="f-26 text-primary mr-1" />Add new user</h4>
+            <h4>
+              <FaUserCircle className="f-26 text-primary mr-1" />
+              Add new user
+            </h4>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className={mode}>

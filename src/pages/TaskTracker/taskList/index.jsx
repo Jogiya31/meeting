@@ -85,18 +85,6 @@ const TaskList = () => {
       setModuleOption([...options]);
     }
 
-    if (statusLists && taskList?.Result?.length) {
-      const statusIdSet = new Set(taskList.Result.map((item) => item.Status));
-
-      options = [];
-      statusLists?.Result?.forEach((item) => {
-        if (item.StatusTitle && statusIdSet.has(String(item.StatusId))) {
-          options.push({ label: item.StatusTitle, value: item.StatusId });
-        }
-      });
-      setStatusOption([...options]);
-    }
-
     if (userList && taskList?.Result?.length) {
       const taskUserIdSet = new Set();
 
@@ -227,20 +215,26 @@ const TaskList = () => {
   }, [projectFilter, moduleFilter, userFilter, statusFilter]);
 
   useEffect(() => {
-    if (filterValue) {
-      const activeStatus = statusLists?.Result?.filter((item) => item.StatusId === filterValue?.[0]?.StatusId);
-      setStatusFilter([{ label: activeStatus?.[0]?.StatusTitle, value: activeStatus?.[0]?.StatusId }]);
-      dispatch(taskActions.getTaskInfo({ ...filterPayload, StatusMulti: activeStatus?.[0]?.StatusId }));
-    }
-  }, [filterValue]);
+    if (statusLists?.Result) {
+      const options = statusLists.Result.map((item) => ({
+        label: item.StatusTitle,
+        value: item.StatusId
+      }));
+      setStatusOption(options);
 
-  const handleGroupFilter = (newSelected) => {
-    if (newSelected.length) {
-      setGroupFilter(newSelected);
-    } else {
-      setGroupFilter([]);
+      // Handle Preselection if filterValue exists
+      if (filterValue) {
+        const selectedObj = options.find((opt) => opt.value.toString() === filterValue.toString());
+        if (selectedObj) {
+          setStatusFilter([selectedObj]);
+        }
+        dispatch(taskActions.getTaskInfo({ ...filterPayload, StatusMulti: filterValue }));
+      }
     }
-  };
+     filterWith(null);
+
+  }, [statusLists, filterValue]);
+
   const handleProjectFilter = (newSelected) => {
     if (newSelected.length) {
       setProjectFilter(newSelected);
@@ -281,13 +275,13 @@ const TaskList = () => {
       filter: false,
       flex: 1
     },
-    { field: 'ProjectTitle', sortable: true, filter: true, flex: 1 },
-    { field: 'ModuleName', sortable: true, filter: true, flex: 1 },
-    { field: 'Task', sortable: true, filter: true, flex: 1 },
-    { field: 'Description', sortable: true, filter: true, flex: 1 },
-    { field: 'StartDate', sortable: true, filter: true, flex: 1 },
-    { field: 'StatusTitle', headerName: 'Status', sortable: true, filter: true, flex: 1 },
-    { field: 'AssignTo', sortable: true, filter: true, flex: 1 },
+    { field: 'ProjectTitle', sortable: true, filter: false, flex: 1 },
+    { field: 'ModuleName', sortable: true, filter: false, flex: 1 },
+    { field: 'Task', sortable: true, filter: false, flex: 1 },
+    { field: 'Description', sortable: true, filter: false, flex: 1 },
+    { field: 'StartDate', sortable: true, filter: false, flex: 1 },
+    { field: 'StatusTitle', headerName: 'Status', sortable: true, filter: false, flex: 1 },
+    { field: 'AssignTo', sortable: true, filter: false, flex: 1 },
     { field: 'Remark', flex: 1 }
   ]);
 
@@ -468,7 +462,7 @@ const TaskList = () => {
                   onChange={handleStartDate}
                   placeholderText="Start Date"
                   dateFormat="dd-MM-yyyy"
-                  name="startDate"                  
+                  name="startDate"
                 />
               </div>
               <div className="filter-col">

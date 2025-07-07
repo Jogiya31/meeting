@@ -211,7 +211,8 @@ const TaskAssigment = () => {
               } else if (status === '3') {
                 progressMap[userId].taskComplete += 1;
               }
-              progressMap[userId].taskProgress = (progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100 + '%';
+              progressMap[userId].taskProgress =
+                ((progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100).toFixed(2) + '%';
             });
           }
         }

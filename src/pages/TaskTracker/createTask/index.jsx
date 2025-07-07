@@ -83,15 +83,17 @@ const CreateTask = () => {
       filter: false,
       flex: 1
     },
-    { field: 'ProjectTitle', sortable: true, filter: true, flex: 1 },
-    { field: 'ModuleName', sortable: true, filter: true, flex: 1 },
-    { field: 'Task', sortable: true, filter: true, flex: 1 },
-    { field: 'Description', sortable: true, filter: true, flex: 1 },
-    { field: 'StartDate', sortable: true, filter: true, flex: 1 },
+    { field: 'ProjectTitle', sortable: true, filter: false, flex: 1 },
+    { field: 'ModuleName', sortable: true, filter: false, flex: 1 },
+    { field: 'Task', sortable: true, filter: false, flex: 1 },
+    { field: 'Description', sortable: true, filter: false, flex: 1 },
+    { field: 'StartDate', sortable: true, filter: false, flex: 1 },
     {
       headerName: 'Actions',
       field: 'actions',
       flex: 1,
+      sortable: false,
+      filter: false,
       cellRenderer: ActionCellRenderer
     }
   ]);

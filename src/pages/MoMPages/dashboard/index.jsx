@@ -130,16 +130,19 @@ const DashDefault = () => {
       navigate('/meetings/users');
     } else if (card === 'meeting') {
       filterWith(null);
-      navigate('/tasktracker/Task-List');
-    } else if (card === 'panding') {
-      filterWith(1);
       navigate('/meetings/view');
+    }else if (card === 'task-list') {
+      filterWith(null);
+      navigate('/tasktracker/Task-List');
+    } else if (card === 'pending') {
+      filterWith(1);
+      navigate('/tasktracker/Task-List');
     } else if (card === 'inprogress') {
       filterWith(2);
-      navigate('/meetings/view');
+      navigate('/tasktracker/Task-List');
     } else if (card === 'completed') {
       filterWith(3);
-      navigate('/meetings/view');
+      navigate('/tasktracker/Task-List');
     } else if (card === 'projects') {
       filterWith(3);
       navigate('/meetings/masterSettings');
@@ -417,7 +420,7 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-3' : 'grd-bg-color-3'} pointer`}
-              onClick={() => handleCardClick('meeting')}
+              onClick={() => handleCardClick('task-list')}
             >
               <Card.Body>
                 <Row>
@@ -477,7 +480,7 @@ const DashDefault = () => {
           <div className="grid-item">
             <Card
               className={`customcard mb-1  ${theme === 'static' ? 'bg-color-5' : 'grd-bg-color-5'}  pointer`}
-              onClick={() => handleCardClick('panding')}
+              onClick={() => handleCardClick('pending')}
             >
               <Card.Body>
                 <Row>
@@ -556,18 +559,6 @@ const DashDefault = () => {
             </Card>
           </Col>
 
-          {/* <Col md={6}>
-            <Card className="mt-3">
-              <Card.Body className="p-0">
-                <div className="dashboard-donut">
-                  <div className="d-flex justify-content-center w-full">
-                    <h5 className="chartCardTitle mt-3 ">Task Not Completed On Time By Team Members</h5>
-                  </div>
-                  <DonutChart2 data={userOverdueCounts} />
-                </div>
-              </Card.Body>
-            </Card>
-          </Col> */}
           <Col md={6}>
             <Card className="mt-3">
               <Card.Body className="p-0">

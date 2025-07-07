@@ -122,6 +122,16 @@ const DashDefault = () => {
     if (card === 'user') {
       navigate('/tasktracker/users');
     } else if (card === 'task') {
+      filterWith(null);
+      navigate('/tasktracker/Task-List');
+    } else if (card === 'pending') {
+      filterWith(1);
+      navigate('/tasktracker/Task-List');
+    } else if (card === 'inprogress') {
+      filterWith(2);
+      navigate('/tasktracker/Task-List');
+    } else if (card === 'completed') {
+      filterWith(3);
       navigate('/tasktracker/Task-List');
     }
   };
@@ -405,8 +415,7 @@ const DashDefault = () => {
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-4' : 'grd-bg-color-4'}  pointer`}
               onClick={() => {
-                handleCardClick('task');
-                filterWith(statusDataList?.Result?.filter((item) => item.StatusTitle === 'Completed'));
+                handleCardClick('completed');
               }}
             >
               <Card.Body>
@@ -437,8 +446,7 @@ const DashDefault = () => {
             <Card
               className={`customcard mb-1  ${theme === 'static' ? 'bg-color-5' : 'grd-bg-color-5'}  pointer`}
               onClick={() => {
-                handleCardClick('task');
-                filterWith(statusDataList?.Result?.filter((item) => item.StatusTitle === 'Pending'));
+                handleCardClick('pending');
               }}
             >
               <Card.Body>
@@ -469,8 +477,7 @@ const DashDefault = () => {
             <Card
               className={`customcard mb-1 ${theme === 'static' ? 'bg-color-6' : 'grd-bg-color-6'}  pointer`}
               onClick={() => {
-                handleCardClick('task');
-                filterWith(statusDataList?.Result?.filter((item) => item.StatusTitle === 'Inprogress'));
+                handleCardClick('inprogress');
               }}
             >
               <Card.Body>
