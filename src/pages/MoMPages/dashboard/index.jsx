@@ -160,7 +160,6 @@ const DashDefault = () => {
 
   const exportPdf = () => {
     if (!pdfContent.current) return;
-
     html2canvas(pdfContent.current, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
@@ -168,7 +167,7 @@ const DashDefault = () => {
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(`Meeting_Details_${moment(selectedMeeting?.[0]?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}.pdf`);
+      pdf.save(`${selectedMeeting?.[0]?.MeetingTitle} _ ${moment(selectedMeeting?.[0]?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}.pdf`);
     });
     setshowInfo(false);
   };

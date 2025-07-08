@@ -153,7 +153,7 @@ const UserList = () => {
     {
       headerName: '#',
       valueGetter: (params) => params.node.rowIndex + 1,
-      width: 80,
+      width: 60,
       pinned: 'left',
       suppressMovable: true,
       cellStyle: { textAlign: 'center' },
@@ -176,9 +176,13 @@ const UserList = () => {
       cellRenderer: StatusCellRenderer
     },
     {
+      width: 100,
+      suppressMovable: true,
       headerName: 'Actions',
       field: 'actions',
+      pinned: 'right',
       flex: 1,
+      sortable: false,
       cellRenderer: ActionCellRenderer
     }
   ]);

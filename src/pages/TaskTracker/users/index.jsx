@@ -108,13 +108,6 @@ const UserList = () => {
         <Button variant="" size="sm" onClick={handleEdit} title="Edit User">
           <img src={edit} width={20} alt="" />
         </Button>
-        <Button
-          variant={data.Status === '1' || data.Status === 1 ? 'outline-success' : 'outline-danger'}
-          onClick={handleDelete}
-          className="c-btn-sm"
-        >
-          {data.Status === '1' || data.Status === 1 ? 'Active' : 'Inactive'}
-        </Button>
       </div>
     );
   };
@@ -165,6 +158,17 @@ const UserList = () => {
   };
 
   const [columnDefs] = useState([
+     {
+      headerName: '#',
+      valueGetter: (params) => params.node.rowIndex + 1,
+      width: 60,
+      pinned: 'left',
+      suppressMovable: true,
+      cellStyle: { textAlign: 'center' },
+      sortable: false,
+      filter: false,
+      flex: 1
+    },
     { field: 'UserName', sortable: true, filter: true, flex: 1, cellRenderer: UserNameCellRenderer },
     { field: 'DesignationTitle', sortable: true, filter: true, flex: 1 },
     { field: 'EmployeeDivisionTitle', sortable: true, filter: true, flex: 1 },
@@ -177,12 +181,18 @@ const UserList = () => {
       field: 'StatusTitle',
       headerName: 'Status',
       flex: 1,
+      sortable: false,
+      filter: false,
       cellRenderer: StatusCellRenderer
     },
     {
+      width: 100,
+      suppressMovable: true,
       headerName: 'Actions',
       field: 'actions',
+      pinned: 'right',
       flex: 1,
+      sortable: false,
       cellRenderer: ActionCellRenderer
     }
   ]);
@@ -522,10 +532,9 @@ const UserList = () => {
       Assigneddept: '',
       Email: user.Email
     };
-
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Do you want to change status for this item?',
+      text: `Do you want to ${user.Status === '1' ? 'deactivate' : 'activate'} this user?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -534,9 +543,10 @@ const UserList = () => {
       theme: mode
     }).then(async (result) => {
       if (result.isConfirmed) {
-        api.post('/Update_User', updatedData).then(() => {
+        dispatch(userActions.updateuserInfo(updatedData));
+        setTimeout(() => {
           getUserList();
-        });
+        }, 300);
       }
     });
   };
