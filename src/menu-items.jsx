@@ -86,47 +86,18 @@ const menuItems = {
               display: false
             }
           ]
-        }
-      ]
-    },
-    {
-      id: 'Tasks',
-      title: 'Task Menu',
-      type: 'group',
-      icon: 'icon-ui',
-      children: [
+        },
         {
-          id: 'task',
-          title: 'Task',
-          type: 'collapse',
-          icon: 'fas fa-handshake',
-          display: true,
-          children: [
-            {
-              id: 'task_list',
-              title: 'Task List',
-              type: 'item',
-              url: '/tasktracker/Task-List',
-              display: true
-            },
-            {
-              id: 'Create_tasks',
-              title: 'Create Task',
-              type: 'item',
-              url: '/tasktracker/create-Task',
-              display: true
-            },
-            {
-              id: 'tasks_Assginment',
-              title: 'Task Assignment',
-              type: 'item',
-              url: '/tasktracker/Task-Assignment',
-              display: true
-            },
-          ]
+          id: 'tasks_Assginment',
+          title: 'Task Assignment',
+          type: 'item',
+          url: '/tasktracker/Task-Assignment',
+          icon: 'fas fa-edit',
+          display: true
         }
       ]
     },
+
     {
       id: 'setting',
       title: 'Settings',
@@ -178,44 +149,14 @@ const menuItems = {
           classes: 'nav-item',
           icon: 'feather icon-users',
           display: true
-        }
-      ]
-    },
-    {
-      id: 'Tasks',
-      title: 'Task Menu',
-      type: 'group',
-      icon: 'icon-ui',
-      children: [
+        },
         {
-          id: 'task',
-          title: 'Task',
-          type: 'collapse',
-          icon: 'fas fa-handshake',
-          display: true,
-          children: [
-            {
-              id: 'task_list',
-              title: 'Task List',
-              type: 'item',
-              url: '/tasktracker/Task-List',
-              display: true
-            },
-            {
-              id: 'Create_tasks',
-              title: 'Create Task',
-              type: 'item',
-              url: '/tasktracker/create-Task',
-              display: true
-            },
-            {
-              id: 'tasks_Assginment',
-              title: 'Task Assignment',
-              type: 'item',
-              url: '/tasktracker/Task-Assignment',
-              display: true
-            },
-          ]
+          id: 'tasks_Assginment',
+          title: 'Task Assignment',
+          type: 'item',
+          url: '/tasktracker/Task-Assignment',
+          icon: 'fas fa-edit',
+          display: true
         }
       ]
     },
@@ -252,40 +193,18 @@ const menuItems = {
           classes: 'nav-item',
           icon: 'feather icon-grid',
           display: true
-        }
-      ]
-    },
-    {
-      id: 'Tasks',
-      title: 'Task Menu',
-      type: 'group',
-      icon: 'icon-ui',
-      children: [
+        },
         {
-          id: 'task',
-          title: 'Task',
-          type: 'collapse',
-          icon: 'fas fa-handshake',
-          display: true,
-          children: [
-            {
-              id: 'task_list',
-              title: 'Task List',
-              type: 'item',
-              url: '/tasktracker/Task-List',
-              display: true
-            },
-            {
-              id: 'tasks_Assginment',
-              title: 'Task Assignment',
-              type: 'item',
-              url: '/tasktracker/Task-Assignment',
-              display: true
-            },
-          ]
+          id: 'tasks_Assginment',
+          title: 'Task Assignment',
+          type: 'item',
+          url: '/tasktracker/Task-Assignment',
+          icon: 'fas fa-edit',
+          display: true
         }
       ]
     },
+
     {
       id: 'Others',
       title: 'Others',

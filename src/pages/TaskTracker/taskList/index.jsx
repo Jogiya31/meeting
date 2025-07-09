@@ -231,8 +231,7 @@ const TaskList = () => {
         dispatch(taskActions.getTaskInfo({ ...filterPayload, StatusMulti: filterValue }));
       }
     }
-     filterWith(null);
-
+    filterWith(null);
   }, [statusLists, filterValue]);
 
   const handleProjectFilter = (newSelected) => {
@@ -401,13 +400,10 @@ const TaskList = () => {
 
   return (
     <div>
-      <Card className="Recent-Users widget-focus-lg header-info default-shadow">
-        <Card.Header className=" py-2">
+      <div className="">
+        <div>
           <Form noValidate onSubmit={handleSubmit}>
-            <div className="filter-row">
-              <div className="filter-title">
-                <h5>Task List</h5>
-              </div>
+            <div className="filter-row mb-2">
               <div className="filter-col">
                 <MultiSelect
                   options={projectOption}
@@ -476,13 +472,13 @@ const TaskList = () => {
                   name="endDate"
                 />
               </div>
-              <div className="filter-submit">
+              <div className="filter-submit align-items-center d-flex">
                 <Button type="submit" size="sm" className="m-0 bg-defaultBlue" onClick={handleSubmit}>
                   Submit
                 </Button>
               </div>
               <div className="filter-col">
-                <div className="d-flex align-items-center justify-content-center">
+                <div className="d-flex align-items-center justify-content-end">
                   <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={onExport} title="Export PDF" />
                   <img
                     src={refresh}
@@ -496,23 +492,21 @@ const TaskList = () => {
               </div>
             </div>
           </Form>
-        </Card.Header>
-        <Card.Body className="p-3 pt-0 dark-table">
-          <div>
-            <AdvanceTable
-              reference={gridRef}
-              gridWrapperRef={gridWrapperRef}
-              rowData={taskData || []}
-              columnDefs={columnDefs}
-              pagination={true}
-              paginationPageSize={15}
-              paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
-              resetTrigger={resetTrigger}
-              tablethemes="blue"
-            />
-          </div>
-        </Card.Body>
-      </Card>
+        </div>
+        <div className=" dark-table">
+          <AdvanceTable
+            reference={gridRef}
+            gridWrapperRef={gridWrapperRef}
+            rowData={taskData || []}
+            columnDefs={columnDefs}
+            pagination={true}
+            paginationPageSize={15}
+            paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
+            resetTrigger={resetTrigger}
+            tablethemes="blue"
+          />
+        </div>
+      </div>
     </div>
   );
 };

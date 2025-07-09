@@ -9,6 +9,8 @@ import { useTheme } from '../../../contexts/themeContext';
 import { settingsActions } from '../../../store/settings/settingSlice';
 import { moduleActions } from '../../../store/module/moduleSlice';
 import { useAuth } from '../../../contexts/AuthContext';
+import './style.scss';
+import TaskList from '../taskList';
 
 const TaskAssigment = () => {
   const dispatch = useDispatch();
@@ -371,7 +373,8 @@ const TaskAssigment = () => {
       <Card className="w-full header-info default-shadow">
         <Row>
           <Col md={12}>
-            <Tabs defaultActiveKey="assignedTask">
+            <Tabs defaultActiveKey="allTask">
+              <Tab eventKey="allTask" title="All Tasks"><TaskList /></Tab>
               <Tab eventKey="assignedTask" title="Assigned Tasks">
                 <EnhancedTable
                   enableSno
@@ -404,7 +407,7 @@ const TaskAssigment = () => {
                   />
                 </Tab>
               )}
-              <Tab eventKey="taskProgress" title="Task Progress">
+              <Tab eventKey="userTaskProgress" title="User Task Progress">
                 <EnhancedTable
                   enableSno
                   data={taskProgress}
@@ -415,6 +418,13 @@ const TaskAssigment = () => {
                 />
               </Tab>
             </Tabs>
+            <button
+              type="button"
+              class="float-end btn-sm table-header-primary btn btn-primary new-task"
+              onClick={() => setShowUnAssignedTask(true)}
+            >
+              Add Task
+            </button>
           </Col>
         </Row>
       </Card>

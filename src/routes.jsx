@@ -46,7 +46,6 @@ const Settings = lazy(() => import('./pages/MoMPages/settings'));
 const userDashboard = lazy(() => import('./pages/TaskTracker/dashboard'));
 const TaskList = lazy(() => import('./pages/TaskTracker/taskList'));
 const userList = lazy(() => import('./pages/TaskTracker/users'));
-const CreateTask = lazy(() => import('./pages/TaskTracker/createTask'));
 const TaskAssignment = lazy(() => import('./pages/TaskTracker/taskAssignment'));
 
 //Auth
@@ -136,17 +135,12 @@ const routes = [
       },
       {
         exact: true,
-        path: '/tasktracker/Create-Task',
-        element: CreateTask
-      },
-      {
-        exact: true,
         path: '/tasktracker/Task-Assignment',
         element: TaskAssignment
       },
       {
         path: '*',
-        element: NotFound // <-- Set NotFound page for unknown routes
+        element: NotFound
       }
     ]
   }

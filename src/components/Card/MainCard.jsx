@@ -4,7 +4,7 @@ import { Dropdown, Card, Collapse } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import useWindowSize from '../../hooks/useWindowSize';
 const MainCard = (props) => {
-  const { isOption, title, children, cardClass, optionClass, headerAction } = props;
+  const { isOption, title, children, cardClass, optionClass, headerAction, showListCount } = props;
 
   const [fullCard, setFullCard] = useState(false);
   const [collapseCard, setCollapseCard] = useState(false);
@@ -60,7 +60,9 @@ const MainCard = (props) => {
 
   cardHeader = (
     <Card.Header>
-      <Card.Title as="h5">{title}</Card.Title>
+      <Card.Title as="h5">
+        {title} {showListCount && `(${showListCount})`}
+      </Card.Title>
       {cardHeaderRight}
       {headerAction}
     </Card.Header>
@@ -93,7 +95,7 @@ const MainCard = (props) => {
       {cardHeader}
       <Collapse in={!collapseCard}>
         <div>
-          <Card.Body className='p-2'>{children}</Card.Body>
+          <Card.Body className="p-2">{children}</Card.Body>
         </div>
       </Collapse>
       {loader}

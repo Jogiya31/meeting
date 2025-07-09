@@ -450,7 +450,7 @@ const Index = () => {
         </div>
         <hr />
         {enableAddNew && (
-          <div className="footer d-flex justify-content-between px-4">
+          <div className="footer d-flex justify-content-between align-items-center px-4">
             <input
               type="text"
               className="form-control mr-3"
@@ -458,8 +458,12 @@ const Index = () => {
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
             />
-            <Button className="m-0" onClick={() => handleAddItem(newItem, setNewItem, apiAction, fetchAction, fieldName)}>
-              Add
+            <Button
+              className="m-0 d-flex align-items-center justify-content-center"
+              onClick={() => handleAddItem(newItem, setNewItem, apiAction, fetchAction, fieldName)}
+            >
+              <i className="fas fa-plus" />
+              <span>Add</span>
             </Button>
           </div>
         )}
@@ -542,7 +546,8 @@ const Index = () => {
 
         <div className="footer d-flex justify-content-end px-4">
           <Button className="m-0" onClick={() => setShowDivision(true)}>
-            Add
+            <i className="fas fa-plus" />
+            <span>Add</span>
           </Button>
         </div>
       </>
@@ -623,7 +628,8 @@ const Index = () => {
 
         <div className="footer d-flex justify-content-end px-4">
           <Button className="m-0" onClick={() => setShowProject(true)}>
-            Add
+            <i className="fas fa-plus" />
+            <span>Add</span>
           </Button>
         </div>
       </>
@@ -704,7 +710,8 @@ const Index = () => {
 
         <div className="footer d-flex justify-content-end px-4">
           <Button className="m-0" onClick={() => setShowModule(true)}>
-            Add
+            <i className="fas fa-plus" />
+            <span>Add</span>
           </Button>
         </div>
       </>
@@ -983,7 +990,7 @@ const Index = () => {
         <Col md={4} className="ml-auto">
           <Form.Control
             type="text"
-            placeholder="Global Search..."
+            placeholder="Search..."
             className="globalSearch"
             value={globalSearch}
             onChange={(e) => setGlobalSearch(e.target.value)}
@@ -994,7 +1001,7 @@ const Index = () => {
         {(matchesSearch('Division Lists') ||
           divisionDataList?.Result?.some((item) => item.DivisionTitle?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Division Lists" cardClass="info default-shadow" isOption>
+            <MainCard title="Division Lists" cardClass="info default-shadow" showListCount={divisionDataList?.Result?.length}>
               <DivisionList
                 divisionDataList={divisionDataList}
                 setSelectedData={setSelectedData}
@@ -1008,7 +1015,7 @@ const Index = () => {
         {(matchesSearch('Employment Type') ||
           employmentTypeList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Employment Type" cardClass="warning default-shadow" isOption>
+            <MainCard title="Employment Type" cardClass="warning default-shadow" showListCount={employmentTypeList?.length}>
               <RenderList
                 list={employmentTypeList}
                 setList={setEmploymentTypeList}
@@ -1024,7 +1031,7 @@ const Index = () => {
         {(matchesSearch('Designation List') ||
           designationList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Designation List" cardClass="success default-shadow" isOption>
+            <MainCard title="Designation List" cardClass="success default-shadow" showListCount={designationList?.length}>
               <RenderList
                 list={designationList}
                 setList={setDesignationList}
@@ -1040,7 +1047,7 @@ const Index = () => {
         {(matchesSearch('Company List') ||
           organisationList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Company List" cardClass="purple default-shadow" isOption>
+            <MainCard title="Company List" cardClass="purple default-shadow" showListCount={organisationList?.length}>
               <RenderList
                 list={organisationList}
                 setList={setOrganisationList}
@@ -1053,10 +1060,9 @@ const Index = () => {
             </MainCard>
           </Col>
         )}
-        {(matchesSearch('Task Status') ||
-          statusList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
+        {(matchesSearch('Task Status') || statusList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Task Status" cardClass="brown default-shadow" isOption>
+            <MainCard title="Task Status" cardClass="brown default-shadow" showListCount={statusList?.length}>
               <RenderList
                 list={statusList}
                 setList={setStatusList}
@@ -1072,7 +1078,7 @@ const Index = () => {
         {(matchesSearch('Salutation List') ||
           salutationList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Salutation List" cardClass="info default-shadow" isOption>
+            <MainCard title="Salutation List" cardClass="info default-shadow" showListCount={salutationList?.length}>
               <RenderList
                 list={salutationList}
                 setList={setSalutationList}
@@ -1088,7 +1094,7 @@ const Index = () => {
         {(matchesSearch('Priority Order List') ||
           priorityList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Priority Order List" cardClass="warning default-shadow" isOption>
+            <MainCard title="Priority Order List" cardClass="warning default-shadow" showListCount={priorityList?.length}>
               <RenderList
                 list={priorityList}
                 setList={setPriorityList}
@@ -1104,7 +1110,7 @@ const Index = () => {
         {(matchesSearch('Available Projects') ||
           projectList?.some((item) => item.title?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Available Projects" cardClass="secondary default-shadow" isOption>
+            <MainCard title="Available Projects" cardClass="secondary default-shadow" showListCount={projectList?.length}>
               <ProjectList
                 projectList={projectList}
                 setSelectedData={setSelectedData}
@@ -1118,7 +1124,7 @@ const Index = () => {
         {(matchesSearch('Module Lists') ||
           moduleList?.Result?.some((item) => item.ModuleName?.toLowerCase().includes(globalSearch.toLowerCase()))) && (
           <Col sm={12} md={12} xl={6} xxl={4}>
-            <MainCard title="Module Lists" cardClass="success default-shadow" isOption>
+            <MainCard title="Module Lists" cardClass="success default-shadow" showListCount={moduleList?.Result?.length}>
               <ModuleList
                 moduleList={moduleList}
                 setSelectedData={setSelectedData}
