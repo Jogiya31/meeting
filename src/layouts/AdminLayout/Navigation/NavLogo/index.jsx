@@ -19,13 +19,15 @@ const NavLogo = () => {
   return (
     <React.Fragment>
       <div className={`navbar-brand header-logo ${logoColor}`}>
-        <Link to="#" className="b-brand">
-          <img src={logo} className="logo" alt="" />
-          <span className="b-title">DAID</span>
-        </Link>
-        <Link to="#" className={toggleClass.join(' ')} id="mobile-collapse" onClick={() => dispatch({ type: actionType.COLLAPSE_MENU })}>
-          <span />
-        </Link>
+        <div>
+          <Link to="#" className="b-brand">
+            <img src={logo} className="logo" alt="" />
+            <span className="b-title">Tracker</span>
+          </Link>
+          <Link to="#" className={toggleClass.join(' ')} id="mobile-collapse" onClick={() => dispatch({ type: actionType.COLLAPSE_MENU })}>
+            <span />
+          </Link>
+        </div>
       </div>
     </React.Fragment>
   );

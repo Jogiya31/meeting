@@ -5,9 +5,11 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import NavGroup from './NavGroup';
 import { useTheme } from '../../../../contexts/themeContext';
+import { useAuth } from '../../../../contexts/AuthContext';
 
 const NavContent = ({ navigation }) => {
   const { navColor } = useTheme();
+  const { user, role } = useAuth();
   const navItems = navigation.map((item) => {
     switch (item.type) {
       case 'group':
@@ -21,6 +23,13 @@ const NavContent = ({ navigation }) => {
 
   mainContent = (
     <div className={`navbar-content daid-scroll ${navColor}`}>
+      <div className="userRole">
+        <p className="text-white loginUser">
+          <i className="fas fa-circle online"></i>
+          <span>{user.UserName}</span>
+        </p>
+        <small className='role text-uppercase'>{role}</small>
+      </div>
       <PerfectScrollbar>
         <ListGroup variant="flush" as="ul" bsPrefix=" " className="nav pcoded-inner-navbar" id="nav-ps-next">
           {navItems}

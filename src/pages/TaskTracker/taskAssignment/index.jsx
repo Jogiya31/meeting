@@ -19,6 +19,7 @@ const TaskAssigment = () => {
   const [assignedTask, setassignedTask] = useState([]);
   const [UnAssignedTasks, setUnAssignedTasks] = useState([]);
   const [taskProgress, setTaskProgress] = useState([]);
+  const [projectProgress, setProjectProgress] = useState([]);
   const [TaskformData, setTaskFormData] = useState({
     ProjectId: '',
     ModuleId: '',
@@ -131,9 +132,9 @@ const TaskAssigment = () => {
       const assignedTasks = [];
       const unAssignedTasks = [];
       const progressMap = {};
+      const projectProgressMap = {};
 
       taskList.Result.forEach((item) => {
-        // Split and clean IDs
         const assignedIds =
           item.UserId?.split(',')
             .map((id) => id.trim())
@@ -142,14 +143,24 @@ const TaskAssigment = () => {
           item.ChangeAssignTo?.split(',')
             .map((id) => id.trim())
             .filter((id) => id) || [];
-
-        // Combine and deduplicate
         const allAssignedUserIds = Array.from(new Set([...assignedIds, ...changeAssignIds]));
+
+        const projectId = item.ProjectId;
+
+        if (!projectProgressMap[projectId]) {
+          projectProgressMap[projectId] = {
+            projectId,
+            projectTitle: item.ProjectTitle || `Project ID: ${projectId}`,
+            taskAssigned: 0,
+            taskPending: 0,
+            taskComplete: 0,
+            taskProgress: '0%'
+          };
+        }
 
         if (allAssignedUserIds.length === 0) {
           unAssignedTasks.push({ ...item, StartDate: item?.StartDate?.split(' ')[0] });
         } else {
-          // Get distinct user names
           const userNames = allAssignedUserIds
             .map((uid) => userList.Result.find((u) => u.UserId?.trim() === uid)?.UserName)
             .filter(Boolean);
@@ -160,69 +171,52 @@ const TaskAssigment = () => {
             StartDate: item?.StartDate?.split(' ')[0]
           });
 
-          // Update progress stats
-          if (role === 'user') {
-            allAssignedUserIds
-              .filter((item) => String(item) === String(user.UserId))
-              .forEach((userId) => {
-                const user = userList.Result.find((u) => u.UserId?.trim() === userId);
-                const userName = user?.UserName || `User ID: ${userId}`;
+          // Update user-wise progress
+          allAssignedUserIds.forEach((userId) => {
+            const user = userList.Result.find((u) => u.UserId?.trim() === userId);
+            const userName = user?.UserName || `User ID: ${userId}`;
 
-                if (!progressMap[userId]) {
-                  progressMap[userId] = {
-                    userId,
-                    userName,
-                    taskAssigned: 0,
-                    taskpending: 0,
-                    taskComplete: 0,
-                    taskProgress: 0
-                  };
-                }
+            if (!progressMap[userId]) {
+              progressMap[userId] = {
+                userId,
+                userName,
+                taskAssigned: 0,
+                taskpending: 0,
+                taskComplete: 0,
+                taskProgress: '0%'
+              };
+            }
 
-                progressMap[userId].taskAssigned += 1;
+            progressMap[userId].taskAssigned += 1;
 
-                const status = item.Status?.toLowerCase() || '';
-                if (status === '1' || status === '2') {
-                  progressMap[userId].taskpending += 1;
-                } else if (status === '3') {
-                  progressMap[userId].taskComplete += 1;
-                }
-                progressMap[userId].taskProgress = (progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100 + '%';
-              });
-          } else {
-            allAssignedUserIds.forEach((userId, index) => {
-              const user = userList.Result.find((u) => u.UserId?.trim() === userId);
-              const userName = user?.UserName;
+            const status = item.Status?.toLowerCase() || '';
+            if (status === '1' || status === '2') {
+              progressMap[userId].taskpending += 1;
+            } else if (status === '3') {
+              progressMap[userId].taskComplete += 1;
+            }
 
-              if (!progressMap[userId]) {
-                progressMap[userId] = {
-                  userId,
-                  userName,
-                  taskAssigned: 0,
-                  taskpending: 0,
-                  taskComplete: 0,
-                  taskProgress: 0
-                };
-              }
-
-              progressMap[userId].taskAssigned += 1;
-
-              const status = item.Status?.toLowerCase() || '';
-              if (status === '1' || status === '2') {
-                progressMap[userId].taskpending += 1;
-              } else if (status === '3') {
-                progressMap[userId].taskComplete += 1;
-              }
-              progressMap[userId].taskProgress =
-                ((progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100).toFixed(2) + '%';
-            });
-          }
+            progressMap[userId].taskProgress =
+              ((progressMap[userId].taskComplete / progressMap[userId].taskAssigned) * 100).toFixed(2) + '%';
+          });
         }
+
+        // Update project-wise progress
+        const status = item.Status?.toLowerCase() || '';
+        projectProgressMap[projectId].taskAssigned += 1;
+        if (status === '1' || status === '2') {
+          projectProgressMap[projectId].taskPending += 1;
+        } else if (status === '3') {
+          projectProgressMap[projectId].taskComplete += 1;
+        }
+        const { taskAssigned, taskComplete } = projectProgressMap[projectId];
+        projectProgressMap[projectId].taskProgress = ((taskComplete / taskAssigned) * 100).toFixed(2) + '%';
       });
 
       setassignedTask(assignedTasks);
       setUnAssignedTasks(unAssignedTasks);
       setTaskProgress(Object.values(progressMap));
+      setProjectProgress(Object.values(projectProgressMap)); // <-- Create and set this in state
     }
   }, [taskList, userList]);
 
@@ -246,6 +240,13 @@ const TaskAssigment = () => {
     { id: 'userName', label: 'User Name', class: '' },
     { id: 'taskAssigned', label: 'Task Assigned', class: '' },
     { id: 'taskpending', label: 'Task Pending / Inprogress', class: '' },
+    { id: 'taskComplete', label: 'Task Complete', class: '' },
+    { id: 'taskProgress', label: 'Task Progress %', class: '' }
+  ];
+  const projectProgressHeaders = [
+    { id: 'projectTitle', label: 'Project Name', class: '' },
+    { id: 'taskAssigned', label: 'Task Assigned', class: '' },
+    { id: 'taskPending', label: 'Task Pending / Inprogress', class: '' },
     { id: 'taskComplete', label: 'Task Complete', class: '' },
     { id: 'taskProgress', label: 'Task Progress %', class: '' }
   ];
@@ -374,7 +375,9 @@ const TaskAssigment = () => {
         <Row>
           <Col md={12}>
             <Tabs defaultActiveKey="allTask">
-              <Tab eventKey="allTask" title="All Tasks"><TaskList /></Tab>
+              <Tab eventKey="allTask" title="All Tasks">
+                <TaskList />
+              </Tab>
               <Tab eventKey="assignedTask" title="Assigned Tasks">
                 <EnhancedTable
                   enableSno
@@ -407,12 +410,22 @@ const TaskAssigment = () => {
                   />
                 </Tab>
               )}
-              <Tab eventKey="userTaskProgress" title="User Task Progress">
+              <Tab eventKey="userTaskProgress" title="Users Progress">
                 <EnhancedTable
                   enableSno
                   data={taskProgress}
                   headers={progressHeaders}
                   headerCss="warning"
+                  enablePagination
+                  PerPagelimit={15}
+                />
+              </Tab>
+              <Tab eventKey="project TaskProgress" title="Project Progress">
+                <EnhancedTable
+                  enableSno
+                  data={projectProgress}
+                  headers={projectProgressHeaders}
+                  headerCss="default"
                   enablePagination
                   PerPagelimit={15}
                 />

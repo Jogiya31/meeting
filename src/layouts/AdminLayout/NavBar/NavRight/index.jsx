@@ -16,7 +16,7 @@ const NavRight = () => {
             <Dropdown.Menu align="end" className="profile-notification">
               <div className="pro-head">
                 <img src={male_i} className="img-radius" alt="User Profile" />
-                <span>DAID</span>
+                <span>Tracker</span>
                 <Link to="#" className="dud-logout" title="Logout">
                   <i className="feather icon-log-out" />
                 </Link>
