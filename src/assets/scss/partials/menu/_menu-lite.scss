@@ -27,6 +27,10 @@
 }
 
 .navbar-collapsed {
+  .userRole {
+    display: none;
+    transition: all 0.3s ease-in-out;
+  }
   .b-brand .b-title {
     transform: rotateY(-90deg);
     transform-origin: 0 0;
