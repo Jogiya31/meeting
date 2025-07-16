@@ -12,7 +12,6 @@ import { useAuth } from '../../../contexts/AuthContext';
 import './style.scss';
 import TaskList from '../taskList';
 import DatePicker from 'react-datepicker';
-import moment from 'moment';
 
 const TaskAssigment = () => {
   const dispatch = useDispatch();
@@ -44,6 +43,7 @@ const TaskAssigment = () => {
   const [selectedData, setselectedData] = useState(null);
   const [userOption, setuserOption] = useState([]);
   const [userFilter, setuserFilter] = useState([]);
+  const [changeAssignedUserOption, setChangeAssignedUserOption] = useState([]);
   const [changeAssignedUserFilter, setChangeAssignedUserFilter] = useState([]);
 
   const projectDataList = useSelector((state) => state.settings.projectData);
@@ -71,7 +71,6 @@ const TaskAssigment = () => {
   }, []);
 
   const handleEdit = (data) => {
-    console.log('data', data)
     setselectedData(data);
     setShowTask(true);
   };
@@ -113,7 +112,7 @@ const TaskAssigment = () => {
         label: user.UserName,
         value: user.UserId
       }));
-      setuserOption(filteredOptions);
+      setChangeAssignedUserOption(filteredOptions);
     } else {
       const activeUsers = userList.Result.filter((item) => item.Status === '1');
       setuserOption(activeUsers.map((item) => ({ label: item.UserName, value: item.UserId })));
@@ -145,6 +144,7 @@ const TaskAssigment = () => {
             projectId,
             projectTitle: item.ProjectTitle || `Project ID: ${projectId}`,
             taskAssigned: 0,
+            taskUnAssigned: 0,
             taskPending: 0,
             taskComplete: 0,
             taskProgress: '0%'
@@ -199,6 +199,8 @@ const TaskAssigment = () => {
         projectProgressMap[projectId].taskAssigned += 1;
         if (status === '1' || status === '2') {
           projectProgressMap[projectId].taskPending += 1;
+        } else if (status === '4') {
+          projectProgressMap[projectId].taskUnAssigned += 1;
         } else if (status === '3') {
           projectProgressMap[projectId].taskComplete += 1;
         }
@@ -239,6 +241,7 @@ const TaskAssigment = () => {
   const projectProgressHeaders = [
     { id: 'projectTitle', label: 'Project Name', class: '' },
     { id: 'taskAssigned', label: 'Task Assigned', class: '' },
+    { id: 'taskUnAssigned', label: 'Task UnAssigned', class: '' },
     { id: 'taskPending', label: 'Task Pending / Inprogress', class: '' },
     { id: 'taskComplete', label: 'Task Complete', class: '' },
     { id: 'taskProgress', label: 'Task Progress %', class: '' }
@@ -342,6 +345,7 @@ const TaskAssigment = () => {
         setActiveTab('UnAssignedTasks');
       }
     } else {
+      finalPayload.Status = TaskformData.Status || 4;
       finalPayload.StartDate = new Date(startDate).toISOString().replace('T', ' ').substring(0, 23);
       finalPayload.EndDate = new Date(endDate).toISOString().replace('T', ' ').substring(0, 23);
       finalPayload.CreatedBy = user.UserName;
@@ -491,7 +495,6 @@ const TaskAssigment = () => {
                     className="custom-form-select"
                     onChange={handleTaskChange}
                     isInvalid={!!taskErrors.ProjectId}
-                    disabled={selectedData}
                   >
                     <option value="">Select project...</option>
                     {Array.isArray(projectDataList?.Result)
@@ -520,7 +523,6 @@ const TaskAssigment = () => {
                     className="custom-form-select"
                     onChange={handleTaskChange}
                     isInvalid={!!taskErrors.ModuleId}
-                    disabled={selectedData}
                   >
                     <option value="">Select Module...</option>
                     {moduleList?.Result?.map((item) => (
@@ -540,7 +542,6 @@ const TaskAssigment = () => {
                     value={TaskformData.Task}
                     onChange={handleTaskChange}
                     isInvalid={!!taskErrors.Task}
-                    disabled={selectedData}
                   />
                   <Form.Control.Feedback type="invalid">{taskErrors.Task}</Form.Control.Feedback>
                 </Form.Group>
@@ -556,7 +557,6 @@ const TaskAssigment = () => {
                     placeholder="Enter text here.."
                     onChange={handleTaskChange}
                     isInvalid={!!taskErrors.TaskDescription}
-                    disabled={selectedData}
                   />
                   <Form.Control.Feedback type="invalid">{taskErrors.TaskDescription}</Form.Control.Feedback>
                 </Form.Group>
@@ -583,8 +583,8 @@ const TaskAssigment = () => {
                   <Form.Group className="mb-3">
                     <Form.Label>Change Assigned user</Form.Label>
                     <MultiSelect
-                      options={userOption}
-                      value={userOption?.filter(
+                      options={changeAssignedUserOption}
+                      value={changeAssignedUserOption?.filter(
                         (option) =>
                           TaskformData && TaskformData.ChangeAssignTo && TaskformData.ChangeAssignTo.split(',').includes(option.value)
                       )}

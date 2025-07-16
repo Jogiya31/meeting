@@ -363,7 +363,7 @@ const NewPoint = () => {
               EndDate: moment(item.endDate, 'DD-MM-YYYY HH:mm:ss').toISOString(),
               UserId: item.officer,
               Reason: selectedMeeting ? item.reason || '' : '',
-              Status: selectedMeeting ? 1 : '', // set status pending by default for new record
+              Status: 1, // set status pending by default for new record
               ProjectId: item.projectId || ''
             };
             if (!item.discussionId) {

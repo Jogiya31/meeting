@@ -17,7 +17,7 @@ const Signin1 = () => {
             <Card.Body>
               <div className="mb-4 mt-3">
                 <img src={logo} alt="" width={70} />
-                <h4>Tracker Login</h4>
+                <h4>Team work</h4>
               </div>
               <AuthLogin />
             </Card.Body>
