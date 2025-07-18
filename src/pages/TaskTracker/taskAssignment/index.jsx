@@ -12,6 +12,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import './style.scss';
 import TaskList from '../taskList';
 import DatePicker from 'react-datepicker';
+import moment from 'moment';
 
 const TaskAssigment = () => {
   const dispatch = useDispatch();
@@ -86,8 +87,8 @@ const TaskAssigment = () => {
         UserId: selectedData.UserId,
         ChangeAssignTo: selectedData.ChangeAssignTo,
         Status: selectedData.Status,
-        StartDate: selectedData.StartDate,
-        EndDate: selectedData.EndDate,
+        StartDate: moment(selectedData.StartDate, 'DD-MM-YYYY HH:mm:ss').toISOString(),
+        EndDate: moment(selectedData.EndDate, 'DD-MM-YYYY HH:mm:ss').toISOString(),
         Remark: selectedData.Remark || ''
       };
       setTaskFormData(updatedFormData);
@@ -336,8 +337,8 @@ const TaskAssigment = () => {
       finalPayload.Status = TaskformData.Status || selectedData.Status;
       finalPayload.ChangeAssignTo = TaskformData.ChangeAssignTo || '';
       finalPayload.Remark = TaskformData.Remark || selectedData.Remark || '';
-      finalPayload.StartDate = new Date(startDate).toISOString().replace('T', ' ').substring(0, 23);
-      finalPayload.EndDate = new Date(endDate).toISOString().replace('T', ' ').substring(0, 23);
+      finalPayload.StartDate = moment(new Date(startDate)).format('YYYY-MM-DD HH:mm:ss');
+      finalPayload.EndDate = moment(new Date(endDate)).format('YYYY-MM-DD HH:mm:ss');
       dispatch(taskActions.updateTaskInfo(finalPayload));
       if (TaskformData.UserId) {
         setActiveTab('assignedTask');
@@ -346,8 +347,8 @@ const TaskAssigment = () => {
       }
     } else {
       finalPayload.Status = TaskformData.Status || 4;
-      finalPayload.StartDate = new Date(startDate).toISOString().replace('T', ' ').substring(0, 23);
-      finalPayload.EndDate = new Date(endDate).toISOString().replace('T', ' ').substring(0, 23);
+      finalPayload.StartDate = moment(new Date(startDate)).format('YYYY-MM-DD HH:mm:ss');
+      finalPayload.EndDate = moment(new Date(endDate)).format('YYYY-MM-DD HH:mm:ss');
       finalPayload.CreatedBy = user.UserName;
       dispatch(taskActions.addTaskInfo(finalPayload));
       if (TaskformData.UserId) {
@@ -391,6 +392,7 @@ const TaskAssigment = () => {
   };
 
   const handleStartDate = (date) => {
+    setTaskFormData({ ...TaskformData, StartDate: date });
     setStartDate(date);
     if (date instanceof Date && !isNaN(date)) {
       setstartDateError(false);
@@ -399,6 +401,7 @@ const TaskAssigment = () => {
 
   const handleEndDate = (date) => {
     setEndDate(date);
+    setTaskFormData({ ...TaskformData, EndDate: date });
     if (date instanceof Date && !isNaN(date)) {
       setendDateError(false);
     }
@@ -602,7 +605,7 @@ const TaskAssigment = () => {
                   <Form.Label>Start Date</Form.Label>
                   <DatePicker
                     className={`form-control cfs-14 ${startDateError ? 'is-invalid' : ''}`}
-                    selected={startDate}
+                    selected={TaskformData.StartDate}
                     onChange={handleStartDate}
                     placeholderText="Start Date"
                     dateFormat="dd-MM-yyyy"
@@ -616,7 +619,7 @@ const TaskAssigment = () => {
                   <Form.Label>End Date</Form.Label>
                   <DatePicker
                     className={`form-control cfs-14 ${endDateError ? 'is-invalid' : ''}`}
-                    selected={endDate}
+                    selected={TaskformData.EndDate}
                     onChange={handleEndDate}
                     placeholderText="End Date"
                     dateFormat="dd-MM-yyyy"

@@ -89,7 +89,7 @@ const menuItems = {
         },
         {
           id: 'tasks_Assginment',
-          title: 'Task Assignment',
+          title: 'Tasks',
           type: 'item',
           url: '/tasktracker/Task-Assignment',
           icon: 'fas fa-edit',
@@ -152,7 +152,7 @@ const menuItems = {
         },
         {
           id: 'tasks_Assginment',
-          title: 'Task Assignment',
+          title: 'Tasks',
           type: 'item',
           url: '/tasktracker/Task-Assignment',
           icon: 'fas fa-edit',
@@ -196,7 +196,7 @@ const menuItems = {
         },
         {
           id: 'tasks_Assginment',
-          title: 'Task Assignment',
+          title: 'Tasks',
           type: 'item',
           url: '/tasktracker/Task-Assignment',
           icon: 'fas fa-edit',
