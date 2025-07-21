@@ -508,7 +508,7 @@ const DashDefault = () => {
         {role !== 'user' && (
           <Row>
             <Col md={6}>
-              <Card className="mt-3">
+              <Card className="mt-3 br-5">
                 <Card.Body className="p-0">
                   <div className="dashboard-barchart">
                     <GroupedColumnChart data={chartGroupData} labels={chartLabels} title="Total Tasks/Pending Tasks By group" />
@@ -517,7 +517,7 @@ const DashDefault = () => {
               </Card>
             </Col>
             <Col md={6}>
-              <Card className="mt-3">
+              <Card className="mt-3 br-5">
                 <Card.Body className="p-0">
                   <div className="dashboard-donut d-block">
                     <div className="d-flex justify-content-center w-full">
@@ -542,7 +542,7 @@ const DashDefault = () => {
               </Card>
             </Col> */}
             <Col md={6}>
-              <Card className="mt-3">
+              <Card className="mt-3 br-5">
                 <Card.Body className="p-0">
                   <div className="dashboard-barchart">
                     <GroupedColumnChart data={overDueTaskData} labels={chartLabels} title="Task Not Completed On Time By group" />

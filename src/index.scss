@@ -51,6 +51,9 @@
 .br-0 {
   border: none !important;
 }
+.br-5 {
+  border-radius: 5px !important;
+}
 
 .op-10 {
   opacity: 1 !important;
@@ -1032,7 +1035,7 @@ button.sortBtn.btn.btn-info,
       margin-right: 5px;
     }
   }
-  .role{
+  .role {
     margin: 0 28px;
   }
 }

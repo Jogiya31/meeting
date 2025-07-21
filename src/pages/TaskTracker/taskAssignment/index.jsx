@@ -153,7 +153,7 @@ const TaskAssigment = () => {
         }
 
         if (allAssignedUserIds.length === 0) {
-          unAssignedTasks.push({ ...item, StartDate: item?.StartDate?.split(' ')[0] });
+          unAssignedTasks.push({ ...item, StartDate: item?.StartDate?.split(' ')[0], EndDate: item?.EndDate?.split(' ')[0] });
         } else {
           const userNames = allAssignedUserIds
             .map((uid) => userList.Result.find((u) => u.UserId?.trim() === uid)?.UserName)
@@ -162,7 +162,8 @@ const TaskAssigment = () => {
           assignedTasks.push({
             ...item,
             AssignedToUsers: userNames.join(', '),
-            StartDate: item?.StartDate?.split(' ')[0]
+            StartDate: item?.StartDate?.split(' ')[0],
+            EndDate: item?.EndDate?.split(' ')[0]
           });
 
           // Update user-wise progress
@@ -198,13 +199,17 @@ const TaskAssigment = () => {
         // Update project-wise progress
         const status = item.Status?.toLowerCase() || '';
         projectProgressMap[projectId].taskAssigned += 1;
+
         if (status === '1' || status === '2') {
           projectProgressMap[projectId].taskPending += 1;
-        } else if (status === '4') {
-          projectProgressMap[projectId].taskUnAssigned += 1;
         } else if (status === '3') {
           projectProgressMap[projectId].taskComplete += 1;
         }
+
+        if (allAssignedUserIds.length === 0) {
+          projectProgressMap[projectId].taskUnAssigned += 1;
+        }
+
         const { taskAssigned, taskComplete } = projectProgressMap[projectId];
         projectProgressMap[projectId].taskProgress = ((taskComplete / taskAssigned) * 100).toFixed(2) + '%';
       });
@@ -222,14 +227,14 @@ const TaskAssigment = () => {
     { id: 'Task', label: 'Task Name', class: '' },
     { id: 'Description', label: 'Task Description', class: '' },
     { id: 'AssignedToUsers', label: 'Assigned Users', class: '' },
-    { id: 'StartDate', label: 'Created At', class: '' }
+    { id: 'StartDate', label: 'Start Date', class: '' },
+    { id: 'EndDate', label: 'End Date', class: '' }
   ];
   const unAssignedHeaders = [
     { id: 'ProjectTitle', label: 'Project Name', class: '' },
     { id: 'ModuleName', label: 'Module Name', class: '' },
     { id: 'Task', label: 'Task Name', class: '' },
-    { id: 'Description', label: 'Task Description', class: '' },
-    { id: 'StartDate', label: 'Created At', class: '' }
+    { id: 'Description', label: 'Task Description', class: '' }
   ];
 
   const progressHeaders = [

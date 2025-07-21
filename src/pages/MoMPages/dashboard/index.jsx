@@ -131,7 +131,7 @@ const DashDefault = () => {
     } else if (card === 'meeting') {
       filterWith(null);
       navigate('/meetings/view');
-    }else if (card === 'task-list') {
+    } else if (card === 'task-list') {
       filterWith(null);
       navigate('/tasktracker/Task-List');
     } else if (card === 'pending') {
@@ -167,7 +167,9 @@ const DashDefault = () => {
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(`${selectedMeeting?.[0]?.MeetingTitle} _ ${moment(selectedMeeting?.[0]?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}.pdf`);
+      pdf.save(
+        `${selectedMeeting?.[0]?.MeetingTitle} _ ${moment(selectedMeeting?.[0]?.MeetingDate, 'DD-MM-YYYY HH:mm:ss').format('DD-MM-YYYY')}.pdf`
+      );
     });
     setshowInfo(false);
   };
@@ -178,139 +180,139 @@ const DashDefault = () => {
     return found ? found.DesignationTitle : '';
   };
 
-   const generateGraphData = () => {
-     if (divisionDataList?.Result && taskList?.Result) {
-       // DivisionId to DivisionTitle Map
-       const divisionMap = divisionDataList.Result.reduce((acc, div) => {
-         acc[div.DivisionId] = div.DivisionTitle;
-         return acc;
-       }, {});
- 
-       const labels = divisionDataList.Result.map((div) => div.DivisionTitle);
- 
-       const taskCounts = {};
-       const overdueCounts = {};
- 
-       const today = new Date();
- 
-       taskList.Result.forEach((task) => {
-         const title = divisionMap[task.DivisionId];
-         if (!title) return;
- 
-         if (!taskCounts[title]) {
-           taskCounts[title] = { total: 0, pending: 0 };
-         }
- 
-         taskCounts[title].total += 1;
- 
-         if (task.Status === '' || task.Status === '2') {
-           taskCounts[title].pending += 1;
-         }
- 
-         if (task.Status !== '3' && task.EndDate) {
-           const [day, month, yearAndTime] = task.EndDate.split('-');
-           const [year, time] = yearAndTime.split(' ');
-           const endDate = new Date(`${year}-${month}-${day}T${time || '00:00:00'}`);
-           if (endDate.toString() !== 'Invalid Date' && endDate < today) {
-             overdueCounts[title] = (overdueCounts[title] || 0) + 1;
-           }
-         }
-       });
- 
-       const groupsData = [];
- 
-       labels.forEach((title, index) => {
-         const counts = taskCounts[title] || { total: 0, pending: 0 };
- 
-         const totalData = Array(labels.length).fill(0);
-         const pendingData = Array(labels.length).fill(0);
- 
-         totalData[index] = counts.total;
-         pendingData[index] = counts.pending;
- 
-         groupsData.push({
-           label: `${title} - Total Tasks`,
-           data: totalData,
-           backgroundColor: getRandomColor()
-         });
- 
-         groupsData.push({
-           label: `${title} - Pending Task`,
-           data: pendingData,
-           backgroundColor: getRandomColor()
-         });
-       });
- 
-       setChartLabels(labels);
-       setChartGroupData(groupsData);
- 
-       const overdueChartData = labels.map((title, index) => {
-         const dataArray = Array(labels.length).fill(0);
-         dataArray[index] = overdueCounts[title] || 0;
- 
-         return {
-           label: title,
-           data: dataArray,
-           backgroundColor: getRandomColor()
-         };
-       });
- 
-       setOverDueTaskData(overdueChartData);
-     }
- 
-     // ===================== User-wise Overdue, Pending, Assigned Counts =====================
- 
-     if (userList?.Result?.length && taskList?.Result?.length) {
-       const userMap = userList.Result.reduce((acc, user) => {
-         acc[user.UserId] = user.UserName;
-         return acc;
-       }, {});
- 
-       const userOverdueCountMap = {};
-       const userPendingCountMap = {};
- 
-       const today = new Date();
- 
-       taskList.Result.forEach((task) => {
-         if (!task.UserId) return;
- 
-         const userIds = task.UserId.split(',');
- 
-         userIds.forEach((uid) => {
-           const trimmedId = uid.trim();
-           const userName = userMap[trimmedId];
-           if (!userName) return;
- 
-           // Pending or In Progress Tasks
-           if (task.Status === '1' || task.Status === '2' || task.Status === '') {
-             userPendingCountMap[userName] = (userPendingCountMap[userName] || 0) + 1;
-           }
-           // Overdue Tasks
-           if (task.Status === '3' || !task.EndDate) return;
- 
-           const [day, month, yearAndTime] = task.EndDate.split('-');
-           const [year, time] = yearAndTime.split(' ');
-           const endDate = new Date(`${year}-${month}-${day}T${time || '00:00:00'}`);
- 
-           if (endDate.toString() !== 'Invalid Date' && endDate < today) {
-             userOverdueCountMap[userName] = (userOverdueCountMap[userName] || 0) + 1;
-           }
-         });
-       });
- 
-       const userOverdueCounts = Object.keys(userOverdueCountMap).map((userName) => ({
-         name: userName,
-         tasks: userOverdueCountMap[userName]
-       }));
-       setUserOverdueCounts(userOverdueCounts);
- 
-       const userPendingCounts = Object.keys(userPendingCountMap).map((userName) => ({
-         name: userName,
-         tasks: userPendingCountMap[userName]
-       }));
-       setUserPendingCounts(userPendingCounts);
-     }
-   };
+  const generateGraphData = () => {
+    if (divisionDataList?.Result && taskList?.Result) {
+      // DivisionId to DivisionTitle Map
+      const divisionMap = divisionDataList.Result.reduce((acc, div) => {
+        acc[div.DivisionId] = div.DivisionTitle;
+        return acc;
+      }, {});
+
+      const labels = divisionDataList.Result.map((div) => div.DivisionTitle);
+
+      const taskCounts = {};
+      const overdueCounts = {};
+
+      const today = new Date();
+
+      taskList.Result.forEach((task) => {
+        const title = divisionMap[task.DivisionId];
+        if (!title) return;
+
+        if (!taskCounts[title]) {
+          taskCounts[title] = { total: 0, pending: 0 };
+        }
+
+        taskCounts[title].total += 1;
+
+        if (task.Status === '' || task.Status === '2') {
+          taskCounts[title].pending += 1;
+        }
+
+        if (task.Status !== '3' && task.EndDate) {
+          const [day, month, yearAndTime] = task.EndDate.split('-');
+          const [year, time] = yearAndTime.split(' ');
+          const endDate = new Date(`${year}-${month}-${day}T${time || '00:00:00'}`);
+          if (endDate.toString() !== 'Invalid Date' && endDate < today) {
+            overdueCounts[title] = (overdueCounts[title] || 0) + 1;
+          }
+        }
+      });
+
+      const groupsData = [];
+
+      labels.forEach((title, index) => {
+        const counts = taskCounts[title] || { total: 0, pending: 0 };
+
+        const totalData = Array(labels.length).fill(0);
+        const pendingData = Array(labels.length).fill(0);
+
+        totalData[index] = counts.total;
+        pendingData[index] = counts.pending;
+
+        groupsData.push({
+          label: `${title} - Total Tasks`,
+          data: totalData,
+          backgroundColor: getRandomColor()
+        });
+
+        groupsData.push({
+          label: `${title} - Pending Task`,
+          data: pendingData,
+          backgroundColor: getRandomColor()
+        });
+      });
+
+      setChartLabels(labels);
+      setChartGroupData(groupsData);
+
+      const overdueChartData = labels.map((title, index) => {
+        const dataArray = Array(labels.length).fill(0);
+        dataArray[index] = overdueCounts[title] || 0;
+
+        return {
+          label: title,
+          data: dataArray,
+          backgroundColor: getRandomColor()
+        };
+      });
+
+      setOverDueTaskData(overdueChartData);
+    }
+
+    // ===================== User-wise Overdue, Pending, Assigned Counts =====================
+
+    if (userList?.Result?.length && taskList?.Result?.length) {
+      const userMap = userList.Result.reduce((acc, user) => {
+        acc[user.UserId] = user.UserName;
+        return acc;
+      }, {});
+
+      const userOverdueCountMap = {};
+      const userPendingCountMap = {};
+
+      const today = new Date();
+
+      taskList.Result.forEach((task) => {
+        if (!task.UserId) return;
+
+        const userIds = task.UserId.split(',');
+
+        userIds.forEach((uid) => {
+          const trimmedId = uid.trim();
+          const userName = userMap[trimmedId];
+          if (!userName) return;
+
+          // Pending or In Progress Tasks
+          if (task.Status === '1' || task.Status === '2' || task.Status === '') {
+            userPendingCountMap[userName] = (userPendingCountMap[userName] || 0) + 1;
+          }
+          // Overdue Tasks
+          if (task.Status === '3' || !task.EndDate) return;
+
+          const [day, month, yearAndTime] = task.EndDate.split('-');
+          const [year, time] = yearAndTime.split(' ');
+          const endDate = new Date(`${year}-${month}-${day}T${time || '00:00:00'}`);
+
+          if (endDate.toString() !== 'Invalid Date' && endDate < today) {
+            userOverdueCountMap[userName] = (userOverdueCountMap[userName] || 0) + 1;
+          }
+        });
+      });
+
+      const userOverdueCounts = Object.keys(userOverdueCountMap).map((userName) => ({
+        name: userName,
+        tasks: userOverdueCountMap[userName]
+      }));
+      setUserOverdueCounts(userOverdueCounts);
+
+      const userPendingCounts = Object.keys(userPendingCountMap).map((userName) => ({
+        name: userName,
+        tasks: userPendingCountMap[userName]
+      }));
+      setUserPendingCounts(userPendingCounts);
+    }
+  };
 
   useEffect(() => {
     if (taskList?.Result && userList?.Result) {
@@ -537,7 +539,7 @@ const DashDefault = () => {
         </div>
         <Row>
           <Col md={6}>
-            <Card className="mt-3">
+            <Card className="mt-3 br-5">
               <Card.Body className="p-0">
                 <div className="dashboard-barchart">
                   <GroupedColumnChart data={chartGroupData} labels={chartLabels} title="Total Tasks/Pending Tasks By group" />
@@ -546,7 +548,7 @@ const DashDefault = () => {
             </Card>
           </Col>
           <Col md={6}>
-            <Card className="mt-3">
+            <Card className="mt-3 br-5">
               <Card.Body className="p-0">
                 <div className="dashboard-donut">
                   <div className="d-flex justify-content-center w-full">
@@ -559,7 +561,7 @@ const DashDefault = () => {
           </Col>
 
           <Col md={6}>
-            <Card className="mt-3">
+            <Card className="mt-3 br-5">
               <Card.Body className="p-0">
                 <div className="dashboard-barchart">
                   <GroupedColumnChart data={overDueTaskData} labels={chartLabels} title="Task Not Completed On Time By group" />
