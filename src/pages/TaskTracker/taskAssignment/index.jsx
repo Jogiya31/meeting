@@ -109,13 +109,13 @@ const TaskAssigment = () => {
       };
       collectIds(selectedData.UserId);
       collectIds(selectedData.ChangeAssignTo);
-      const filteredOptions = userList.Result.filter((user) => user.Status === '1' && userIdSet.has(user.UserId)).map((user) => ({
+      const filteredOptions = userList?.Result?.filter((user) => user.Status === '1' && userIdSet.has(user.UserId)).map((user) => ({
         label: user.UserName,
         value: user.UserId
       }));
       setChangeAssignedUserOption(filteredOptions);
     } else {
-      const activeUsers = userList.Result.filter((item) => item.Status === '1');
+      const activeUsers = userList?.Result?.filter((item) => item.Status === '1');
       setuserOption(activeUsers.map((item) => ({ label: item.UserName, value: item.UserId })));
     }
   }, [selectedData, userList]);
@@ -337,8 +337,8 @@ const TaskAssigment = () => {
       finalPayload.Status = TaskformData.Status || selectedData.Status;
       finalPayload.ChangeAssignTo = TaskformData.ChangeAssignTo || '';
       finalPayload.Remark = TaskformData.Remark || selectedData.Remark || '';
-      finalPayload.StartDate = moment(new Date(startDate)).format('YYYY-MM-DD HH:mm:ss');
-      finalPayload.EndDate = moment(new Date(endDate)).format('YYYY-MM-DD HH:mm:ss');
+      finalPayload.StartDate = moment(new Date(TaskformData.StartDate)).format('YYYY-MM-DD HH:mm:ss');
+      finalPayload.EndDate = moment(new Date(TaskformData.EndDate)).format('YYYY-MM-DD HH:mm:ss');
       dispatch(taskActions.updateTaskInfo(finalPayload));
       if (TaskformData.UserId) {
         setActiveTab('assignedTask');
@@ -347,8 +347,8 @@ const TaskAssigment = () => {
       }
     } else {
       finalPayload.Status = TaskformData.Status || 4;
-      finalPayload.StartDate = moment(new Date(startDate)).format('YYYY-MM-DD HH:mm:ss');
-      finalPayload.EndDate = moment(new Date(endDate)).format('YYYY-MM-DD HH:mm:ss');
+      finalPayload.StartDate = moment(new Date(TaskformData.StartDate)).format('YYYY-MM-DD HH:mm:ss');
+      finalPayload.EndDate = moment(new Date(TaskformData.EndDate)).format('YYYY-MM-DD HH:mm:ss');
       finalPayload.CreatedBy = user.UserName;
       dispatch(taskActions.addTaskInfo(finalPayload));
       if (TaskformData.UserId) {
