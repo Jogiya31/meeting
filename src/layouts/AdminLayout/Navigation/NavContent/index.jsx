@@ -23,7 +23,7 @@ const NavContent = ({ navigation }) => {
 
   mainContent = (
     <div className={`navbar-content daid-scroll ${navColor}`}>
-      <div className="userRole">
+      <div className="userRole mt-2">
         <p className="text-white loginUser">
           <i className="fas fa-circle online"></i>
           <span>{user.UserName}</span>

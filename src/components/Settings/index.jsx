@@ -83,7 +83,7 @@ const Settings = () => {
             <div className="align-items-center mt-4  ">
               <div className="flex-shrink-0 mb-2">
                 <h6 className="mb-1">Themes style</h6>
-                <p className="text-muted text-sm mb-0">Gradient / Static </p>
+                <p className="text-muted text-sm mb-0"> Static / Gradient</p>
               </div>
               <div className="d-flex">
                 <div

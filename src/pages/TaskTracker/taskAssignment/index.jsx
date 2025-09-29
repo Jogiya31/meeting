@@ -453,16 +453,18 @@ const TaskAssigment = () => {
                   />
                 </Tab>
               )}
-              <Tab eventKey="userTaskProgress" title="Users Progress">
-                <EnhancedTable
-                  enableSno
-                  data={taskProgress}
-                  headers={progressHeaders}
-                  headerCss="warning"
-                  enablePagination
-                  PerPagelimit={15}
-                />
-              </Tab>
+              {role !== 'user' && (
+                <Tab eventKey="userTaskProgress" title="Users Progress">
+                  <EnhancedTable
+                    enableSno
+                    data={taskProgress}
+                    headers={progressHeaders}
+                    headerCss="warning"
+                    enablePagination
+                    PerPagelimit={15}
+                  />
+                </Tab>
+              )}
               <Tab eventKey="projectTaskProgress" title="Project Progress">
                 <EnhancedTable
                   enableSno

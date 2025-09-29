@@ -3,7 +3,7 @@ import axiosClient from './axiosClient';
 ////////////////// login api /////////////////////////
 export const authInfo = (data) => {
   const payload = data.payload;
-   payload.key = 20;
+   payload.Key = 20;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -33,7 +33,7 @@ export const alluserInfo = () => {
 };
 export const adduserInfo = (data) => {
   const payload = data.payload;
-  payload.key = 2;
+  payload.Key = 2;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -41,7 +41,7 @@ export const adduserInfo = (data) => {
 };
 export const updateuserInfo = (data) => {
   const payload = data.payload;
-  payload.key = 3;
+  payload.Key = 3;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -60,7 +60,7 @@ export const GetDesignationDetails = () => {
 };
 export const AddDesignationDetails = (data) => {
   const payload = data.payload;
-  payload.key = 5;
+  payload.Key = 5;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -68,7 +68,7 @@ export const AddDesignationDetails = (data) => {
 };
 export const UpdateDesignation = (data) => {
   const payload = data.payload;
-  payload.key = 6;
+  payload.Key = 6;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -87,7 +87,7 @@ export const GetDivisionDetails = () => {
 };
 export const AddDivisionDetails = (data) => {
   const payload = data.payload;
-  payload.key = 8;
+  payload.Key = 8;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ export const AddDivisionDetails = (data) => {
 };
 export const UpdateDivision = (data) => {
   const payload = data.payload;
-  payload.key = 9;
+  payload.Key = 9;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -114,7 +114,7 @@ export const GetOrganisationDetails = () => {
 };
 export const AddOrganisationDetails = (data) => {
   const payload = data.payload;
-  payload.key = 11;
+  payload.Key = 11;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -122,7 +122,7 @@ export const AddOrganisationDetails = (data) => {
 };
 export const UpdateOrganisation = (data) => {
   const payload = data.payload;
-  payload.key = 36;
+  payload.Key = 36;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -141,7 +141,7 @@ export const GetEmployementDetails = () => {
 };
 export const AddEmployementDetails = (data) => {
   const payload = data.payload;
-  payload.key = 13;
+  payload.Key = 13;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -149,7 +149,7 @@ export const AddEmployementDetails = (data) => {
 };
 export const UpdateEmployement = (data) => {
   const payload = data.payload;
-  payload.key = 14;
+  payload.Key = 14;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -168,7 +168,7 @@ export const GetStatusDetails = () => {
 };
 export const AddStatusDetails = (data) => {
   const payload = data.payload;
-  payload.key = 19;
+  payload.Key = 19;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -176,7 +176,7 @@ export const AddStatusDetails = (data) => {
 };
 export const UpdateStatus = (data) => {
   const payload = data.payload;
-  payload.key = 21;
+  payload.Key = 21;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -196,7 +196,7 @@ export const GetProjectDetails = () => {
 
 export const AddProjectDetailsFromTracker = (data) => {
   const payload = data.payload;
-  payload.key = 26;
+  payload.Key = 26;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -205,7 +205,7 @@ export const AddProjectDetailsFromTracker = (data) => {
 
 export const UpdateProjectDetailsFromTracker = (data) => {
   const payload = data.payload;
-  payload.key = 27;
+  payload.Key = 27;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -224,7 +224,7 @@ export const GetSalutationDetails = () => {
 };
 export const AddSalutationDetails = (data) => {
   const payload = data.payload;
-  payload.key = 30;
+  payload.Key = 30;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -232,7 +232,7 @@ export const AddSalutationDetails = (data) => {
 };
 export const UpdateSalutation = (data) => {
   const payload = data.payload;
-  payload.key = 31;
+  payload.Key = 31;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -262,7 +262,7 @@ export const GetPriorityDetails = () => {
 };
 export const AddPriorityDetails = (data) => {
   const payload = data.payload;
-  payload.key = 33;
+  payload.Key = 33;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -270,7 +270,7 @@ export const AddPriorityDetails = (data) => {
 };
 export const UpdatePriority = (data) => {
   const payload = data.payload;
-  payload.key = 35;
+  payload.Key = 35;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -289,7 +289,7 @@ export const getMeetings = () => {
 };
 export const addMeetingsDetails = (data) => {
   const payload = data.payload;
-  payload.key = 16;
+  payload.Key = 16;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -297,7 +297,7 @@ export const addMeetingsDetails = (data) => {
 };
 export const updateMeetingsDetails = (data) => {
   const payload = data.payload;
-  payload.key = 23;
+  payload.Key = 23;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -305,7 +305,7 @@ export const updateMeetingsDetails = (data) => {
 };
 export const addAttendanceDetails = (data) => {
   const payload = data.payload;
-  payload.key = 50;
+  payload.Key = 50;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -313,7 +313,7 @@ export const addAttendanceDetails = (data) => {
 };
 export const updateAttendanceDetails = (data) => {
   const payload = data.payload;
-  payload.key = 24;
+  payload.Key = 24;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -321,7 +321,7 @@ export const updateAttendanceDetails = (data) => {
 };
 export const addDiscussionDetails = (data) => {
   const payload = data.payload;
-  payload.key = 17;
+  payload.Key = 17;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -329,7 +329,7 @@ export const addDiscussionDetails = (data) => {
 };
 export const updateDiscussionDetails = (data) => {
   const payload = data.payload;
-  payload.key = 18;
+  payload.Key = 18;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -337,7 +337,7 @@ export const updateDiscussionDetails = (data) => {
 };
 export const deleteAttendanceDetails = (data) => {
   const payload = data.payload;
-  payload.key = 28;
+  payload.Key = 28;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -345,7 +345,7 @@ export const deleteAttendanceDetails = (data) => {
 };
 export const deleteDiscussionDetails = (data) => {
   const payload = data.payload;
-  payload.key = 29;
+  payload.Key = 29;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -364,7 +364,7 @@ export const GetModuleDetails = () => {
 };
 export const AddModuleDetails = (data) => {
   const payload = data.payload;
-  payload.key = 38;
+  payload.Key = 38;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -372,7 +372,7 @@ export const AddModuleDetails = (data) => {
 };
 export const UpdateModule = (data) => {
   const payload = data.payload;
-  payload.key = 40;
+  payload.Key = 40;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -382,7 +382,7 @@ export const UpdateModule = (data) => {
 /////////////////// Task api  ///////////////////
 export const GetTaskDetails = (data) => {
   const payload = data.payload;
-  payload.key = 44;
+  payload.Key = 44;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -390,7 +390,7 @@ export const GetTaskDetails = (data) => {
 };
 export const AddTaskDetails = (data) => {
   const payload = data.payload;
-  payload.key = 42;
+  payload.Key = 42;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
@@ -398,7 +398,7 @@ export const AddTaskDetails = (data) => {
 };
 export const UpdateTask = (data) => {
   const payload = data.payload;
-  payload.key = 43;
+  payload.Key = 43;
   const url = `/Api`;
   return axiosClient().post(url, payload, {
     'Content-Type': 'application/json'
