@@ -1,0 +1,32 @@
+import React, { createContext, useContext, useState } from 'react';
+const ThemeContext = createContext(null);
+export const useTheme = () => useContext(ThemeContext);
+
+export const ThemeProvider = ({ children }) => {
+  const [mode, setMode] = useState('light');
+  const [theme, setTheme] = useState('static');
+  const [navColor, setNavColor] = useState('');
+  const [logoColor, setLogoColor] = useState('');
+
+
+  const changeMode = (val) => {
+    setMode(val);
+  };
+  const changeThemeMode = (val) => {
+    setTheme(val);
+  };
+  const changeNavColor = (val) => {
+    setNavColor(val);
+  };
+  const changeLogoColor = (val) => {
+    setLogoColor(val);
+  };
+
+  return (
+    <ThemeContext.Provider value={{ mode, theme, navColor, logoColor, changeMode, changeThemeMode, changeNavColor, changeLogoColor }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export default ThemeProvider;

@@ -1,0 +1,514 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Card, Form } from 'react-bootstrap';
+import excel_i from '../../../assets/images/excel_i.svg';
+import refresh from '../../../assets/images/refresh-arrow.png';
+import DatePicker from 'react-datepicker';
+import { useSelector, useDispatch } from 'react-redux';
+import { settingsActions } from '../../../store/settings/settingSlice';
+import { userActions } from '../../../store/user/userSlice';
+import { moduleActions } from '../../../store/module/moduleSlice';
+import { MultiSelect } from 'react-multi-select-component';
+import './style.scss';
+import AdvanceTable from '../../../components/Table/advanceTable';
+import { taskActions } from '../../../store/task/taskSlice';
+import { useStore } from '../../../contexts/DataContext';
+import { exportJsonToExcel } from '../../../utils/utils';
+import { useAuth } from '../../../contexts/AuthContext';
+import moment from 'moment';
+
+const TaskList = () => {
+  const dispatch = useDispatch();
+  const gridRef = useRef();
+  const gridWrapperRef = useRef();
+  const { user, role } = useAuth();
+  const { filterValue, filterWith } = useStore();
+  const [filterPayload, setFilterPayload] = useState({
+    ProjectId: '',
+    ModuleId: '',
+    StatusMulti: '',
+    UserId: role === 'user' ? user.UserId : '',
+    StartDate: '',
+    EndDate: '',
+    GroupIdMulti: ''
+  });
+  const [projectOption, setProjectOption] = useState([]);
+  const [moduleOption, setModuleOption] = useState([]);
+  const [statusOption, setStatusOption] = useState([]);
+  const [userOption, setuserOption] = useState([]);
+  const [groupFilter, setGroupFilter] = useState([]);
+  const [projectFilter, setProjectFilter] = useState([]);
+  const [moduleFilter, setModuleFilter] = useState([]);
+  const [statusFilter, setStatusFilter] = useState([]);
+  const [userFilter, setuserFilter] = useState([]);
+  const [taskData, setTaskData] = useState([]);
+  const [resetTrigger, setResetTrigger] = useState(0);
+
+  const divisionDataList = useSelector((state) => state.settings.divisionData);
+  const projectDataList = useSelector((state) => state.settings.projectData);
+  const statusLists = useSelector((state) => state.settings.statusData);
+  const userList = useSelector((state) => state.users.data);
+  const moduleList = useSelector((state) => state.module.data);
+  const taskList = useSelector((state) => state.task.data);
+
+  useEffect(() => {
+    dispatch(taskActions.getTaskInfo(filterPayload));
+    dispatch(settingsActions.getDivisionInfo());
+    dispatch(settingsActions.getProjectInfo());
+    dispatch(settingsActions.getStatusInfo());
+    dispatch(userActions.getuserInfo());
+    dispatch(moduleActions.getModuleInfo());
+  }, []);
+  useEffect(() => {
+    let options = [];
+
+    if (projectDataList && taskList?.Result?.length) {
+      const projectIdSet = new Set(taskList.Result.map((item) => item.ProjectId));
+
+      options = [];
+      projectDataList?.Result?.forEach((item) => {
+        if (item.ProjectTitle && projectIdSet.has(item.ProjectId)) {
+          options.push({ label: item.ProjectTitle, value: item.ProjectId });
+        }
+      });
+      setProjectOption([...options]);
+    }
+
+    if (moduleList && taskList?.Result?.length) {
+      const moduleIdSet = new Set(taskList.Result.map((item) => item.ModuleId));
+
+      options = [];
+      moduleList?.Result?.forEach((item) => {
+        if (item.ModuleName && moduleIdSet.has(item.ModuleId)) {
+          options.push({ label: item.ModuleName, value: item.ModuleId });
+        }
+      });
+      setModuleOption([...options]);
+    }
+
+    if (userList && taskList?.Result?.length) {
+      const taskUserIdSet = new Set();
+
+      taskList.Result.forEach((item) => {
+        const collectIds = (idString) => {
+          if (!idString) return;
+          idString.split(',').forEach((id) => {
+            const trimmedId = id.trim();
+            if (trimmedId && trimmedId !== '0') {
+              taskUserIdSet.add(trimmedId);
+            }
+          });
+        };
+
+        collectIds(item.UserId);
+        collectIds(item.ChangeAssignTo);
+      });
+
+      options = [];
+      userList?.Result?.forEach((user) => {
+        if (user.Status === '1' && taskUserIdSet.has(user.UserId)) {
+          options.push({ label: user.UserName, value: user.UserId });
+        }
+      });
+      setuserOption([...options]);
+    }
+  }, [taskList, projectDataList, moduleList, statusLists, userList]);
+
+  useEffect(() => {
+    let filterParams = { ...filterPayload };
+
+    // GROUP filter values
+    if (groupFilter && groupFilter.length > 0) {
+      let groupPayload = '';
+      if (groupFilter && groupFilter.length === divisionDataList?.Result?.length) {
+        filterParams = { ...filterParams, GroupIdMulti: '' };
+      } else {
+        for (let index = 0; index < groupFilter.length; index++) {
+          const element = groupFilter[index];
+          groupPayload += `${element.value},`;
+        }
+        filterParams = {
+          ...filterParams,
+          GroupIdMulti: groupPayload.slice(0, -1)
+        };
+      }
+    } else {
+      filterParams = { ...filterParams, GroupIdMulti: '' };
+    }
+
+    // PROJECT filter values
+    if (projectFilter && projectFilter.length > 0) {
+      let projectPayload = '';
+      if (projectFilter && projectFilter.length === projectDataList?.Result?.length) {
+        filterParams = { ...filterParams, ProjectId: '' };
+      } else {
+        for (let index = 0; index < projectFilter.length; index++) {
+          const element = projectFilter[index];
+          projectPayload += `${element.value},`;
+        }
+        filterParams = {
+          ...filterParams,
+          ProjectId: projectPayload.slice(0, -1)
+        };
+      }
+    } else {
+      filterParams = { ...filterParams, ProjectId: '' };
+    }
+
+    // MODULE filter values
+    if (moduleFilter && moduleFilter.length > 0) {
+      let modulePayload = '';
+      if (moduleFilter && String(moduleFilter.length) === String(moduleList?.Result?.length)) {
+        filterParams = { ...filterParams, ModuleId: '' };
+      } else {
+        for (let index = 0; index < moduleFilter.length; index++) {
+          const element = moduleFilter[index];
+          modulePayload += `${element.value},`;
+        }
+        filterParams = {
+          ...filterParams,
+          ModuleId: modulePayload.slice(0, -1)
+        };
+      }
+    } else {
+      filterParams = { ...filterParams, ModuleId: '' };
+    }
+
+    // USER filter values
+    if (userFilter && userFilter.length > 0) {
+      let userPayload = '';
+      if (userFilter && userFilter.length === userList?.Result?.filter((item) => item.Status === '1').length) {
+        filterParams = { ...filterParams, UserId: '' };
+      } else {
+        for (let index = 0; index < userFilter.length; index++) {
+          const element = userFilter[index];
+          userPayload += `${element.value},`;
+        }
+        filterParams = {
+          ...filterParams,
+          UserId: userPayload.slice(0, -1)
+        };
+      }
+    } else {
+      filterParams = { ...filterParams, UserId: '' };
+    }
+
+    // STATUS filter values
+    if (statusFilter && statusFilter.length > 0) {
+      let statusPayload = '';
+      if (statusFilter && statusFilter.length === statusLists?.Result?.length) {
+        filterParams = { ...filterParams, StatusMulti: '' };
+      } else {
+        for (let index = 0; index < statusFilter.length; index++) {
+          const element = statusFilter[index];
+          statusPayload += `${element.value},`;
+        }
+        filterParams = {
+          ...filterParams,
+          StatusMulti: statusPayload.slice(0, -1)
+        };
+      }
+    } else {
+      filterParams = { ...filterParams, StatusMulti: '' };
+    }
+
+    setFilterPayload(filterParams);
+  }, [projectFilter, moduleFilter, userFilter, statusFilter]);
+
+  useEffect(() => {
+    if (statusLists?.Result) {
+      const options = statusLists.Result.map((item) => ({
+        label: item.StatusTitle,
+        value: item.StatusId
+      }));
+      setStatusOption(options);
+
+      // Handle Preselection if filterValue exists
+      if (filterValue) {
+        const selectedObj = options.find((opt) => opt.value.toString() === filterValue.toString());
+        if (selectedObj) {
+          setStatusFilter([selectedObj]);
+        }
+        dispatch(taskActions.getTaskInfo({ ...filterPayload, StatusMulti: filterValue }));
+      }
+    }
+    filterWith(null);
+  }, [statusLists, filterValue]);
+
+  const handleProjectFilter = (newSelected) => {
+    if (newSelected.length) {
+      setProjectFilter(newSelected);
+    } else {
+      setProjectFilter([]);
+    }
+  };
+  const handleModuleFilter = (newSelected) => {
+    if (newSelected.length) {
+      setModuleFilter(newSelected);
+    } else {
+      setModuleFilter([]);
+    }
+  };
+  const handleuserFilter = (newSelected) => {
+    if (newSelected.length) {
+      setuserFilter(newSelected);
+    } else {
+      setuserFilter([]);
+    }
+  };
+  const handleStatusFilter = (newSelected) => {
+    if (newSelected.length) {
+      setStatusFilter(newSelected);
+    } else {
+      setStatusFilter([]);
+    }
+  };
+  const [columnDefs] = useState([
+    {
+      headerName: '#',
+      valueGetter: (params) => params.node.rowIndex + 1,
+      width: 80,
+      pinned: 'left',
+      suppressMovable: true,
+      cellStyle: { textAlign: 'center' },
+      sortable: false,
+      filter: false,
+      flex: 1
+    },
+    { field: 'ProjectTitle', sortable: true, filter: false, flex: 1 },
+    { field: 'ModuleName', sortable: true, filter: false, flex: 1 },
+    { field: 'Task', sortable: true, filter: false, flex: 1 },
+    { field: 'Description', sortable: true, filter: false, flex: 1 },
+    { field: 'StartDate', sortable: true, filter: false, flex: 1 },
+    { field: 'StatusTitle', headerName: 'Status', sortable: true, filter: false, flex: 1 },
+    { field: 'AssignTo', sortable: true, filter: false, flex: 1 },
+    { field: 'Remark', flex: 1 }
+  ]);
+
+  useEffect(() => {
+    if (taskList && Array.isArray(taskList.Result) && userList?.Result) {
+      const updatedData = taskList.Result.map((item) => {
+        // Merge and deduplicate user IDs from UserId and ChangeAssignTo
+        const userIdSet = new Set();
+
+        const collectIds = (idString) => {
+          if (!idString) return;
+          idString.split(',').forEach((id) => {
+            const trimmedId = id.trim();
+            if (trimmedId && trimmedId !== '0') {
+              userIdSet.add(trimmedId);
+            }
+          });
+        };
+
+        collectIds(item.UserId);
+        collectIds(item.ChangeAssignTo);
+        const activeStatus = statusLists?.Result?.filter((stat) => String(stat.StatusId) === String(item.Status));
+
+        // Map user IDs to user names
+        const userNames = Array.from(userIdSet)
+          .map((id) => {
+            const user = userList.Result.find((u) => u.UserId === id);
+            return user?.UserName || null;
+          })
+          .filter(Boolean); // Remove nulls
+        return {
+          ...item,
+          StatusTitle: activeStatus?.[0]?.StatusTitle,
+          UserNames: userNames.join(', '),
+          AssignTo: userNames.join(', ')
+        };
+      });
+
+      setTaskData(updatedData);
+    } else {
+      setTaskData([]);
+    }
+  }, [taskList, userList]);
+
+  const triggerReset = () => {
+    setResetTrigger((prev) => prev + 1);
+    filterWith(null);
+    setGroupFilter([]);
+    setProjectFilter([]);
+    setModuleFilter([]);
+    setStatusFilter([]);
+    setuserFilter([]);
+    setFilterPayload({
+      ProjectId: '',
+      ModuleId: '',
+      Status: '',
+      UserId: '',
+      StartDate: '',
+      EndDate: '',
+      GroupId: ''
+    });
+    dispatch(
+      taskActions.getTaskInfo({
+        ProjectId: '',
+        ModuleId: '',
+        StatusMulti: '',
+        UserId: role === 'user' ? user.UserId : '',
+        StartDate: '',
+        EndDate: '',
+        GroupIdMulti: ''
+      })
+    );
+  };
+  const handleStartDate = (date) => {
+    if (date instanceof Date && !isNaN(date)) {
+      const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+      setFilterPayload({ ...filterPayload, StartDate: formattedDate });
+    } else {
+      setFilterPayload({ ...filterPayload, StartDate: '' });
+    }
+  };
+  const handleEndDate = (date) => {
+    if (date instanceof Date && !isNaN(date)) {
+      const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+      setFilterPayload({ ...filterPayload, EndDate: formattedDate });
+    } else {
+      setFilterPayload({ ...filterPayload, EndDate: '' });
+    }
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(taskActions.getTaskInfo(filterPayload));
+  };
+  const onExport = () => {
+    if (!gridRef.current?.api) return;
+
+    const visibleColumns = gridRef.current.api.getAllDisplayedColumns();
+    const visibleColKeys = visibleColumns
+      .filter((col) => !!col.getColDef().field) // Only columns with valid field
+      .map((col) => col.getColId());
+
+    const rowData = [];
+    gridRef.current.api.forEachNodeAfterFilterAndSort((node) => {
+      const filteredRow = {};
+      visibleColKeys.forEach((key) => {
+        filteredRow[key] = node.data[key];
+      });
+      rowData.push(filteredRow);
+    });
+
+    const headerLines = ['Total Task List'];
+
+    const footerLines = [`Exported On: ${moment().format('DD-MM-YYYY hh:mm A')}`];
+
+    exportJsonToExcel(rowData, 'Task_List', headerLines, footerLines);
+  };
+
+  return (
+    <div>
+      <div className="">
+        <div>
+          <Form noValidate onSubmit={handleSubmit}>
+            <div className="filter-row mb-2">
+              <div className="filter-col">
+                <MultiSelect
+                  options={projectOption}
+                  value={projectFilter}
+                  onChange={handleProjectFilter}
+                  overrideStrings={{
+                    selectSomeItems: 'Projects'
+                  }}
+                  hasSelectAll={true}
+                />
+              </div>
+              <div className="filter-col">
+                <MultiSelect
+                  options={moduleOption}
+                  value={moduleFilter}
+                  onChange={handleModuleFilter}
+                  overrideStrings={{
+                    selectSomeItems: 'Modules'
+                  }}
+                  hasSelectAll={true}
+                />
+              </div>
+              {role !== 'user' && (
+                <div className="filter-col">
+                  <MultiSelect
+                    options={userOption}
+                    value={userFilter}
+                    onChange={handleuserFilter}
+                    overrideStrings={{
+                      selectSomeItems: 'Users'
+                    }}
+                    hasSelectAll={true}
+                  />
+                </div>
+              )}
+              <div className="filter-col">
+                <MultiSelect
+                  options={statusOption}
+                  value={statusFilter}
+                  onChange={handleStatusFilter}
+                  overrideStrings={{
+                    selectSomeItems: 'Status'
+                  }}
+                  hasSelectAll={true}
+                />
+              </div>
+              <div className="filter-col">
+                {' '}
+                <DatePicker
+                  selected={filterPayload.StartDate || null}
+                  className={`form-control cfs-14`}
+                  onChange={handleStartDate}
+                  placeholderText="Start Date"
+                  dateFormat="dd-MM-yyyy"
+                  name="startDate"
+                />
+              </div>
+              <div className="filter-col">
+                {' '}
+                <DatePicker
+                  selected={filterPayload.EndDate || null}
+                  className={`form-control cfs-14`}
+                  onChange={handleEndDate}
+                  placeholderText="End Date"
+                  dateFormat="dd-MM-yyyy"
+                  name="endDate"
+                />
+              </div>
+              <div className="filter-submit align-items-center d-flex">
+                <Button type="submit" size="sm" className="m-0 bg-defaultBlue" onClick={handleSubmit}>
+                  Submit
+                </Button>
+              </div>
+              <div className="filter-col">
+                <div className="d-flex align-items-center justify-content-end">
+                  <img src={excel_i} alt="" className="img-fluid ml-1 pointer" width={30} onClick={onExport} title="Export PDF" />
+                  <img
+                    src={refresh}
+                    alt=""
+                    className="img-fluid ml-1 pointer"
+                    title="Reset Table"
+                    width={30}
+                    onClick={() => triggerReset()}
+                  />
+                </div>
+              </div>
+            </div>
+          </Form>
+        </div>
+        <div className=" dark-table">
+          <AdvanceTable
+            reference={gridRef}
+            gridWrapperRef={gridWrapperRef}
+            rowData={taskData || []}
+            columnDefs={columnDefs}
+            pagination={true}
+            paginationPageSize={15}
+            paginationPageSizeSelector={[10, 15, 20, 25, 50, 100]}
+            resetTrigger={resetTrigger}
+            tablethemes="blue"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TaskList;

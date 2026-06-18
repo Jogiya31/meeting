@@ -1,0 +1,36 @@
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import logo from '../../../../assets/images/logo.png';
+import { ConfigContext } from '../../../../contexts/ConfigContext';
+import * as actionType from '../../../../store/actions';
+import { useTheme } from 'contexts/themeContext';
+
+const NavLogo = () => {
+  const { logoColor } = useTheme();
+  const configContext = useContext(ConfigContext);
+  const { collapseMenu } = configContext.state;
+  const { dispatch } = configContext;
+
+  let toggleClass = ['mobile-menu'];
+  if (collapseMenu) {
+    toggleClass = [...toggleClass, 'on'];
+  }
+
+  return (
+    <React.Fragment>
+      <div className={`navbar-brand header-logo ${logoColor}`}>
+        <div>
+          <Link to="#" className="b-brand">
+            <img src={logo} className="logo" alt="" />
+            <span className="b-title">Team work</span>
+          </Link>
+          <Link to="#" className={toggleClass.join(' ')} id="mobile-collapse" onClick={() => dispatch({ type: actionType.COLLAPSE_MENU })}>
+            <span />
+          </Link>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+};
+
+export default NavLogo;
